@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type MotionProps } from "framer-motion";
 import {
   HiOutlineViewList,
   HiOutlineHeart,
@@ -63,6 +63,14 @@ const servicesVariants = {
   },
 };
 
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+const MotionButton = motion.button as React.ComponentType<
+  React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
+>;
+
 export default function Services() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -73,7 +81,7 @@ export default function Services() {
   return (
     <section id="servicios" className="bg-light py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -86,9 +94,9 @@ export default function Services() {
           <p className="mt-4 text-lg text-foreground/70">
             Servicios integrales de imagenología diagnóstica con tecnología de última generación
           </p>
-        </motion.div>
+        </MotionDiv>
 
-        <motion.div
+        <MotionDiv
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="visible"
@@ -100,7 +108,7 @@ export default function Services() {
             const isExpanded = expandedId === especialidad.id;
 
             return (
-              <motion.div
+              <MotionDiv
                 key={especialidad.id}
                 variants={cardVariants}
                 className="group overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg"
@@ -128,26 +136,26 @@ export default function Services() {
                     </div>
                   </div>
 
-                  <motion.button
+                  <MotionButton
                     onClick={() => toggleExpanded(especialidad.id)}
                     className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <span>{isExpanded ? "Ocultar" : "Ver"} servicios</span>
-                    <motion.div
+                    <MotionDiv
                       animate={{ rotate: isExpanded ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                       className="text-white"
                     >
                       <HiChevronDown size={18} />
-                    </motion.div>
-                  </motion.button>
+                    </MotionDiv>
+                  </MotionButton>
                 </div>
 
                 <AnimatePresence>
                   {isExpanded && (
-                    <motion.div
+                    <MotionDiv
                       variants={servicesVariants}
                       initial="hidden"
                       animate="visible"
@@ -156,7 +164,7 @@ export default function Services() {
                     >
                       <div className="space-y-2 px-6 py-4">
                         {especialidad.servicios.map((servicio) => (
-                          <motion.div
+                          <MotionDiv
                             key={servicio.id}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -166,7 +174,7 @@ export default function Services() {
                             <span className="text-sm font-medium text-foreground">
                               {servicio.nombre}
                             </span>
-                            <motion.button
+                            <MotionButton
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: 0.1, duration: 0.2 }}
@@ -178,17 +186,17 @@ export default function Services() {
                                 <HiOutlineCalendar size={14} />
                               </span>
                               <span>Agendar</span>
-                            </motion.button>
-                          </motion.div>
+                            </MotionButton>
+                          </MotionDiv>
                         ))}
                       </div>
-                    </motion.div>
+                    </MotionDiv>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </MotionDiv>
             );
           })}
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );
