@@ -10,12 +10,12 @@ export default function Home() {
       <main>
         <Hero />
 
-        <section id="nosotros" className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-[--color-primary] text-center mb-12">
+        <section id="nosotros" className="bg-white py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-12 text-center text-4xl font-bold text-[--color-primary] md:text-5xl">
               Nosotros
             </h2>
-            <p className="text-lg text-gray-600 text-center max-w-3xl mx-auto">
+            <p className="mx-auto max-w-3xl text-center text-lg text-gray-600">
               Contenido de la sección nosotros...
             </p>
           </div>
@@ -23,12 +23,12 @@ export default function Home() {
 
         <Services />
 
-        <section id="contacto" className="py-20 bg-[--color-primary]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-12">
+        <section id="contacto" className="bg-[--color-primary] py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 className="mb-12 text-center text-4xl font-bold text-white md:text-5xl">
               Contáctanos
             </h2>
-            <p className="text-lg text-white/90 text-center max-w-3xl mx-auto">
+            <p className="mx-auto max-w-3xl text-center text-lg text-white/90">
               Contenido de la sección contacto...
             </p>
           </div>

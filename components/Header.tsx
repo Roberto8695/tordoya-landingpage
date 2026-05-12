@@ -34,7 +34,7 @@ export default function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                className="relative text-[15px] font-semibold text-primary transition-colors duration-200 hover:text-secondary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:origin-center after:scale-x-0 after:bg-secondary after:transition-transform after:duration-200 hover:after:scale-x-100"
+                className="relative text-[15px] font-light text-primary transition-colors duration-200 hover:text-secondary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:origin-center after:scale-x-0 after:bg-secondary after:transition-transform after:duration-200 hover:after:scale-x-100"
               >
                 {item.label}
               </a>
