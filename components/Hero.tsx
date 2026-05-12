@@ -50,7 +50,7 @@ export default function Hero() {
 	return (
 		<section
 			id="inicio"
-			className="relative h-[100vh] overflow-hidden bg-[--color-primary] text-white"
+			className="relative h-screen overflow-hidden bg-[--color-primary] text-white"
 		>
 			{slides.map((slide, index) => {
 				const isActive = index === activeSlide;
@@ -84,7 +84,7 @@ export default function Hero() {
 									<div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
 										<a
 											href={slide.href}
-											className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-bold text-[--color-primary] shadow-xl shadow-black/20 transition-transform duration-200 hover:-translate-y-0.5"
+											className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-bold text-[--color-primary] shadow-xl shadow-black/20 transition-transform duration-200 hover:-translate-y-0.5"
 										>
 											{slide.cta}
 										</a>

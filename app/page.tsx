@@ -8,7 +8,7 @@ export default function Home() {
       <Header />
       
 
-      <main className="pt-20">
+      <main className="">
       <Hero />
      <AboutUs />
       <Services />
