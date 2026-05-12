@@ -1,0 +1,62 @@
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+
+const manrope = localFont({
+  src: [
+    {
+      path: "../public/fonts/Manrope-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Manrope-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const dDin = localFont({
+  src: [
+    {
+      path: "../public/fonts/D-DIN.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/D-DIN-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-d-din",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Tordoya | Soluciones Integrales",
+  description: "Empresa líder en soluciones integrales para tu negocio",
+  icons: {
+    icon: "/image/icono.webp",
+    shortcut: "/image/icono.webp",
+    apple: "/image/icono.webp",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="es"
+      className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
+}
