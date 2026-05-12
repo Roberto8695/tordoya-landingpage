@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, type MotionProps } from "framer-motion";
 import { HiOutlineEye, HiOutlineLightBulb, HiSparkles } from "react-icons/hi";
 
 const containerVariants = {
@@ -27,18 +27,22 @@ const itemVariants = {
   },
 };
 
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
 export default function AboutUs() {
   return (
     <section id="nosotros" className="bg-primary py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <MotionDiv
           className="grid gap-10 md:grid-cols-2 md:items-center"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          <motion.div variants={itemVariants}>
+          <MotionDiv variants={itemVariants}>
             <h2 className="text-3xl font-black text-light sm:text-4xl" >
               Quiénes somos
             </h2>
@@ -48,7 +52,7 @@ export default function AboutUs() {
               guían cada decisión estratégica y operativa.
             </p>
 
-            <motion.div className="mt-8 grid gap-4 sm:grid-cols-2" variants={containerVariants}>
+            <MotionDiv className="mt-8 grid gap-4 sm:grid-cols-2" variants={containerVariants}>
                 <article className="group flex gap-4 rounded-lg border border-primary/8 bg-accent/80 p-4 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer" >
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-light">
                   <HiOutlineLightBulb size={24} />
@@ -72,14 +76,14 @@ export default function AboutUs() {
                   </p>
                 </div>
               </article>
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
 
-          <motion.div className="relative flex items-center justify-center" variants={itemVariants}>
+          <MotionDiv className="relative flex items-center justify-center" variants={itemVariants}>
             <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />
             <div className="absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-accent/5 blur-2xl" />
 
-            <motion.div className="z-10 w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-lg" whileHover={{ scale: 1.05 }}>
+            <MotionDiv className="z-10 w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-lg" whileHover={{ scale: 1.05 }}>
               <h4 className="text-lg font-extrabold text-primary" >Nuestros valores</h4>
               <p className="mt-3 text-foreground/80" >
                 Compromiso, excelencia y cercanía. Trabajamos con calidad
@@ -117,9 +121,9 @@ export default function AboutUs() {
                   </div>
                 </li>
               </ul>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </MotionDiv>
+          </MotionDiv>
+        </MotionDiv>
       </div>
     </section>
   );
