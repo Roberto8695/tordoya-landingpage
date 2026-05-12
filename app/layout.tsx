@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const manrope = localFont({
   src: [
@@ -39,11 +41,11 @@ const dDin = localFont({
 export const metadata: Metadata = {
   title: "Tordoya | Soluciones Integrales",
   description: "Empresa líder en soluciones integrales para tu negocio",
-  icons: {
-    icon: "/image/icono.webp",
-    shortcut: "/image/icono.webp",
-    apple: "/image/icono.webp",
-  },
+  icons: [
+    { rel: 'icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'shortcut icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'apple-touch-icon', url: '/image/icono.webp?v=2', sizes: '180x180' },
+  ],
 };
 
 export default function RootLayout({
@@ -56,7 +58,11 @@ export default function RootLayout({
       lang="es"
       className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-white text-foreground">
+        <Header />
+        <main className="flex-1 pt-20">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

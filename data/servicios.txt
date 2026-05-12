@@ -1,0 +1,54 @@
+Especialidad		Nombre del Estudio
+
+Abdominal		Ecografía abdominal completa
+Abdominal		Ecografía hepática y Vías Biliares 
+Abdominal		Ecografía de vesícula y vías biliares
+Abdominal		Ecografía de páncreas
+Abdominal		Ecografía de bazo
+Abdominal		Ecografia abdominopelvico 
+
+Ginecológica		Ecografía pélvica o ginecológica
+Ginecológica		Ecografía transvaginal
+Ginecológica		Monitoreo ó seguimiento  folicular
+
+Obstétrica		Obstétrico Biometría fetal ( tradicional)
+Obstétrica		Obstétrica  cromosómica ó estructural   I trimestre
+Obstétrica		Obstétrica estructural del  2do y 3er  trimestre
+Obstétrica		Obstétrico Gemelar 
+Obstétrica		Obstétrica 3D Y 4D
+Obstétrica		Perfil biofísico fetal
+Obstétrica		Doppler obstétrico
+
+Urológica		Ecografía renal bilateral 
+Urológica		Ecografía vesical, vías urinarias  transabdominal 
+Urológica		Ecografía prostática suprapúbica
+Urológica		Ecografía prostática transrectal
+Urológica		Ecografia testicular 
+
+Partes Blandas		Ecografía de tiroides
+Partes Blandas		Ecografía mamaria
+Partes Blandas		Ecografía de partes blandas localizada
+Partes Blandas		Ecografía de pared Abdominal e inguinal ( hernias de la pared )
+Partes Blandas		Ecografía ganglionar
+
+Doppler			Doppler carotídeo y/o vertebrales 
+Doppler			Doppler arterial miembros inferiores
+Doppler			Doppler venoso miembros inferiores
+Doppler			Doppler arterial miembros superiores
+Doppler			Doppler venoso miembros superiores
+Doppler			Doppler testicular
+Doppler			Doppler hepatoportal 
+Doppler			Doppler tiroideo 
+Doppler			Doppler pelvico ginecológico 
+Doppler			Doppler renal
+
+Musculoesquelética	Ecografía MSK hombro
+Musculoesquelética	Ecografía MSK rodilla
+Musculoesquelética	Ecografía MSK codo
+Musculoesquelética	Ecografía MSK tobillo
+Musculoesquelética	Ecografía MSK  muñeca
+
+Emergencias		Abdomen agudo ( apendicitis, colecistitis, pancreatitis aguda, peritonitis, etc. 
+	
+Otros 			Colposcopia 
+Otros			Citología Cervico vaginal ( Papanicolau, PAP)
