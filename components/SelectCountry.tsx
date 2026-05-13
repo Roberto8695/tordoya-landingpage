@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import useDetectCountry from "../hooks/useDetectCountry";
 
 type CountryOption = {
 	id: "mexico" | "bolivia" | "peru";
@@ -18,6 +19,8 @@ const countryOptions: CountryOption[] = [
 export default function SelectCountry() {
 	const [isOpen, setIsOpen] = useState(true);
 	const [selectedCountry, setSelectedCountry] = useState<CountryOption["id"] | null>(null);
+	const [highlightedCountry, setHighlightedCountry] = useState<CountryOption["id"] | null>(null);
+	const detectedCountry = useDetectCountry();
 
 	useEffect(() => {
 		if (!isOpen) {
@@ -36,6 +39,12 @@ export default function SelectCountry() {
 		setSelectedCountry(countryId);
 		setIsOpen(false);
 	};
+
+	useEffect(() => {
+		if (detectedCountry) {
+			setHighlightedCountry(detectedCountry);
+		}
+	}, [detectedCountry]);
 
 	if (!isOpen) {
 		return null;
@@ -59,6 +68,7 @@ export default function SelectCountry() {
 				<div className="mt-8 grid gap-3">
 					{countryOptions.map((country) => {
 						const isSelected = selectedCountry === country.id;
+						const isHighlighted = highlightedCountry === country.id;
 
 						return (
 							<button
@@ -68,10 +78,11 @@ export default function SelectCountry() {
 								className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 sm:px-5 ${
 									isSelected
 										? "border-accent bg-accent/10"
+										: isHighlighted
+										? "border-accent/40 bg-accent/6 ring-2 ring-accent/20"
 										: "border-primary/15 bg-white hover:border-secondary/40 hover:bg-secondary/5"
 								}`}
-								aria-label={`Seleccionar ${country.name}`}
-							>
+								aria-label={`Seleccionar ${country.name}`}>
 								<div className="flex items-center gap-3">
 									<span className="overflow-hidden rounded-sm border border-primary/10 shadow-sm" aria-hidden="true">
 										<Image
@@ -85,6 +96,11 @@ export default function SelectCountry() {
 									<span className="text-base font-semibold text-primary sm:text-lg">
 										{country.name}
 									</span>
+									{isHighlighted && !isSelected && (
+										<span className="ml-3 inline-flex items-center rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
+											Detectado
+										</span>
+									)}
 								</div>
 
 								<span className="rounded-full bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
