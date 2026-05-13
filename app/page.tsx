@@ -1,19 +1,19 @@
 import Header from "@/components/Header";
+import Hero from "@/components/Hero";
 import AboutUs from "@/components/AboutUs";
 import Services from "@/components/Services";
-import Hero from "@/components/Hero";
+import PortalResultados from "@/components/PortalResultados";
+
 export default function Home() {
   return (
     <>
       <Header />
-      
+      <Hero />
 
       <main className="">
-      <Hero />
-     <AboutUs />
-      <Services />
-
-       
+        <AboutUs />
+        <Services />
+        <PortalResultados />
       </main>
     </>
   );
