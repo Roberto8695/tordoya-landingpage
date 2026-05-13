@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence, type MotionProps } from "framer-motion";
+import { motion, type MotionProps } from "framer-motion";
 import {
   HiOutlineViewList,
   HiOutlineHeart,
@@ -49,18 +49,9 @@ const cardVariants = {
   },
 };
 
-const servicesVariants = {
-  hidden: { opacity: 0, height: 0 },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    transition: { duration: 0.3, ease: "easeIn" },
-  },
+const servicesPanelTransition = {
+  duration: 0.42,
+  ease: [0.22, 1, 0.36, 1],
 };
 
 const MotionDiv = motion.div as React.ComponentType<
@@ -153,46 +144,48 @@ export default function Services() {
                   </MotionButton>
                 </div>
 
-                <AnimatePresence>
-                  {isExpanded && (
-                    <MotionDiv
-                      variants={servicesVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="overflow-hidden bg-white"
-                    >
-                      <div className="space-y-2 px-6 py-4">
-                        {especialidad.servicios.map((servicio) => (
-                          <MotionDiv
-                            key={servicio.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
-                          >
-                            <span className="text-sm font-medium text-foreground">
-                              {servicio.nombre}
-                            </span>
-                            <MotionButton
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.1, duration: 0.2 }}
-                              className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              <span className="text-white">
-                                <HiOutlineCalendar size={14} />
-                              </span>
-                              <span>Agendar</span>
-                            </MotionButton>
-                          </MotionDiv>
-                        ))}
-                      </div>
-                    </MotionDiv>
-                  )}
-                </AnimatePresence>
+                <MotionDiv
+                  initial={false}
+                  animate={{
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0,
+                  }}
+                  transition={servicesPanelTransition}
+                  className="overflow-hidden bg-white"
+                  aria-hidden={!isExpanded}
+                >
+                  <MotionDiv
+                    animate={{ y: isExpanded ? 0 : -8 }}
+                    transition={servicesPanelTransition}
+                    className="space-y-2 px-6 py-4"
+                  >
+                    {especialidad.servicios.map((servicio) => (
+                      <MotionDiv
+                        key={servicio.id}
+                        animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+                        transition={{ duration: 0.28 }}
+                        className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
+                      >
+                        <span className="text-sm font-medium text-foreground">
+                          {servicio.nombre}
+                        </span>
+                        <MotionButton
+                          animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
+                          transition={{ duration: 0.22 }}
+                          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          tabIndex={isExpanded ? 0 : -1}
+                        >
+                          <span className="text-white">
+                            <HiOutlineCalendar size={14} />
+                          </span>
+                          <span>Agendar</span>
+                        </MotionButton>
+                      </MotionDiv>
+                    ))}
+                  </MotionDiv>
+                </MotionDiv>
               </MotionDiv>
             );
           })}
