@@ -193,21 +193,7 @@ export default function PortalResultados() {
 					</div>
 				</div>
 
-				{/* Indicadores */}
-				<div className="mt-8 flex items-center justify-center gap-3">
-					{[0, 1, 2].map((index) => (
-						<button
-							key={index}
-							onClick={() => setActiveIndicator(index)}
-							className={`rounded-full transition-all duration-300 ${
-								index === activeIndicator
-									? "h-2 w-8 bg-white shadow-[0_0_12px_rgba(255,255,255,0.4)]"
-									: "h-2 w-2 bg-white/35 hover:bg-white/55"
-							}`}
-							aria-label={`Indicador ${index + 1}`}
-						/>
-					))}
-				</div>
+				
 			</div>
 		</section>
 	);
