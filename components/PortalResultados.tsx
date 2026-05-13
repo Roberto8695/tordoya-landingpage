@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FaLock } from "react-icons/fa";
 
 export default function PortalResultados() {
 	const [folioInput, setFolioInput] = useState("");
@@ -63,7 +64,7 @@ export default function PortalResultados() {
 			<div className="relative mx-auto flex max-w-4xl flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
 				{/* Badge */}
 				<span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-semibold tracking-[0.2em] uppercase text-white/88 backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/25">
-					<span className="h-2 w-2 rounded-full bg-[--color-accent] shadow-[0_0_18px_rgba(0,183,250,0.8)] animate-pulse" />
+					<FaLock size={14} className="text-white/90" aria-hidden="true" />
 					Portal seguro
 				</span>
 
@@ -81,9 +82,7 @@ export default function PortalResultados() {
 					
 					{/* Encabezado Card */}
 					<div className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[--color-accent]">
-						<div className="h-4 w-4 rounded-md border border-[--color-accent]/55 bg-white/5 flex items-center justify-center">
-							<div className="h-2 w-2 rounded-sm bg-[--color-accent]" />
-						</div>
+						<FaLock size={14} className="text-[--color-accent]" aria-hidden="true" />
 						Portal seguro
 					</div>
 
@@ -183,10 +182,7 @@ export default function PortalResultados() {
 
 					{/* Security Message */}
 					<div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-left text-[12px] leading-5 text-white/72 transition-all duration-300 hover:border-white/15 hover:bg-white/8">
-						<svg className="mt-0.5 h-4 w-4 shrink-0 text-white/70 flex-shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-							<path d="M12 3a4.5 4.5 0 0 0-4.5 4.5V10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-							<rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
-						</svg>
+						<FaLock size={16} className="mt-0.5 text-white/70 flex-shrink-0" aria-hidden="true" />
 						<p>
 							Tu información médica está protegida con <span className="font-semibold text-white/85">encriptación de extremo a extremo</span> y cumple con estándares <span className="font-semibold text-white/85">HIPAA</span>.
 						</p>
