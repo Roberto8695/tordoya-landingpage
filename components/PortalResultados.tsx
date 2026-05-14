@@ -115,7 +115,7 @@ export default function PortalResultados() {
 						<button
 							type="submit"
 							disabled={isLoading}
-							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[--color-accent] px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,183,250,0.28)] transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,183,250,0.4)] hover:bg-[#1abfff] disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0000FF] px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,80,179,0.32)] transition-all duration-300 hover:bg-[#003f8f] hover:shadow-[0_20px_50px_rgba(0,63,143,0.45)] disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 active:scale-95"
 						>
 							{isLoading ? (
 								<>
@@ -184,7 +184,7 @@ export default function PortalResultados() {
 					<div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-left text-[12px] leading-5 text-white/72 transition-all duration-300 hover:border-white/15 hover:bg-white/8">
 						<FaLock size={16} className="mt-0.5 text-white/70 flex-shrink-0" aria-hidden="true" />
 						<p>
-							Tu información médica está protegida con <span className="font-semibold text-white/85">encriptación de extremo a extremo</span> y cumple con estándares <span className="font-semibold text-white/85">HIPAA</span>.
+							Con TORDOYA tu información médica es mas que segura 
 						</p>
 					</div>
 				</div>
