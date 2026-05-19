@@ -23,7 +23,7 @@ export default function Header() {
               alt="Isotipo Tordoya"
               width={1920}
               height={1920}
-              className="h-10 w-auto shrink-0 sm:h-12 md:h-16 lg:h-20"
+              className="h-10 w-auto shrink-0 sm:h-12 md:h-16 lg:h-12"
               priority
             />
            
