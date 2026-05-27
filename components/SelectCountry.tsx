@@ -10,6 +10,8 @@ type CountryOption = {
 	flagSrc: string;
 };
 
+const STORAGE_KEY = "tordoya_country";
+
 const countryOptions: CountryOption[] = [
 	{ id: "mexico", name: "Mexico", flagSrc: "/image/mexico.png" },
 	{ id: "bolivia", name: "Bolivia", flagSrc: "/image/bolivia.png" },
@@ -21,6 +23,18 @@ export default function SelectCountry() {
 	const [selectedCountry, setSelectedCountry] = useState<CountryOption["id"] | null>(null);
 	const [highlightedCountry, setHighlightedCountry] = useState<CountryOption["id"] | null>(null);
 	const detectedCountry = useDetectCountry();
+	const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+
+	useEffect(() => {
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (storedCountry) {
+			setSelectedCountry(storedCountry);
+			setIsOpen(false);
+		}
+
+		setHasLoadedStorage(true);
+	}, []);
 
 	useEffect(() => {
 		if (!isOpen) {
@@ -37,13 +51,34 @@ export default function SelectCountry() {
 
 	const handleSelectCountry = (countryId: CountryOption["id"]) => {
 		setSelectedCountry(countryId);
+		window.localStorage.setItem(STORAGE_KEY, countryId);
 		setIsOpen(false);
 	};
 
 	useEffect(() => {
-		if (detectedCountry) {
-			setHighlightedCountry(detectedCountry);
+		if (!detectedCountry || !hasLoadedStorage) {
+			return;
 		}
+
+		setHighlightedCountry(detectedCountry);
+
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (!storedCountry) {
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		if (storedCountry !== detectedCountry) {
+			window.localStorage.removeItem(STORAGE_KEY);
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		setSelectedCountry(storedCountry);
+		setIsOpen(false);
 	}, [detectedCountry]);
 
 	if (!isOpen) {

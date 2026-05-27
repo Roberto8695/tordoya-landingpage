@@ -17,7 +17,7 @@ export default function Footer() {
 			<div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
 				<div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:items-start">
 					<div>
-						<Link href="#inicio" className="inline-flex items-center rounded-xl  px-3 py-2 shadow-sm">
+						<Link href="#inicio" className="inline-flex items-center rounded-xl px-3 py-2 shadow-sm">
 							<Image
 								src="/image/logo-white.webp"
 								alt="Tordoya"
