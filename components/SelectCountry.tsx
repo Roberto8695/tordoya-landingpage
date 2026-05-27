@@ -98,7 +98,7 @@ export default function SelectCountry() {
 									</span>
 									{isHighlighted && !isSelected && (
 										<span className="ml-3 inline-flex items-center rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
-											Detectado
+											
 										</span>
 									)}
 								</div>
