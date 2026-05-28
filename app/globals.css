@@ -9,6 +9,13 @@
 
   --background: #ffffff;
   --foreground: #171717;
+
+    --color-card: rgba(255,255,255,0.08);
+  --color-border: rgba(255,255,255,0.12);
+  --color-glow: rgba(0,183,250,0.35);
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
 }
 
 @theme inline {

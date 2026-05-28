@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import SelectCountry from "@/components/SelectCountry";
 
 const manrope = localFont({
   src: [
@@ -60,12 +56,8 @@ export default function RootLayout({
       lang="es"
       className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-foreground">
-        <SelectCountry />
-        <Header />
-        <main className="flex-1 pt-20">{children}</main>
-        <Footer />
-        <WhatsAppButton />
+      <body className="min-h-full bg-white text-foreground">
+        {children}
       </body>
     </html>
   );

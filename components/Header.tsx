@@ -79,30 +79,35 @@ export default function Header() {
             </svg>
           </button>
         </div>
-
-        {isMenuOpen && (
-          <div id="mobile-menu" className="border-t border-primary/10 pb-5 pt-4 md:hidden">
-            <div className="flex flex-col space-y-3">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="rounded-md px-2 py-2 text-lg font-semibold text-primary transition-colors duration-200 hover:bg-primary/5 hover:text-secondary"
-                >
-                  {item.label}
-                </a>
-              ))}
+        <div
+          id="mobile-menu"
+          aria-hidden={!isMenuOpen}
+          className={`overflow-hidden border-t border-primary/10 transition-[max-height,opacity,transform] duration-300 ease-out md:hidden ${
+            isMenuOpen
+              ? "max-h-96 opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+        >
+          <div className="flex flex-col space-y-3 pb-5 pt-4">
+            {navItems.map((item) => (
               <a
-                href="#contacto"
+                key={item.label}
+                href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
+                className="rounded-md px-2 py-2 text-base font-light text-primary transition-colors duration-200 hover:bg-primary/5 hover:text-secondary"
               >
-                Agenda tu cita
+                {item.label}
               </a>
-            </div>
+            ))}
+            <a
+              href="#contacto"
+              onClick={() => setIsMenuOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
+            >
+              Agenda tu cita
+            </a>
           </div>
-        )}
+        </div>
       </nav>
     </header>
   );

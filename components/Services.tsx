@@ -102,7 +102,7 @@ export default function Services() {
               <MotionDiv
                 key={especialidad.id}
                 variants={cardVariants}
-                className="group overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg"
+                className="group overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
               >
                 <div 
                   className={`${
