@@ -127,7 +127,7 @@ export default function FormContact() {
 
 						<button
 							type="submit"
-							className="inline-flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_36px_rgba(0,183,250,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0aa8e4] hover:shadow-[0_20px_44px_rgba(0,183,250,0.34)]"
+							className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_36px_rgba(0,183,250,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0aa8e4] hover:shadow-[0_20px_44px_rgba(0,183,250,0.34)]"
 						>
 							<span className="mr-2 text-base leading-none">✈</span>
 							Enviar mensaje

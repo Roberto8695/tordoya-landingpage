@@ -88,7 +88,7 @@ export default function Services() {
         </MotionDiv>
 
         <MotionDiv
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
@@ -102,7 +102,7 @@ export default function Services() {
               <MotionDiv
                 key={especialidad.id}
                 variants={cardVariants}
-                className="group overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
+                className="group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
               >
                 <div 
                   className={`${

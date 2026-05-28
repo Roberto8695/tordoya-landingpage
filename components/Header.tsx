@@ -43,7 +43,7 @@ export default function Header() {
 
           <a
             href="#contacto"
-            className="hidden min-w-42.5 justify-self-end md:inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2 md:px-6 md:py-3 text-sm md:text-base font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-secondary hover:shadow-secondary/30"
+            className="hidden min-w-42.5 justify-self-end md:inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 md:px-6 md:py-3 text-sm md:text-base font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-secondary hover:shadow-secondary/30"
           >
             Agenda tu cita
           </a>
@@ -102,7 +102,7 @@ export default function Header() {
             <a
               href="#contacto"
               onClick={() => setIsMenuOpen(false)}
-              className="mt-2 inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
+              className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
             >
               Agenda tu cita
             </a>

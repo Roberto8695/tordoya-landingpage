@@ -115,7 +115,7 @@ export default function PortalResultados() {
 						<button
 							type="submit"
 							disabled={isLoading}
-							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0000FF] px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,80,179,0.32)] transition-all duration-300 hover:bg-[#003f8f] hover:shadow-[0_20px_50px_rgba(0,63,143,0.45)] disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 active:scale-95"
+							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,80,179,0.32)] transition-all duration-300 hover:bg-[#003f8f] hover:shadow-[0_20px_50px_rgba(0,63,143,0.45)] disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 active:scale-95"
 						>
 							{isLoading ? (
 								<>
