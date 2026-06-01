@@ -10,6 +10,7 @@ import {
 	HiOutlineLockClosed,
 	HiOutlineMail,
 } from "react-icons/hi";
+import { login } from "@/services/auth.service";
 
 type FormState = {
 	email: string;
@@ -29,6 +30,7 @@ export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 	const containerVariants = {
 		hidden: { opacity: 0, y: 14 },
@@ -48,9 +50,10 @@ export default function LoginForm() {
 		setFormState((prev) => ({ ...prev, [field]: value }));
 	};
 
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setErrorMessage(null);
+		setSuccessMessage(null);
 
 		if (!formState.email.trim() || !formState.password.trim()) {
 			setErrorMessage("Completa el correo y la contrasena para continuar.");
@@ -58,9 +61,24 @@ export default function LoginForm() {
 		}
 
 		setIsLoading(true);
-		window.setTimeout(() => {
+
+		try {
+			const data = await login({
+				email: formState.email,
+				password: formState.password,
+			});
+
+			if (!data?.ok) {
+				setErrorMessage(data?.message || "Credenciales invalidas.");
+				return;
+			}
+
+			setSuccessMessage("Acceso correcto. Bienvenido al panel.");
+		} catch {
+			setErrorMessage("No se pudo conectar con el servidor.");
+		} finally {
 			setIsLoading(false);
-		}, 1200);
+		}
 	};
 
 	return (
@@ -144,6 +162,12 @@ export default function LoginForm() {
 				{errorMessage && (
 					<div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
 						{errorMessage}
+					</div>
+				)}
+
+				{successMessage && (
+					<div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+						{successMessage}
 					</div>
 				)}
 
