@@ -129,7 +129,7 @@ export default function LoginForm() {
 							type="button"
 							onClick={() => setShowPassword((prev) => !prev)}
 								className="rounded-full p-1 text-white/60 transition hover:text-white"
-							aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+							aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
 						>
 							{showPassword ? (
 								<HiOutlineEyeOff className="h-5 w-5" />
