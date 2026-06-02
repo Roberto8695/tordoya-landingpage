@@ -114,7 +114,7 @@ export default function Services() {
                   } p-6 transition-all duration-300`}
                 >
                   <div
-                    className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60"
+                    className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
                     style={{ backgroundImage: `url(${especialidad.imagen})` }}
                     aria-hidden="true"
                   />
