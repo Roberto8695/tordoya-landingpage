@@ -83,7 +83,7 @@ export default function Services() {
             Nuestros Servicios
           </h2>
           <p className="mt-4 text-lg text-foreground/70">
-            Servicios integrales de imagenología diagnóstica con tecnología de última generación
+            Servicios integrales de imagenologia diagnostica con tecnologia de ultima generacion
           </p>
         </MotionDiv>
 
@@ -104,8 +104,8 @@ export default function Services() {
                 variants={cardVariants}
                 className="group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
               >
-                <div 
-                  className={`${
+                <div
+                  className={`relative overflow-hidden ${
                     especialidad.color === "primary"
                       ? "bg-linear-to-br from-primary to-primary/70"
                       : especialidad.color === "secondary"
@@ -113,8 +113,17 @@ export default function Services() {
                       : "bg-linear-to-br from-accent to-accent/70"
                   } p-6 transition-all duration-300`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60"
+                    style={{ backgroundImage: `url(${especialidad.imagen})` }}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/40"
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10 flex items-start justify-between">
+                    <div className="relative flex-1">
                       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
                         {IconComponent && <IconComponent size={24} />}
                       </div>
@@ -129,7 +138,7 @@ export default function Services() {
 
                   <MotionButton
                     onClick={() => toggleExpanded(especialidad.id)}
-                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
+                    className="relative z-10 mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

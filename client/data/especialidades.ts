@@ -8,6 +8,7 @@ export interface Especialidad {
   nombre: string;
   icon: string;
   color: string;
+  imagen: string;
   servicios: Servicio[];
 }
 
@@ -17,6 +18,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Abdominal",
     icon: "HiOutlineViewList",
     color: "primary",
+    imagen: "/image/especialidades/ABDOMINAL.webp",
     servicios: [
       { id: "abd-1", nombre: "Ecografía abdominal completa" },
       { id: "abd-2", nombre: "Ecografía hepática y Vías Biliares" },
@@ -31,6 +33,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Ginecológica",
     icon: "HiOutlineHeart",
     color: "secondary",
+    imagen: "/image/especialidades/GINECOLÓGICA.webp",
     servicios: [
       { id: "gin-1", nombre: "Ecografía pélvica o ginecológica" },
       { id: "gin-2", nombre: "Ecografía transvaginal" },
@@ -42,6 +45,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Obstétrica",
     icon: "HiOutlineArrowUp",
     color: "accent",
+    imagen: "/image/especialidades/OBSTÉTRICA.webp",
     servicios: [
       { id: "obs-1", nombre: "Obstétrico Biometría fetal (tradicional)" },
       { id: "obs-2", nombre: "Obstétrica cromosómica ó estructural I trimestre" },
@@ -57,6 +61,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Urológica",
     icon: "HiOutlineBeaker",
     color: "primary",
+    imagen: "/image/especialidades/UROLÓGICA.webp",
     servicios: [
       { id: "uro-1", nombre: "Ecografía renal bilateral" },
       { id: "uro-2", nombre: "Ecografía vesical, vías urinarias transabdominal" },
@@ -70,6 +75,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Partes Blandas",
     icon: "HiOutlineShieldExclamation",
     color: "secondary",
+    imagen: "/image/especialidades/PARTES_BLANDAS.webp",
     servicios: [
       { id: "pb-1", nombre: "Ecografía de tiroides" },
       { id: "pb-2", nombre: "Ecografía mamaria" },
@@ -83,6 +89,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Doppler",
     icon: "HiOutlineTrendingUp",
     color: "accent",
+    imagen: "/image/especialidades/DOPPLER.webp",
     servicios: [
       { id: "dop-1", nombre: "Doppler carotídeo y/o vertebrales" },
       { id: "dop-2", nombre: "Doppler arterial miembros inferiores" },
@@ -101,6 +108,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Musculoesquelética",
     icon: "HiOutlineArchive",
     color: "primary",
+    imagen: "/image/especialidades/MUSCULOESQUELÉTICA.webp",
     servicios: [
       { id: "msk-1", nombre: "Ecografía MSK hombro" },
       { id: "msk-2", nombre: "Ecografía MSK rodilla" },
@@ -114,6 +122,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Emergencias",
     icon: "HiOutlineExclamation",
     color: "secondary",
+    imagen: "/image/especialidades/EMERGENCIAS.webp",
     servicios: [
       { id: "emg-1", nombre: "Abdomen agudo (apendicitis, colecistitis, pancreatitis aguda, peritonitis)" },
     ],
@@ -123,6 +132,7 @@ export const especialidades: Especialidad[] = [
     nombre: "Otros",
     icon: "HiOutlineInformationCircle",
     color: "accent",
+    imagen: "/image/especialidades/OTROS.webp",
     servicios: [
       { id: "oth-1", nombre: "Colposcopia" },
       { id: "oth-2", nombre: "Citología Cervico vaginal (Papanicolau, PAP)" },
