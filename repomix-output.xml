@@ -1,0 +1,5654 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+client/.gitignore
+client/app/(auth)/layout.tsx
+client/app/(auth)/portal-auth/page.tsx
+client/app/(dashboard)/admin/page.tsx
+client/app/(site)/layout.tsx
+client/app/(site)/page.tsx
+client/app/favicon.ico
+client/app/globals.css
+client/app/layout.tsx
+client/components/AboutUs.tsx
+client/components/auth/LoginBackground.tsx
+client/components/auth/LoginCard.tsx
+client/components/auth/LoginForm.tsx
+client/components/auth/SecurityBadge.tsx
+client/components/Footer.tsx
+client/components/FormContact.tsx
+client/components/Header.tsx
+client/components/Hero.tsx
+client/components/PortalResultados.tsx
+client/components/SelectCountry.tsx
+client/components/Services.tsx
+client/components/WhatsAppButton.tsx
+client/data/especialidades.ts
+client/data/servicios.txt
+client/dev.ps1
+client/eslint.config.mjs
+client/hooks/useDetectCountry.ts
+client/lib/api-client.ts
+client/lib/auth.ts
+client/lib/constants.ts
+client/lib/permissions.ts
+client/lib/storage.ts
+client/lib/utils.ts
+client/next.config.ts
+client/package.json
+client/pnpm-workspace.yaml
+client/postcss.config.mjs
+client/public/file.svg
+client/public/fonts/D-DIN-Bold.otf
+client/public/fonts/D-DIN.otf
+client/public/fonts/Manrope-Bold.ttf
+client/public/fonts/Manrope-Regular.ttf
+client/public/fonts/README.txt
+client/public/globe.svg
+client/public/image/bolivia.png
+client/public/image/D_DIN.jpg
+client/public/image/especialidades/ABDOMINAL.webp
+client/public/image/especialidades/DOPPLER.webp
+client/public/image/especialidades/EMERGENCIAS.webp
+client/public/image/especialidades/GINECOLÓGICA.webp
+client/public/image/especialidades/MUSCULOESQUELÉTICA.webp
+client/public/image/especialidades/OBSTÉTRICA.webp
+client/public/image/especialidades/OTROS.webp
+client/public/image/especialidades/PARTES_BLANDAS.webp
+client/public/image/especialidades/UROLÓGICA.webp
+client/public/image/icono.webp
+client/public/image/logo_h.webp
+client/public/image/logo_tordoya.webp
+client/public/image/logo-white.webp
+client/public/image/mexico.png
+client/public/image/peru.png
+client/public/next.svg
+client/public/vercel.svg
+client/public/window.svg
+client/README.md
+client/repomix-output.xml
+client/services/auth.service.ts
+client/tsconfig.json
+README.md
+server/.gitignore
+server/.prettierrc
+server/eslint.config.mjs
+server/nest-cli.json
+server/package.json
+server/prisma.config.ts
+server/prisma/migrations/20260530030027_init/migration.sql
+server/prisma/migrations/20260530044247_init/migration.sql
+server/prisma/migrations/20260530044452_init/migration.sql
+server/prisma/migrations/migration_lock.toml
+server/prisma/schema.prisma
+server/README.md
+server/src/app.controller.spec.ts
+server/src/app.controller.ts
+server/src/app.module.ts
+server/src/app.service.ts
+server/src/auth/auth.controller.spec.ts
+server/src/auth/auth.controller.ts
+server/src/auth/auth.module.ts
+server/src/auth/auth.service.spec.ts
+server/src/auth/auth.service.ts
+server/src/auth/dto/login.dto.ts
+server/src/main.ts
+server/src/prisma/prisma.module.ts
+server/src/prisma/prisma.service.ts
+server/test/app.e2e-spec.ts
+server/test/jest-e2e.json
+server/tsconfig.build.json
+server/tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="client/.gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="client/app/(auth)/layout.tsx">
+export default function AuthLayout({
+	children,
+}: Readonly<{ children: React.ReactNode }>) {
+	return <div className="min-h-full bg-[--color-primary]">{children}</div>;
+}
+</file>
+
+<file path="client/app/(auth)/portal-auth/page.tsx">
+import Image from "next/image";
+import LoginBackground from "../../../components/auth/LoginBackground";
+import LoginCard from "../../../components/auth/LoginCard";
+import LoginForm from "../../../components/auth/LoginForm";
+import SecurityBadge from "../../../components/auth/SecurityBadge";
+
+export default function PortalAuthPage() {
+	return (
+		<main className="relative min-h-screen overflow-hidden bg-[--color-primary] text-white">
+			<LoginBackground />
+			<div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-16 sm:px-10 lg:flex-row lg:items-center lg:gap-10">
+				<section className="relative flex flex-1 flex-col justify-center gap-10">
+					<SecurityBadge />
+					<div className="space-y-6">
+						<div className="flex items-center gap-4">
+							<Image
+								src="/image/logo-white.webp"
+								alt="Tordoya"
+								width={180}
+								height={46}
+								className="h-11 w-auto"
+								priority
+							/>
+							
+						</div>
+						<h2 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">
+							Accede al panel administrativo clinico con seguridad reforzada.
+						</h2>
+						<p className="max-w-xl text-sm leading-6 text-white/70 sm:text-base">
+							Plataforma privada para gestion de pacientes, protocolos y reportes. Disenada
+							para equipos medicos que exigen control total y trazabilidad.
+						</p>
+					</div>
+					<div className="flex flex-wrap gap-4 text-xs text-white/70">
+						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
+							Cifrado de extremo a extremo
+						</span>
+						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
+							Auditoria y logs en tiempo real
+						</span>
+						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
+							Autenticacion multifactor
+						</span>
+					</div>
+
+					
+
+				</section>
+
+				<section className="mt-12 w-full max-w-xl lg:mt-0 lg:flex-1">
+					<LoginCard>
+						<LoginForm />
+					</LoginCard>
+				</section>
+			</div>
+		</main>
+	);
+}
+</file>
+
+<file path="client/app/(dashboard)/admin/page.tsx">
+export default function AdminPage() {
+	return (
+		<main className="min-h-screen bg-white text-foreground">
+			<div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-16">
+				<p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary/70">
+					Panel
+				</p>
+				<h1 className="text-3xl font-semibold text-primary">Admin</h1>
+				<p className="text-base text-foreground/70">
+					Ruta administrativa en construccion.
+				</p>
+			</div>
+		</main>
+	);
+}
+</file>
+
+<file path="client/app/(site)/layout.tsx">
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import SelectCountry from "@/components/SelectCountry";
+import WhatsAppButton from "@/components/WhatsAppButton";
+
+export default function SiteLayout({
+	children,
+}: Readonly<{ children: React.ReactNode }>) {
+	return (
+		<div className="min-h-full flex flex-col bg-white text-foreground">
+			<SelectCountry />
+			<Header />
+			<main className="flex-1 ">{children}</main>
+			<Footer />
+			<WhatsAppButton />
+		</div>
+	);
+}
+</file>
+
+<file path="client/app/(site)/page.tsx">
+import AboutUs from "@/components/AboutUs";
+import FormContact from "@/components/FormContact";
+import Hero from "@/components/Hero";
+import PortalResultados from "@/components/PortalResultados";
+import Services from "@/components/Services";
+
+export default function Home() {
+	return (
+		<div className="flex flex-col">
+			<Hero />
+			<AboutUs />
+			<Services />
+			<PortalResultados />
+			<FormContact />
+		</div>
+	);
+}
+</file>
+
+<file path="client/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --color-primary: #01155a;
+  --color-secondary: #155bb3;
+  --color-accent: #00b7fa;
+  --color-light: #F8F9FA;
+  --color-dark: #1A1A2E;
+
+  --background: #ffffff;
+  --foreground: #171717;
+
+    --color-card: rgba(255,255,255,0.08);
+  --color-border: rgba(255,255,255,0.12);
+  --color-glow: rgba(0,183,250,0.35);
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-light: var(--color-light);
+  --color-dark: var(--color-dark);
+  --font-heading: var(--font-d-din);
+  --font-body: var(--font-manrope);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.875rem;
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+p, span, li, a, button {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@keyframes whatsapp-vibrate {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  15% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  30% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  45% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+}
+
+.animate-whatsapp-vibrate {
+  animation: whatsapp-vibrate 0.6s linear infinite;
+}
+</file>
+
+<file path="client/app/layout.tsx">
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+
+const manrope = localFont({
+  src: [
+    {
+      path: "../public/fonts/Manrope-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Manrope-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const dDin = localFont({
+  src: [
+    {
+      path: "../public/fonts/D-DIN.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/D-DIN-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-d-din",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Tordoya | Soluciones Integrales",
+  description: "Empresa líder en soluciones integrales para tu negocio",
+  icons: [
+    { rel: 'icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'shortcut icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'apple-touch-icon', url: '/image/icono.webp?v=2', sizes: '180x180' },
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="es"
+      className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
+    >
+      <body className="min-h-full bg-white text-foreground">
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="client/components/AboutUs.tsx">
+"use client";
+
+import React from "react";
+import { motion, type MotionProps } from "framer-motion";
+import { HiOutlineEye, HiOutlineLightBulb, HiSparkles } from "react-icons/hi";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+export default function AboutUs() {
+  return (
+    <section id="nosotros" className="bg-primary py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <MotionDiv
+          className="grid gap-10 md:grid-cols-2 md:items-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <MotionDiv variants={itemVariants}>
+            <h2 className="text-3xl font-black text-light sm:text-4xl" >
+              Quiénes somos
+            </h2>
+            <p className="mt-4 max-w-xl text-lg text-light">
+              En Tordoya combinamos experiencia clínica y tecnología para ofrecer
+              diagnósticos precisos y un trato humano. Nuestra misión y visión
+              guían cada decisión estratégica y operativa.
+            </p>
+
+            <MotionDiv className="mt-8 grid gap-4 sm:grid-cols-2" variants={containerVariants}>
+                <article className="group flex gap-4 rounded-lg border border-primary/8 bg-accent/80 p-4 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer" >
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-light">
+                  <HiOutlineLightBulb size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-light">Misión</h3>
+                  <p className="mt-1 text-sm text-light">
+                    Ofrecer servicios de ultrasonido e imagen diagnóstica con el rigor de la alta especialidad y la accesibilidad que cada paciente merece.
+                  </p>
+                </div>
+              </article>
+
+              <article className="group flex gap-4 rounded-lg border border-primary/8 bg-white/80 p-4 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer" >
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <HiOutlineEye size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-primary">Visión</h3>
+                  <p className="mt-1 text-sm text-foreground/80">
+                    Liderar el diagnóstico por imagen en Bolivia, Perú y México, siendo el aliado que conecta a médicos y pacientes con la información que necesitan para actuar a tiempo.
+                  </p>
+                </div>
+              </article>
+            </MotionDiv>
+          </MotionDiv>
+
+          <MotionDiv className="relative flex items-center justify-center" variants={itemVariants}>
+            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />
+            <div className="absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-accent/5 blur-2xl" />
+
+            <MotionDiv className="z-10 w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-lg" whileHover={{ scale: 1.05 }}>
+              <h4 className="text-lg font-extrabold text-primary" >Nuestros valores</h4>
+              <p className="mt-3 text-foreground/80" >
+                Compromiso, excelencia y cercanía. Trabajamos con calidad
+                humana y protocolos que garantizan resultados reproducibles.
+              </p>
+
+              <ul className="mt-6 grid gap-3" >
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+                    <HiSparkles size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Calidad</strong>
+                    <span className="block text-sm text-foreground/80">Protocolos validados</span>
+                  </div>
+                </li>
+
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <HiOutlineEye size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Precisión</strong>
+                    <span className="block text-sm text-foreground/80">Lecturas confiables</span>
+                  </div>
+                </li>
+
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-white">
+                    <HiOutlineLightBulb size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Innovación</strong>
+                    <span className="block text-sm text-foreground/80">Mejora continua</span>
+                  </div>
+                </li>
+              </ul>
+            </MotionDiv>
+          </MotionDiv>
+        </MotionDiv>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="client/components/auth/LoginBackground.tsx">
+export default function LoginBackground() {
+	return (
+		<div className="absolute inset-0 overflow-hidden">
+			<div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(1,12,48,0.98)_0%,rgba(1,21,90,0.88)_45%,rgba(3,40,122,0.92)_100%)]" />
+			<div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(0,183,250,0.22),transparent_42%),radial-gradient(circle_at_80%_20%,rgba(120,189,255,0.18),transparent_46%),radial-gradient(circle_at_20%_85%,rgba(21,91,179,0.32),transparent_55%)]" />
+			<div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_75%,rgba(255,255,255,0.08),transparent_45%)]" />
+
+			<div className="absolute -left-24 -top-45 h-130 w-130 rounded-full bg-[rgba(0,183,250,0.28)] blur-[160px]" />
+			<div className="absolute -right-24 -bottom-55 h-140 w-140 rounded-full bg-[rgba(21,91,179,0.38)] blur-[180px]" />
+			<div className="absolute left-[15%] top-[35%] h-48 w-48 rounded-full bg-[rgba(255,255,255,0.08)] blur-[80px]" />
+
+			<div className="absolute inset-0 opacity-30 mix-blend-screen">
+				<div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[48px_48px]" />
+			</div>
+			<div className="absolute inset-0 opacity-20">
+				<div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.08),transparent_45%)]" />
+			</div>
+			<div className="absolute inset-0 opacity-[0.12] [background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2270%22 height=%2270%22 viewBox=%220 0 70 70%22%3E%3Cfilter id=%22n%22 x=%220%22 y=%220%22 width=%22100%25%22 height=%22100%25%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%2270%22 height=%2270%22 filter=%22url(%23n)%22 opacity=%220.25%22/%3E%3C/svg%3E')]" />
+			<div className="absolute inset-0 opacity-40">
+				<div className="absolute left-[12%] top-[18%] h-1.5 w-1.5 rounded-full bg-white/50 blur-[1px]" />
+				<div className="absolute left-[28%] top-[60%] h-1 w-1 rounded-full bg-white/40 blur-[1px]" />
+				<div className="absolute right-[18%] top-[30%] h-1.5 w-1.5 rounded-full bg-white/40 blur-[1px]" />
+				<div className="absolute right-[30%] bottom-[18%] h-1 w-1 rounded-full bg-white/35 blur-[1px]" />
+			</div>
+		</div>
+	);
+}
+</file>
+
+<file path="client/components/auth/LoginCard.tsx">
+"use client";
+
+import { motion, type MotionProps } from "framer-motion";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+
+type LoginCardProps = {
+	children: ReactNode;
+	className?: string;
+};
+
+type MotionDivProps = ComponentPropsWithoutRef<"div"> & MotionProps;
+
+const MotionDiv = motion.div as unknown as React.FC<MotionDivProps>;
+
+export default function LoginCard({ children, className }: LoginCardProps) {
+	return (
+		<MotionDiv
+			initial={{ opacity: 0, y: 16 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.5, ease: "easeOut" }}
+			className={`relative rounded-[28px] border border-white/20 bg-white/10 p-6 shadow-[0_30px_80px_rgba(1,10,32,0.45)] backdrop-blur-[28px] sm:p-8 ${
+				className || ""
+			}`}
+		>
+			<div className="pointer-events-none absolute inset-0 rounded-[28px] bg-[linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_55%)]" />
+			<div className="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-white/10" />
+			<div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent)]" />
+			<div className="pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]" />
+			<div className="relative z-10">{children}</div>
+		</MotionDiv>
+	);
+}
+</file>
+
+<file path="client/components/auth/LoginForm.tsx">
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import type { ComponentPropsWithoutRef } from "react";
+import {
+	HiOutlineEye,
+	HiOutlineEyeOff,
+	HiOutlineLockClosed,
+	HiOutlineMail,
+} from "react-icons/hi";
+import { login } from "@/services/auth.service";
+
+type FormState = {
+	email: string;
+	password: string;
+};
+
+type MotionLabelProps = ComponentPropsWithoutRef<"label"> & MotionProps;
+type MotionButtonProps = ComponentPropsWithoutRef<"button"> & MotionProps;
+type MotionDivProps = ComponentPropsWithoutRef<"div"> & MotionProps;
+
+const MotionLabel = motion.label as unknown as React.FC<MotionLabelProps>;
+const MotionButton = motion.button as unknown as React.FC<MotionButtonProps>;
+const MotionDiv = motion.div as unknown as React.FC<MotionDivProps>;
+
+export default function LoginForm() {
+	const [formState, setFormState] = useState<FormState>({ email: "", password: "" });
+	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+	const containerVariants = {
+		hidden: { opacity: 0, y: 14 },
+		show: {
+			opacity: 1,
+			y: 0,
+			transition: { duration: 0.45, ease: "easeOut", staggerChildren: 0.08 },
+		},
+	};
+
+	const itemVariants = {
+		hidden: { opacity: 0, y: 10 },
+		show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+	};
+
+	const handleChange = (field: keyof FormState, value: string) => {
+		setFormState((prev) => ({ ...prev, [field]: value }));
+	};
+
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setErrorMessage(null);
+		setSuccessMessage(null);
+
+		if (!formState.email.trim() || !formState.password.trim()) {
+			setErrorMessage("Completa el correo y la contrasena para continuar.");
+			return;
+		}
+
+		setIsLoading(true);
+
+		try {
+			const data = await login({
+				email: formState.email,
+				password: formState.password,
+			});
+
+			if (!data?.ok) {
+				setErrorMessage(data?.message || "Credenciales invalidas.");
+				return;
+			}
+
+			setSuccessMessage("Acceso correcto. Bienvenido al panel.");
+		} catch {
+			setErrorMessage("No se pudo conectar con el servidor.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
+			<MotionDiv variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6">
+				<MotionDiv variants={itemVariants} className="flex flex-col items-start gap-4">
+					<div className="flex items-center gap-3">
+						<Image
+							src="/image/logo-white.webp"
+							alt="Tordoya"
+							width={132}
+							height={32}
+							className="h-8 w-auto"
+							priority
+						/>
+						
+					</div>
+
+					<div>
+						<h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+							Portal Administrativo Seguro
+						</h1>
+						<p className="mt-2 text-sm leading-6 text-white/65 sm:text-base">
+							Gestiona la operacion clinica con controles avanzados y acceso cifrado.
+						</p>
+					</div>
+				</MotionDiv>
+
+				<div className="space-y-4">
+					<MotionLabel
+						variants={itemVariants}
+						className="flex flex-col gap-2 text-sm font-medium text-white/80"
+					>
+					Correo
+						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
+							<HiOutlineMail className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
+						<input
+							type="email"
+							required
+							placeholder="nombre@tordoya.com"
+							value={formState.email}
+							onChange={(event) => handleChange("email", event.target.value)}
+								className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+							aria-label="Correo corporativo"
+						/>
+					</div>
+				</MotionLabel>
+
+					<MotionLabel
+						variants={itemVariants}
+						className="flex flex-col gap-2 text-sm font-medium text-white/80"
+					>
+					Contraseña
+						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
+							<HiOutlineLockClosed className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
+						<input
+							type={showPassword ? "text" : "password"}
+							required
+							placeholder="Contraseña segura"
+							value={formState.password}
+							onChange={(event) => handleChange("password", event.target.value)}
+							className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+							aria-label="Contrasena"
+						/>
+						<button
+							type="button"
+							onClick={() => setShowPassword((prev) => !prev)}
+								className="rounded-full p-1 text-white/60 transition hover:text-white"
+							aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+						>
+							{showPassword ? (
+								<HiOutlineEyeOff className="h-5 w-5" />
+							) : (
+								<HiOutlineEye className="h-5 w-5" />
+							)}
+						</button>
+					</div>
+					</MotionLabel>
+				</div>
+
+				{errorMessage && (
+					<div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+						{errorMessage}
+					</div>
+				)}
+
+				{successMessage && (
+					<div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+						{successMessage}
+					</div>
+				)}
+
+				<MotionButton
+					variants={itemVariants}
+					whileHover={{ scale: 1.02, y: -1 }}
+					whileTap={{ scale: 0.98 }}
+					type="submit"
+					disabled={isLoading}
+					className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[linear-gradient(120deg,#00b7fa_0%,#55d7ff_45%,#00b7fa_100%)] px-6 py-3 text-sm font-semibold text-primary shadow-[0_16px_45px_rgba(0,183,250,0.45)] transition-all duration-300 hover:shadow-[0_24px_65px_rgba(0,183,250,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
+				>
+					<span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+						<span className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_55%)]" />
+					</span>
+				{isLoading ? (
+					<>
+						<span className="h-4 w-4 animate-spin rounded-full border-2 border-[#01155a] border-t-transparent" />
+						Validando acceso...
+					</>
+				) : (
+					<>
+						Ingresar al panel
+						<span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+							→
+						</span>
+					</>
+				)}
+				</MotionButton>
+
+				<p className="text-xs text-white/55">
+					Acceso exclusivo para personal autorizado. Todas las sesiones quedan registradas.
+				</p>
+			</MotionDiv>
+		</form>
+	);
+}
+</file>
+
+<file path="client/components/auth/SecurityBadge.tsx">
+import { HiOutlineShieldCheck } from "react-icons/hi";
+
+export default function SecurityBadge() {
+	return (
+		<div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-white/85 shadow-[0_0_22px_rgba(0,183,250,0.28)]">
+			<HiOutlineShieldCheck className="h-4 w-4 text-[--color-accent]" aria-hidden="true" />
+			Acceso seguro
+		</div>
+	);
+}
+</file>
+
+<file path="client/components/Footer.tsx">
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone } from "react-icons/hi";
+
+const navLinks = [
+	{ label: "Inicio", href: "#inicio" },
+	{ label: "Nosotros", href: "#nosotros" },
+	{ label: "Servicios", href: "#servicios" },
+	{ label: "Contáctanos", href: "#contacto" },
+];
+
+export default function Footer() {
+	return (
+		<footer className="mt-auto border-t border-white/20 bg-primary text-white">
+			<div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+				<div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:items-start">
+					<div>
+						<Link href="#inicio" className="inline-flex items-center rounded-xl px-3 py-2 shadow-sm">
+							<Image
+								src="/image/logo-white.webp"
+								alt="Tordoya"
+								width={180}
+								height={60}
+								className="h-10 w-auto"
+								priority={false}
+							/>
+						</Link>
+
+						<p className="mt-4 max-w-md text-sm leading-6 text-white/80">
+							Servicios avanzados de imagenología médica y diagnóstico con tecnología de vanguardia
+						</p>
+
+						<div className="mt-6 flex flex-wrap gap-3 text-sm font-semibold text-white">
+							<span className="rounded-full bg-white/12 px-4 py-2">Calidad</span>
+							<span className="rounded-full bg-white/12 px-4 py-2">Precisión</span>
+							<span className="rounded-full bg-white/12 px-4 py-2">Confianza</span>
+						</div>
+					</div>
+
+					<div>
+						<h3 className="text-lg font-black text-white">Explora</h3>
+						<ul className="mt-5 space-y-3 text-sm">
+							{navLinks.map((link) => (
+								<li key={link.label}>
+									<a
+										href={link.href}
+										className="inline-flex items-center text-white/80 transition-colors duration-200 hover:text-white"
+									>
+										{link.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+
+					<div>
+						<h3 className="text-lg font-black text-white">Contacto</h3>
+
+						<ul className="mt-5 space-y-4 text-sm text-white/80">
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-17 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlineLocationMarker size={18} />
+								</span>
+								<span>Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.</span>
+							</li>
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlinePhone size={18} />
+								</span>
+								<span>+52 1 55 4715 7971</span>
+							</li>
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlineMail size={18} />
+								</span>
+								<span>diagnosticoultrasonidotordoya@gmail.com</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div className="mt-12 flex flex-col gap-4 border-t border-white/20 pt-6 text-sm text-white/80 md:flex-row md:items-center md:justify-between">
+					<p>© {new Date().getFullYear()} Tordoya. Todos los derechos reservados.</p>
+					<p className="text-white/75">
+						Soluciones integrales en diagnóstico por ultrasonido.
+					</p>
+				</div>
+			</div>
+		</footer>
+	);
+}
+</file>
+
+<file path="client/components/FormContact.tsx">
+"use client";
+
+import { useState } from "react";
+
+const phoneCodes = [
+	{ value: "+52", label: "MX +52" },
+	{ value: "+57", label: "CO +57" },
+	{ value: "+51", label: "PE +51" },
+	{ value: "+591", label: "BO +591" },
+];
+
+export default function FormContact() {
+	const [status, setStatus] = useState<"idle" | "sent">("idle");
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setStatus("sent");
+	};
+
+	return (
+		<section
+			id="contacto"
+			className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] py-16 sm:py-20 lg:py-24"
+		>
+			<div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(0,183,250,0.14),_transparent_60%)]" />
+
+			<div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-2xl text-center">
+                    
+					<span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-accent/40 px-4 py-2 text-sm font-light tracking-[0.2em] uppercase text-acent/88 backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/25">
+					<span className="h-2 w-2 rounded-full bg-[--color-accent] shadow-[0_0_18px_rgba(0,183,250,0.8)] animate-pulse" />
+					CONTÁCTANOS
+				</span>
+					<h2 className="mt-3 text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+						¿Tienes alguna duda?
+					</h2>
+					<p className="mt-4 text-base leading-7 text-foreground/60 sm:text-lg">
+						Escríbenos y nuestro equipo te responderá a la brevedad.
+					</p>
+				</div>
+
+				<div className="mt-12 rounded-[2rem] border border-primary/10 bg-white p-6 shadow-[0_18px_50px_rgba(1,21,90,0.08)] sm:p-8 lg:p-10">
+					<form onSubmit={handleSubmit} className="space-y-5">
+						<div className="space-y-2.5">
+							<label htmlFor="fullName" className="text-sm font-semibold text-primary">
+								Nombre completo
+							</label>
+							<input
+								id="fullName"
+								name="fullName"
+								type="text"
+								placeholder="Tu nombre"
+								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="email" className="text-sm font-semibold text-primary">
+								Correo electrónico
+							</label>
+							<input
+								id="email"
+								name="email"
+								type="email"
+								placeholder="correo@ejemplo.com"
+								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="phone" className="text-sm font-semibold text-primary">
+								Número de teléfono
+							</label>
+							<div className="grid grid-cols-[104px_1fr] gap-2 sm:grid-cols-[110px_1fr]">
+								<div className="relative">
+									<select
+										id="phoneCode"
+										name="phoneCode"
+										defaultValue="+52"
+										className="h-12 w-full appearance-none rounded-xl border border-primary/12 bg-white px-3 pr-9 text-[15px] text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10"
+									>
+										{phoneCodes.map((code) => (
+											<option key={code.value} value={code.value}>
+												{code.label}
+											</option>
+										))}
+									</select>
+									<svg
+										className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#90a0bb]"
+										viewBox="0 0 20 20"
+										fill="none"
+										aria-hidden="true"
+									>
+										<path
+											d="M5.5 7.5L10 12l4.5-4.5"
+											stroke="currentColor"
+											strokeWidth="1.7"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+									</svg>
+								</div>
+
+								<input
+									id="phone"
+									name="phone"
+									type="tel"
+									inputMode="tel"
+									placeholder="1234567890"
+									className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+								/>
+							</div>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="message" className="text-sm font-semibold text-primary">
+								Mensaje
+							</label>
+							<textarea
+								id="message"
+								name="message"
+								placeholder="¿En qué podemos ayudarte?"
+								rows={6}
+								className="w-full resize-none rounded-xl border border-primary/12 bg-white px-4 py-3 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<button
+							type="submit"
+							className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_36px_rgba(0,183,250,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0aa8e4] hover:shadow-[0_20px_44px_rgba(0,183,250,0.34)]"
+						>
+							<span className="mr-2 text-base leading-none">✈</span>
+							Enviar mensaje
+						</button>
+
+						{status === "sent" && (
+							<p className="rounded-xl border border-accent/20 bg-accent/8 px-4 py-3 text-sm text-secondary">
+								Tu mensaje quedó listo. Si quieres, ahora conecto este formulario a WhatsApp o a un correo real.
+							</p>
+						)}
+					</form>
+				</div>
+			</div>
+		</section>
+	);
+}
+</file>
+
+<file path="client/components/Header.tsx">
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { label: "Inicio", href: "#inicio" },
+    { label: "Nosotros", href: "#nosotros" },
+    { label: "Servicios", href: "#servicios" },
+    { label: "Contáctanos", href: "#contacto" },
+  ];
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-primary/10 bg-white/95 backdrop-blur-sm shadow-sm">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Principal">
+        <div className="grid h-16 sm:h-20 md:h-28 grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-6">
+          <a href="#inicio" className="flex min-w-0 items-center gap-3 justify-self-start">
+            <Image
+              src="/image/logo_h.webp"
+              alt="Isotipo Tordoya"
+              width={1920}
+              height={1920}
+              className="h-10 w-auto shrink-0 sm:h-12 md:h-16 lg:h-12"
+              priority
+            />
+           
+          </a>
+
+          <div className="hidden md:flex items-center justify-center gap-6 lg:gap-8 xl:gap-10">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="relative text-sm md:text-base font-light text-primary transition-colors duration-200 hover:text-secondary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:origin-center after:scale-x-0 after:bg-secondary after:transition-transform after:duration-200 hover:after:scale-x-100"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="#contacto"
+            className="hidden min-w-42.5 justify-self-end md:inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 md:px-6 md:py-3 text-sm md:text-base font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-secondary hover:shadow-secondary/30"
+          >
+            Agenda tu cita
+          </a>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="ml-auto rounded-md p-2 text-primary transition-colors hover:bg-primary/5 md:hidden"
+            aria-label="Menú"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+        <div
+          id="mobile-menu"
+          aria-hidden={!isMenuOpen}
+          className={`overflow-hidden border-t border-primary/10 transition-[max-height,opacity,transform] duration-300 ease-out md:hidden ${
+            isMenuOpen
+              ? "max-h-96 opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+        >
+          <div className="flex flex-col space-y-3 pb-5 pt-4">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-md px-2 py-2 text-base font-light text-primary transition-colors duration-200 hover:bg-primary/5 hover:text-secondary"
+              >
+                {item.label}
+              </a>
+            ))}
+            <a
+              href="#contacto"
+              onClick={() => setIsMenuOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
+            >
+              Agenda tu cita
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+}
+</file>
+
+<file path="client/components/Hero.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+const slides = [
+	{
+		eyebrow: "Estrategia comercial",
+		title: "Impulsa tu negocio con una presencia que convierte",
+		description:
+			"Creamos experiencias claras, visuales y orientadas a resultados para que tu marca destaque desde el primer impacto.",
+		cta: "Conocer más",
+		href: "#servicios",
+		image: "/image/logo_tordoya.webp",
+		accent: "from-[#01155a]/95 to-[#155bb3]/90",
+	},
+	{
+		eyebrow: "Diseño premium",
+		title: "Un hero inmersivo, limpio y directo al mensaje",
+		description:
+			"La sección principal ocupa toda la pantalla con una estructura moderna, pensada para enganchar sin distraer.",
+		cta: "Ver nosotros",
+		href: "#nosotros",
+		image: "/image/logo_h.webp",
+		accent: "from-[#0b2d7a]/95 to-[#00b7fa]/80",
+	},
+	{
+		eyebrow: "Atención cercana",
+		title: "Tres mensajes, una misma meta: generar confianza",
+		description:
+			"Rotamos contenido clave dentro de un slider para reforzar tu propuesta de valor sin salir del primer pantallazo.",
+		cta: "Contactar ahora",
+		href: "#contacto",
+		image: "/image/icono.webp",
+		accent: "from-[#01155a]/95 to-[#1a1a2e]/90",
+	},
+];
+
+export default function Hero() {
+	const [activeSlide, setActiveSlide] = useState(0);
+
+	useEffect(() => {
+		const interval = window.setInterval(() => {
+			setActiveSlide((currentSlide) => (currentSlide + 1) % slides.length);
+		}, 6000);
+
+		return () => window.clearInterval(interval);
+	}, []);
+
+	return (
+		<section
+			id="inicio"
+			className="relative h-screen overflow-hidden bg-[--color-primary] text-white"
+		>
+			{slides.map((slide, index) => {
+				const isActive = index === activeSlide;
+
+				return (
+					<div
+						key={slide.title}
+						className={`absolute inset-0 transition-opacity duration-700 ${
+							isActive ? "opacity-100" : "pointer-events-none opacity-0"
+						}`}
+						aria-hidden={!isActive}
+					>
+						<div
+							className={`absolute inset-0 bg-gradient-to-br ${slide.accent}`}
+						/>
+						<div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.18),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(0,183,250,0.22),_transparent_32%)]" />
+
+						<div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pt-32 sm:pt-24 md:pt-16 lg:pt-0 sm:px-6 lg:px-8">
+							<div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+								<div className="max-w-3xl">
+									<span className="mb-4 sm:mb-6 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-base font-semibold tracking-[0.2em] uppercase text-white/90 backdrop-blur-sm">
+										{slide.eyebrow}
+									</span>
+									<h1 className="max-w-4xl text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold tracking-tight text-balance">
+										{slide.title}
+									</h1>
+									<p className="mt-4 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl lg:text-2xl leading-6 sm:leading-8 text-white/85">
+										{slide.description}
+									</p>
+
+									<div className="mt-6 sm:mt-10 flex flex-col gap-3 sm:gap-5 sm:flex-row sm:items-center">
+										<a
+											href={slide.href}
+											className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-[--color-primary] shadow-xl shadow-black/20 transition-transform duration-200 hover:-translate-y-0.5"
+										>
+											{slide.cta}
+										</a>
+										<a
+											href="#contacto"
+											className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/20"
+										>
+											Agenda tu cita
+										</a>
+									</div>
+								</div>
+
+								<div className="relative mx-auto w-full max-w-md lg:max-w-none">
+									<div className="absolute inset-0 rounded-[2rem] bg-white/10 blur-3xl" />
+									<div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/15 bg-white/10 p-4 sm:p-6 shadow-2xl shadow-black/20 backdrop-blur-md">
+										<div className="flex items-center justify-between gap-2">
+										<span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-white/70\">
+											Slide {String(index + 1).padStart(2, "0")}
+										</span>
+										<span className="rounded-full bg-white/15 px-2.5 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold text-white/80\">
+											100vh
+										</span>
+										</div>
+
+										<div className="mt-4 sm:mt-8 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] bg-white/10 p-4 sm:p-8\">
+											<Image
+												src={slide.image}
+												alt={slide.title}
+												width={520}
+												height={520}
+												className="h-32 w-auto object-contain sm:h-56 md:h-72 lg:h-96\"
+												priority={isActive}
+											/>
+										</div>
+
+										<div className="mt-6 grid grid-cols-3 gap-3">
+											{slides.map((otherSlide, otherIndex) => {
+												const isCurrent = otherIndex === activeSlide;
+
+												return (
+													<button
+														key={otherSlide.title}
+														type="button"
+														onClick={() => setActiveSlide(otherIndex)}
+														className={`h-2 rounded-full transition-all duration-200 ${
+															isCurrent ? "bg-white" : "bg-white/30 hover:bg-white/50"
+														}`}
+														aria-label={`Ir al slide ${otherIndex + 1}`}
+														aria-pressed={isCurrent}
+													/>
+												);
+											})}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				);
+			})}
+		</section>
+	);
+}
+</file>
+
+<file path="client/components/PortalResultados.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import { FaLock } from "react-icons/fa";
+
+export default function PortalResultados() {
+	const [folioInput, setFolioInput] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const [message, setMessage] = useState("");
+	const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+	const [activeIndicator, setActiveIndicator] = useState(0);
+
+	useEffect(() => {
+		const interval = window.setInterval(() => {
+			setActiveIndicator((prev) => (prev + 1) % 3);
+		}, 6000);
+
+		return () => window.clearInterval(interval);
+	}, []);
+
+	const handleVerResultados = async (e: React.FormEvent) => {
+		e.preventDefault();
+		
+		if (!folioInput.trim()) {
+			setMessageType("error");
+			setMessage("Por favor ingresa un número de folio válido");
+			setTimeout(() => setMessage(""), 4000);
+			return;
+		}
+
+		setIsLoading(true);
+		
+		// Simular búsqueda de resultados
+		setTimeout(() => {
+			setIsLoading(false);
+			// Aquí iría la redirección real a tu portal
+			window.open(`https://tuportal.com/resultados?folio=${folioInput}`, "_blank");
+			setMessageType("success");
+			setMessage("¡Redirigiendo a tus resultados...");
+			setFolioInput("");
+			setTimeout(() => setMessage(""), 3000);
+		}, 1500);
+	};
+
+	const handleWhatsApp = () => {
+		const telefono = "573001234567"; // Reemplaza con tu número
+		const mensaje = encodeURIComponent(
+			`Hola, me gustaría solicitar mis resultados médicos. Mi número de folio es: ${folioInput || "[No especificado]"}`
+		);
+		window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+	};
+
+	return (
+		<section
+			id="resultados"
+			className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,var(--color-primary)_0%,#09429a_48%,#0d5ab8_100%)] py-16 text-white sm:py-20 lg:py-24"
+		>
+			{/* Gradientes animados de fondo */}
+			<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,183,250,0.18),_transparent_32%)]" />
+
+			<div className="pointer-events-none absolute top-20 right-10 h-72 w-72 rounded-full bg-[--color-accent]/10 blur-3xl opacity-20" />
+			<div className="pointer-events-none absolute bottom-20 left-10 h-96 w-96 rounded-full bg-[--color-secondary]/15 blur-3xl opacity-15" />
+
+			<div className="relative mx-auto flex max-w-4xl flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
+				{/* Badge */}
+				<span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-semibold tracking-[0.2em] uppercase text-white/88 backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/25">
+					<FaLock size={14} className="text-white/90" aria-hidden="true" />
+					Portal seguro
+				</span>
+
+				{/* Títulos */}
+				<h1 className="mt-7 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+					Accede a tus resultados
+				</h1>
+
+				<p className="mt-5 text-base leading-8 text-white/82 sm:text-lg">
+					Ingresa tu número de folio para ver de forma segura tus resultados diagnósticos
+				</p>
+
+				{/* Card Principal */}
+				<div className="mx-auto mt-12 max-w-lg rounded-[2rem] border border-white/16 bg-white/10 p-6 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition-all duration-300 hover:border-white/25 hover:bg-white/15 sm:p-8">
+					
+					{/* Encabezado Card */}
+					<div className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[--color-accent]">
+						<FaLock size={14} className="text-[--color-accent]" aria-hidden="true" />
+						Portal seguro
+					</div>
+
+					{/* Formulario */}
+					<form onSubmit={handleVerResultados} className="mt-6 space-y-4">
+						<div>
+							<label className="block text-sm font-semibold text-white/92 mb-2">
+								Número de Folio / Número de Paciente
+							</label>
+
+							<div className="relative group">
+								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[--color-accent]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur" />
+								<div className="relative flex items-center gap-3 rounded-2xl border border-white/12 bg-[linear-gradient(180deg,rgba(248,249,250,0.98),rgba(235,241,252,0.98))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] transition-all duration-300 group-hover:border-white/25">
+									<input
+										type="text"
+										placeholder="Ej: TOR-2024-12345"
+										value={folioInput}
+										onChange={(e) => setFolioInput(e.target.value)}
+										className="w-full bg-transparent text-[15px] text-[#23324d] outline-none placeholder:text-[#8f9bb3] font-medium"
+									/>
+									<svg className="h-5 w-5 shrink-0 text-[#90a0bb] transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+										<circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+									</svg>
+								</div>
+							</div>
+						</div>
+
+						{/* Botón Ver Resultados */}
+						<button
+							type="submit"
+							disabled={isLoading}
+							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,80,179,0.32)] transition-all duration-300 hover:bg-[#003f8f] hover:shadow-[0_20px_50px_rgba(0,63,143,0.45)] disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 active:scale-95"
+						>
+							{isLoading ? (
+								<>
+									<svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+										<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+									</svg>
+									Buscando...
+								</>
+							) : (
+								<>
+									<svg className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									</svg>
+									Ver Resultados
+								</>
+							)}
+						</button>
+					</form>
+
+					{/* Divider */}
+					<div className="mt-6 flex items-center gap-4 text-white/38">
+						<div className="h-px flex-1 bg-white/20" />
+						<span className="text-sm font-medium">o</span>
+						<div className="h-px flex-1 bg-white/20" />
+					</div>
+
+					{/* Botón WhatsApp */}
+					<button
+						onClick={handleWhatsApp}
+						className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/18 bg-gradient-to-r from-white/12 to-white/8 px-6 py-3.5 text-[15px] font-semibold text-white/95 backdrop-blur-md transition-all duration-300 hover:from-white/20 hover:to-white/15 hover:border-white/30 hover:shadow-[0_8px_20px_rgba(0,183,250,0.2)] hover:scale-105 active:scale-95"
+					>
+						<svg className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path
+								d="M12 20.5c4.7 0 8.5-3.3 8.5-7.4S16.7 5.7 12 5.7 3.5 9 3.5 13.1c0 1.4.5 2.8 1.4 4l-.9 3.2 3.3-1.1c1.2.8 2.7 1.3 4.7 1.3Z"
+								stroke="currentColor"
+								strokeWidth="1.6"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+						Solicitar por WhatsApp
+					</button>
+
+					{/* Mensaje de estado */}
+					{message && (
+						<div
+							className={`mt-6 flex items-center gap-2 rounded-2xl border px-4 py-3 text-left text-sm leading-5 transition-all duration-300 ${
+								messageType === "success"
+									? "border-green-500/30 bg-green-500/10 text-green-200"
+									: "border-red-500/30 bg-red-500/10 text-red-200"
+							}`}
+						>
+							<svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								{messageType === "success" ? (
+									<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+								) : (
+									<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+								)}
+							</svg>
+							{message}
+						</div>
+					)}
+
+					{/* Security Message */}
+					<div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-left text-[12px] leading-5 text-white/72 transition-all duration-300 hover:border-white/15 hover:bg-white/8">
+						<FaLock size={16} className="mt-0.5 text-white/70 flex-shrink-0" aria-hidden="true" />
+						<p>
+							Con TORDOYA tu información médica es mas que segura 
+						</p>
+					</div>
+				</div>
+
+				
+			</div>
+		</section>
+	);
+}
+</file>
+
+<file path="client/components/SelectCountry.tsx">
+"use client";
+
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import useDetectCountry from "../hooks/useDetectCountry";
+
+type CountryOption = {
+	id: "mexico" | "bolivia" | "peru";
+	name: string;
+	flagSrc: string;
+};
+
+const STORAGE_KEY = "tordoya_country";
+
+const countryOptions: CountryOption[] = [
+	{ id: "mexico", name: "Mexico", flagSrc: "/image/mexico.png" },
+	{ id: "bolivia", name: "Bolivia", flagSrc: "/image/bolivia.png" },
+	{ id: "peru", name: "Peru", flagSrc: "/image/peru.png" },
+];
+
+export default function SelectCountry() {
+	const [isOpen, setIsOpen] = useState(true);
+	const [selectedCountry, setSelectedCountry] = useState<CountryOption["id"] | null>(null);
+	const [highlightedCountry, setHighlightedCountry] = useState<CountryOption["id"] | null>(null);
+	const detectedCountry = useDetectCountry();
+	const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+
+	useEffect(() => {
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (storedCountry) {
+			setSelectedCountry(storedCountry);
+			setIsOpen(false);
+		}
+
+		setHasLoadedStorage(true);
+	}, []);
+
+	useEffect(() => {
+		if (!isOpen) {
+			document.body.style.overflow = "";
+			return;
+		}
+
+		document.body.style.overflow = "hidden";
+
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
+
+	const handleSelectCountry = (countryId: CountryOption["id"]) => {
+		setSelectedCountry(countryId);
+		window.localStorage.setItem(STORAGE_KEY, countryId);
+		setIsOpen(false);
+	};
+
+	useEffect(() => {
+		if (!detectedCountry || !hasLoadedStorage) {
+			return;
+		}
+
+		setHighlightedCountry(detectedCountry);
+
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (!storedCountry) {
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		if (storedCountry !== detectedCountry) {
+			window.localStorage.removeItem(STORAGE_KEY);
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		setSelectedCountry(storedCountry);
+		setIsOpen(false);
+	}, [detectedCountry]);
+
+	if (!isOpen) {
+		return null;
+	}
+
+	return (
+		<div className="fixed inset-0 z-100 flex items-center justify-center bg-primary/70 px-4 backdrop-blur-sm">
+			<div className="w-full max-w-xl rounded-3xl border border-white/20 bg-white p-6 shadow-2xl sm:p-8">
+				<div className="text-center">
+					<p className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary/80">
+						Bienvenido
+					</p>
+					<h2 className="mt-2 text-3xl font-bold text-primary sm:text-4xl">
+						Selecciona tu pais
+					</h2>
+					<p className="mt-3 text-sm text-foreground/65 sm:text-base">
+						Accede a los servicios de tu sede más cercana
+					</p>
+				</div>
+
+				<div className="mt-8 grid gap-3">
+					{countryOptions.map((country) => {
+						const isSelected = selectedCountry === country.id;
+						const isHighlighted = highlightedCountry === country.id;
+
+						return (
+							<button
+								key={country.id}
+								type="button"
+								onClick={() => handleSelectCountry(country.id)}
+								className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 sm:px-5 ${
+									isSelected
+										? "border-accent bg-accent/10"
+										: isHighlighted
+										? "border-accent/40 bg-accent/6 ring-2 ring-accent/20"
+										: "border-primary/15 bg-white hover:border-secondary/40 hover:bg-secondary/5"
+								}`}
+								aria-label={`Seleccionar ${country.name}`}>
+								<div className="flex items-center gap-3">
+									<span className="overflow-hidden rounded-sm border border-primary/10 shadow-sm" aria-hidden="true">
+										<Image
+											src={country.flagSrc}
+											alt={`Bandera de ${country.name}`}
+											width={40}
+											height={28}
+											className="h-7 w-10 object-cover"
+										/>
+									</span>
+									<span className="text-base font-semibold text-primary sm:text-lg">
+										{country.name}
+									</span>
+									{isHighlighted && !isSelected && (
+										<span className="ml-3 inline-flex items-center rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
+											
+										</span>
+									)}
+								</div>
+
+								<span className="rounded-full bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+									Entrar
+								</span>
+							</button>
+						);
+					})}
+				</div>
+			</div>
+		</div>
+	);
+}
+</file>
+
+<file path="client/components/WhatsAppButton.tsx">
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+
+const NOTIFICATION_INTERVAL = 3 * 60 * 1000;
+const BUZZ_DURATION = 3000;
+
+export default function WhatsAppButton() {
+  const whatsappNumber = '5491234567890'; // Cambia esto por tu número de WhatsApp
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hola,%20me%20gustaría%20conocer%20más%20sobre%20los%20servicios`;
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isBuzzing, setIsBuzzing] = useState(false);
+  const buzzTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setUnreadCount((prev) => prev + 1);
+      setIsBuzzing(true);
+
+      if (buzzTimeoutRef.current) {
+        window.clearTimeout(buzzTimeoutRef.current);
+      }
+
+      buzzTimeoutRef.current = window.setTimeout(() => {
+        setIsBuzzing(false);
+      }, BUZZ_DURATION);
+    }, NOTIFICATION_INTERVAL);
+
+    return () => {
+      window.clearInterval(intervalId);
+      if (buzzTimeoutRef.current) {
+        window.clearTimeout(buzzTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleClick = () => {
+    setUnreadCount(0);
+    setIsBuzzing(false);
+  };
+
+  const badgeText = unreadCount > 9 ? '9+' : String(unreadCount);
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={handleClick}
+      className={`fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full bg-green-500 p-2.5 text-white shadow-md  transition-all duration-300 hover:scale-110 hover:bg-green-600 ${
+        isBuzzing ? 'animate-whatsapp-vibrate' : ''
+      }`}
+      style={{ boxShadow: '0 2px 8px rgba(34, 197, 94, 0.4)' }}
+      aria-label="Contactanos por WhatsApp"
+      title="Contactanos por WhatsApp"
+    >
+      <FaWhatsapp size={20} />
+      {unreadCount > 0 && (
+        <span
+          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white"
+          aria-live="polite"
+        >
+          {badgeText}
+        </span>
+      )}
+    </a>
+  );
+}
+</file>
+
+<file path="client/data/servicios.txt">
+Especialidad		Nombre del Estudio
+
+Abdominal		Ecografía abdominal completa
+Abdominal		Ecografía hepática y Vías Biliares 
+Abdominal		Ecografía de vesícula y vías biliares
+Abdominal		Ecografía de páncreas
+Abdominal		Ecografía de bazo
+Abdominal		Ecografia abdominopelvico 
+
+Ginecológica		Ecografía pélvica o ginecológica
+Ginecológica		Ecografía transvaginal
+Ginecológica		Monitoreo ó seguimiento  folicular
+
+Obstétrica		Obstétrico Biometría fetal ( tradicional)
+Obstétrica		Obstétrica  cromosómica ó estructural   I trimestre
+Obstétrica		Obstétrica estructural del  2do y 3er  trimestre
+Obstétrica		Obstétrico Gemelar 
+Obstétrica		Obstétrica 3D Y 4D
+Obstétrica		Perfil biofísico fetal
+Obstétrica		Doppler obstétrico
+
+Urológica		Ecografía renal bilateral 
+Urológica		Ecografía vesical, vías urinarias  transabdominal 
+Urológica		Ecografía prostática suprapúbica
+Urológica		Ecografía prostática transrectal
+Urológica		Ecografia testicular 
+
+Partes Blandas		Ecografía de tiroides
+Partes Blandas		Ecografía mamaria
+Partes Blandas		Ecografía de partes blandas localizada
+Partes Blandas		Ecografía de pared Abdominal e inguinal ( hernias de la pared )
+Partes Blandas		Ecografía ganglionar
+
+Doppler			Doppler carotídeo y/o vertebrales 
+Doppler			Doppler arterial miembros inferiores
+Doppler			Doppler venoso miembros inferiores
+Doppler			Doppler arterial miembros superiores
+Doppler			Doppler venoso miembros superiores
+Doppler			Doppler testicular
+Doppler			Doppler hepatoportal 
+Doppler			Doppler tiroideo 
+Doppler			Doppler pelvico ginecológico 
+Doppler			Doppler renal
+
+Musculoesquelética	Ecografía MSK hombro
+Musculoesquelética	Ecografía MSK rodilla
+Musculoesquelética	Ecografía MSK codo
+Musculoesquelética	Ecografía MSK tobillo
+Musculoesquelética	Ecografía MSK  muñeca
+
+Emergencias		Abdomen agudo ( apendicitis, colecistitis, pancreatitis aguda, peritonitis, etc. 
+	
+Otros 			Colposcopia 
+Otros			Citología Cervico vaginal ( Papanicolau, PAP)
+</file>
+
+<file path="client/dev.ps1">
+# Script para abrir pnpm dev en Chrome automáticamente, sin VS Code
+Write-Host "Iniciando servidor de desarrollo..." -ForegroundColor Cyan
+
+# Cierra procesos previos que puedan ocupar el puerto 3000
+Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 1
+
+# Lanza pnpm dev desde cmd.exe para que Windows resuelva el comando correctamente
+$env:BROWSER = "none"
+$devProcess = Start-Process -FilePath "cmd.exe" -ArgumentList '/c "pnpm dev"' -PassThru -WindowStyle Hidden
+
+# Espera un poco a que Next arranque
+Write-Host "Esperando a que el servidor esté listo..." -ForegroundColor Yellow
+Start-Sleep -Seconds 5
+
+# Abre Chrome externo directamente
+Write-Host "Abriendo Chrome..." -ForegroundColor Green
+$chromePath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+if (Test-Path $chromePath) {
+	Start-Process -FilePath $chromePath -ArgumentList "http://localhost:3000"
+} else {
+	Start-Process -FilePath "chrome" -ArgumentList "http://localhost:3000"
+}
+
+Write-Host "Servidor ejecutándose en http://localhost:3000" -ForegroundColor Green
+Wait-Process -Id $devProcess.Id
+</file>
+
+<file path="client/eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="client/hooks/useDetectCountry.ts">
+"use client";
+
+import { useEffect, useState } from "react";
+
+export type DetectedCountry = "mexico" | "bolivia" | "peru" | null;
+
+export default function useDetectCountry(): DetectedCountry {
+  const [detected, setDetected] = useState<DetectedCountry>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function tryProviders() {
+      // Provider 1: ipapi.co
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (res.ok) {
+          const json = await res.json();
+          const code = (json.country_code || "").toString().toLowerCase();
+          const name = (json.country_name || "").toString().toLowerCase();
+
+          if (code === "mx" || name.includes("mexic")) {
+            if (mounted) setDetected("mexico");
+            return;
+          }
+          if (code === "bo" || name.includes("boliv")) {
+            if (mounted) setDetected("bolivia");
+            return;
+          }
+          if (code === "pe" || name.includes("peru")) {
+            if (mounted) setDetected("peru");
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore and try next provider
+      }
+
+      // Provider 2: ipwho.is
+      try {
+        const res2 = await fetch("https://ipwho.is/");
+        if (res2.ok) {
+          const j2: any = await res2.json();
+          const code2 = (j2.country_code || "").toString().toLowerCase();
+          const name2 = (j2.country || "").toString().toLowerCase();
+
+          if (code2 === "mx" || name2.includes("mexic")) {
+            if (mounted) setDetected("mexico");
+            return;
+          }
+          if (code2 === "bo" || name2.includes("boliv")) {
+            if (mounted) setDetected("bolivia");
+            return;
+          }
+          if (code2 === "pe" || name2.includes("peru")) {
+            if (mounted) setDetected("peru");
+            return;
+          }
+        }
+      } catch (e) {
+        // all providers failed
+      }
+    }
+
+    tryProviders();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return detected;
+}
+</file>
+
+<file path="client/lib/api-client.ts">
+import { API_BASE_URL } from "./constants";
+
+export type ApiError = {
+	message: string;
+	status?: number;
+};
+
+async function parseJson(response: Response) {
+	const text = await response.text();
+	if (!text) {
+		return null;
+	}
+
+	try {
+		return JSON.parse(text);
+	} catch {
+		return null;
+	}
+}
+
+export async function apiRequest<T>(
+	path: string,
+	options?: RequestInit,
+): Promise<T> {
+	const response = await fetch(`${API_BASE_URL}${path}`, {
+		...options,
+		headers: {
+			"Content-Type": "application/json",
+			...(options?.headers || {}),
+		},
+	});
+
+	const data = await parseJson(response);
+
+	if (!response.ok) {
+		const message =
+			data?.message || data?.error || "Ocurrio un error inesperado.";
+		throw { message, status: response.status } as ApiError;
+	}
+
+	return data as T;
+}
+</file>
+
+<file path="client/lib/auth.ts">
+import { AUTH_TOKEN_KEY } from "./constants";
+import { getStorageItem, removeStorageItem, setStorageItem } from "./storage";
+
+export function saveAuthToken(token: string): void {
+	setStorageItem(AUTH_TOKEN_KEY, token);
+}
+
+export function getAuthToken(): string | null {
+	return getStorageItem(AUTH_TOKEN_KEY);
+}
+
+export function clearAuthToken(): void {
+	removeStorageItem(AUTH_TOKEN_KEY);
+}
+</file>
+
+<file path="client/lib/constants.ts">
+export const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+export const AUTH_TOKEN_KEY = "auth_token";
+</file>
+
+<file path="client/lib/permissions.ts">
+export type UserRole = "ADMIN" | "EDITOR" | string;
+
+export function canAccessAdmin(role: UserRole): boolean {
+	return role === "ADMIN";
+}
+</file>
+
+<file path="client/lib/storage.ts">
+export function getStorageItem(key: string): string | null {
+	if (typeof window === "undefined") {
+		return null;
+	}
+
+	return window.localStorage.getItem(key);
+}
+
+export function setStorageItem(key: string, value: string): void {
+	if (typeof window === "undefined") {
+		return;
+	}
+
+	window.localStorage.setItem(key, value);
+}
+
+export function removeStorageItem(key: string): void {
+	if (typeof window === "undefined") {
+		return;
+	}
+
+	window.localStorage.removeItem(key);
+}
+</file>
+
+<file path="client/lib/utils.ts">
+export function toTrimLower(value: string): string {
+	return value.trim().toLowerCase();
+}
+</file>
+
+<file path="client/next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="client/package.json">
+{
+  "name": "tordoya-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "framer-motion": "11.0.3",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-icons": "4.10.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="client/pnpm-workspace.yaml">
+allowBuilds:
+  sharp: true
+  unrs-resolver: false
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
+</file>
+
+<file path="client/postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="client/public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="client/public/fonts/README.txt">
+# Fuentes Corporativas
+
+Agrega los siguientes archivos de fuente en esta carpeta:
+
+1. **D-DIN.woff2** - D-Din regular (400)
+2. **D-DIN-Bold.woff2** - D-Din bold (700)
+
+Estas fuentes son propietarias y debes adquirirlas legalmente.
+Puedes descargarlas desde: https://www.dafont.com/d-din.font
+</file>
+
+<file path="client/public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="client/public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="client/public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="client/public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="client/README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Portal Administrativo
+
+La vista de login del panel administrativo vive en:
+
+- Ruta: `/portal-auth`
+- Codigo: `app/portal-auth/page.tsx`
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="client/repomix-output.xml">
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+app/favicon.ico
+app/globals.css
+app/layout.tsx
+app/page.tsx
+components/AboutUs.tsx
+components/Footer.tsx
+components/FormContact.tsx
+components/Header.tsx
+components/Hero.tsx
+components/PortalResultados.tsx
+components/SelectCountry.tsx
+components/Services.tsx
+components/WhatsAppButton.tsx
+data/especialidades.ts
+data/servicios.txt
+dev.ps1
+eslint.config.mjs
+hooks/useDetectCountry.ts
+next.config.ts
+package.json
+pnpm-workspace.yaml
+postcss.config.mjs
+public/file.svg
+public/fonts/D-DIN-Bold.otf
+public/fonts/D-DIN.otf
+public/fonts/Manrope-Bold.ttf
+public/fonts/Manrope-Regular.ttf
+public/fonts/README.txt
+public/globe.svg
+public/image/bolivia.png
+public/image/D_DIN.jpg
+public/image/icono.webp
+public/image/logo_h.webp
+public/image/logo_tordoya.webp
+public/image/logo-white.webp
+public/image/mexico.png
+public/image/peru.png
+public/next.svg
+public/vercel.svg
+public/window.svg
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="components/FormContact.tsx">
+"use client";
+
+import { useState } from "react";
+
+const phoneCodes = [
+	{ value: "+52", label: "MX +52" },
+	{ value: "+57", label: "CO +57" },
+	{ value: "+51", label: "PE +51" },
+	{ value: "+591", label: "BO +591" },
+];
+
+export default function FormContact() {
+	const [status, setStatus] = useState<"idle" | "sent">("idle");
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setStatus("sent");
+	};
+
+	return (
+		<section
+			id="contacto"
+			className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] py-16 sm:py-20 lg:py-24"
+		>
+			<div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(0,183,250,0.14),_transparent_60%)]" />
+
+			<div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-2xl text-center">
+                    
+					<span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-accent/40 px-4 py-2 text-sm font-light tracking-[0.2em] uppercase text-acent/88 backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/25">
+					<span className="h-2 w-2 rounded-full bg-[--color-accent] shadow-[0_0_18px_rgba(0,183,250,0.8)] animate-pulse" />
+					CONTÁCTANOS
+				</span>
+					<h2 className="mt-3 text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+						¿Tienes alguna duda?
+					</h2>
+					<p className="mt-4 text-base leading-7 text-foreground/60 sm:text-lg">
+						Escríbenos y nuestro equipo te responderá a la brevedad.
+					</p>
+				</div>
+
+				<div className="mt-12 rounded-[2rem] border border-primary/10 bg-white p-6 shadow-[0_18px_50px_rgba(1,21,90,0.08)] sm:p-8 lg:p-10">
+					<form onSubmit={handleSubmit} className="space-y-5">
+						<div className="space-y-2.5">
+							<label htmlFor="fullName" className="text-sm font-semibold text-primary">
+								Nombre completo
+							</label>
+							<input
+								id="fullName"
+								name="fullName"
+								type="text"
+								placeholder="Tu nombre"
+								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="email" className="text-sm font-semibold text-primary">
+								Correo electrónico
+							</label>
+							<input
+								id="email"
+								name="email"
+								type="email"
+								placeholder="correo@ejemplo.com"
+								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="phone" className="text-sm font-semibold text-primary">
+								Número de teléfono
+							</label>
+							<div className="grid grid-cols-[104px_1fr] gap-2 sm:grid-cols-[110px_1fr]">
+								<div className="relative">
+									<select
+										id="phoneCode"
+										name="phoneCode"
+										defaultValue="+52"
+										className="h-12 w-full appearance-none rounded-xl border border-primary/12 bg-white px-3 pr-9 text-[15px] text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10"
+									>
+										{phoneCodes.map((code) => (
+											<option key={code.value} value={code.value}>
+												{code.label}
+											</option>
+										))}
+									</select>
+									<svg
+										className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#90a0bb]"
+										viewBox="0 0 20 20"
+										fill="none"
+										aria-hidden="true"
+									>
+										<path
+											d="M5.5 7.5L10 12l4.5-4.5"
+											stroke="currentColor"
+											strokeWidth="1.7"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+									</svg>
+								</div>
+
+								<input
+									id="phone"
+									name="phone"
+									type="tel"
+									inputMode="tel"
+									placeholder="1234567890"
+									className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+								/>
+							</div>
+						</div>
+
+						<div className="space-y-2.5">
+							<label htmlFor="message" className="text-sm font-semibold text-primary">
+								Mensaje
+							</label>
+							<textarea
+								id="message"
+								name="message"
+								placeholder="¿En qué podemos ayudarte?"
+								rows={6}
+								className="w-full resize-none rounded-xl border border-primary/12 bg-white px-4 py-3 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
+							/>
+						</div>
+
+						<button
+							type="submit"
+							className="inline-flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_36px_rgba(0,183,250,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0aa8e4] hover:shadow-[0_20px_44px_rgba(0,183,250,0.34)]"
+						>
+							<span className="mr-2 text-base leading-none">✈</span>
+							Enviar mensaje
+						</button>
+
+						{status === "sent" && (
+							<p className="rounded-xl border border-accent/20 bg-accent/8 px-4 py-3 text-sm text-secondary">
+								Tu mensaje quedó listo. Si quieres, ahora conecto este formulario a WhatsApp o a un correo real.
+							</p>
+						)}
+					</form>
+				</div>
+			</div>
+		</section>
+	);
+}
+</file>
+
+<file path="data/especialidades.ts">
+export interface Servicio {
+  id: string;
+  nombre: string;
+}
+
+export interface Especialidad {
+  id: string;
+  nombre: string;
+  icon: string;
+  color: string;
+  servicios: Servicio[];
+}
+
+export const especialidades: Especialidad[] = [
+  {
+    id: "abdominal",
+    nombre: "Abdominal",
+    icon: "HiOutlineViewList",
+    color: "primary",
+    servicios: [
+      { id: "abd-1", nombre: "Ecografía abdominal completa" },
+      { id: "abd-2", nombre: "Ecografía hepática y Vías Biliares" },
+      { id: "abd-3", nombre: "Ecografía de vesícula y vías biliares" },
+      { id: "abd-4", nombre: "Ecografía de páncreas" },
+      { id: "abd-5", nombre: "Ecografía de bazo" },
+      { id: "abd-6", nombre: "Ecografia abdominopelvico" },
+    ],
+  },
+  {
+    id: "ginecologica",
+    nombre: "Ginecológica",
+    icon: "HiOutlineHeart",
+    color: "secondary",
+    servicios: [
+      { id: "gin-1", nombre: "Ecografía pélvica o ginecológica" },
+      { id: "gin-2", nombre: "Ecografía transvaginal" },
+      { id: "gin-3", nombre: "Monitoreo ó seguimiento folicular" },
+    ],
+  },
+  {
+    id: "obstetricia",
+    nombre: "Obstétrica",
+    icon: "HiOutlineArrowUp",
+    color: "accent",
+    servicios: [
+      { id: "obs-1", nombre: "Obstétrico Biometría fetal (tradicional)" },
+      { id: "obs-2", nombre: "Obstétrica cromosómica ó estructural I trimestre" },
+      { id: "obs-3", nombre: "Obstétrica estructural del 2do y 3er trimestre" },
+      { id: "obs-4", nombre: "Obstétrico Gemelar" },
+      { id: "obs-5", nombre: "Obstétrica 3D Y 4D" },
+      { id: "obs-6", nombre: "Perfil biofísico fetal" },
+      { id: "obs-7", nombre: "Doppler obstétrico" },
+    ],
+  },
+  {
+    id: "urologica",
+    nombre: "Urológica",
+    icon: "HiOutlineBeaker",
+    color: "primary",
+    servicios: [
+      { id: "uro-1", nombre: "Ecografía renal bilateral" },
+      { id: "uro-2", nombre: "Ecografía vesical, vías urinarias transabdominal" },
+      { id: "uro-3", nombre: "Ecografía prostática suprapúbica" },
+      { id: "uro-4", nombre: "Ecografía prostática transrectal" },
+      { id: "uro-5", nombre: "Ecografia testicular" },
+    ],
+  },
+  {
+    id: "partes-blandas",
+    nombre: "Partes Blandas",
+    icon: "HiOutlineShieldExclamation",
+    color: "secondary",
+    servicios: [
+      { id: "pb-1", nombre: "Ecografía de tiroides" },
+      { id: "pb-2", nombre: "Ecografía mamaria" },
+      { id: "pb-3", nombre: "Ecografía de partes blandas localizada" },
+      { id: "pb-4", nombre: "Ecografía de pared Abdominal e inguinal (hernias)" },
+      { id: "pb-5", nombre: "Ecografía ganglionar" },
+    ],
+  },
+  {
+    id: "doppler",
+    nombre: "Doppler",
+    icon: "HiOutlineTrendingUp",
+    color: "accent",
+    servicios: [
+      { id: "dop-1", nombre: "Doppler carotídeo y/o vertebrales" },
+      { id: "dop-2", nombre: "Doppler arterial miembros inferiores" },
+      { id: "dop-3", nombre: "Doppler venoso miembros inferiores" },
+      { id: "dop-4", nombre: "Doppler arterial miembros superiores" },
+      { id: "dop-5", nombre: "Doppler venoso miembros superiores" },
+      { id: "dop-6", nombre: "Doppler testicular" },
+      { id: "dop-7", nombre: "Doppler hepatoportal" },
+      { id: "dop-8", nombre: "Doppler tiroideo" },
+      { id: "dop-9", nombre: "Doppler pelvico ginecológico" },
+      { id: "dop-10", nombre: "Doppler renal" },
+    ],
+  },
+  {
+    id: "musculoesquetica",
+    nombre: "Musculoesquelética",
+    icon: "HiOutlineArchive",
+    color: "primary",
+    servicios: [
+      { id: "msk-1", nombre: "Ecografía MSK hombro" },
+      { id: "msk-2", nombre: "Ecografía MSK rodilla" },
+      { id: "msk-3", nombre: "Ecografía MSK codo" },
+      { id: "msk-4", nombre: "Ecografía MSK tobillo" },
+      { id: "msk-5", nombre: "Ecografía MSK muñeca" },
+    ],
+  },
+  {
+    id: "emergencias",
+    nombre: "Emergencias",
+    icon: "HiOutlineExclamation",
+    color: "secondary",
+    servicios: [
+      { id: "emg-1", nombre: "Abdomen agudo (apendicitis, colecistitis, pancreatitis aguda, peritonitis)" },
+    ],
+  },
+  {
+    id: "otros",
+    nombre: "Otros",
+    icon: "HiOutlineInformationCircle",
+    color: "accent",
+    servicios: [
+      { id: "oth-1", nombre: "Colposcopia" },
+      { id: "oth-2", nombre: "Citología Cervico vaginal (Papanicolau, PAP)" },
+    ],
+  },
+];
+</file>
+
+<file path="data/servicios.txt">
+Especialidad		Nombre del Estudio
+
+Abdominal		Ecografía abdominal completa
+Abdominal		Ecografía hepática y Vías Biliares 
+Abdominal		Ecografía de vesícula y vías biliares
+Abdominal		Ecografía de páncreas
+Abdominal		Ecografía de bazo
+Abdominal		Ecografia abdominopelvico 
+
+Ginecológica		Ecografía pélvica o ginecológica
+Ginecológica		Ecografía transvaginal
+Ginecológica		Monitoreo ó seguimiento  folicular
+
+Obstétrica		Obstétrico Biometría fetal ( tradicional)
+Obstétrica		Obstétrica  cromosómica ó estructural   I trimestre
+Obstétrica		Obstétrica estructural del  2do y 3er  trimestre
+Obstétrica		Obstétrico Gemelar 
+Obstétrica		Obstétrica 3D Y 4D
+Obstétrica		Perfil biofísico fetal
+Obstétrica		Doppler obstétrico
+
+Urológica		Ecografía renal bilateral 
+Urológica		Ecografía vesical, vías urinarias  transabdominal 
+Urológica		Ecografía prostática suprapúbica
+Urológica		Ecografía prostática transrectal
+Urológica		Ecografia testicular 
+
+Partes Blandas		Ecografía de tiroides
+Partes Blandas		Ecografía mamaria
+Partes Blandas		Ecografía de partes blandas localizada
+Partes Blandas		Ecografía de pared Abdominal e inguinal ( hernias de la pared )
+Partes Blandas		Ecografía ganglionar
+
+Doppler			Doppler carotídeo y/o vertebrales 
+Doppler			Doppler arterial miembros inferiores
+Doppler			Doppler venoso miembros inferiores
+Doppler			Doppler arterial miembros superiores
+Doppler			Doppler venoso miembros superiores
+Doppler			Doppler testicular
+Doppler			Doppler hepatoportal 
+Doppler			Doppler tiroideo 
+Doppler			Doppler pelvico ginecológico 
+Doppler			Doppler renal
+
+Musculoesquelética	Ecografía MSK hombro
+Musculoesquelética	Ecografía MSK rodilla
+Musculoesquelética	Ecografía MSK codo
+Musculoesquelética	Ecografía MSK tobillo
+Musculoesquelética	Ecografía MSK  muñeca
+
+Emergencias		Abdomen agudo ( apendicitis, colecistitis, pancreatitis aguda, peritonitis, etc. 
+	
+Otros 			Colposcopia 
+Otros			Citología Cervico vaginal ( Papanicolau, PAP)
+</file>
+
+<file path="dev.ps1">
+# Script para abrir pnpm dev en Chrome automáticamente, sin VS Code
+Write-Host "Iniciando servidor de desarrollo..." -ForegroundColor Cyan
+
+# Cierra procesos previos que puedan ocupar el puerto 3000
+Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 1
+
+# Lanza pnpm dev desde cmd.exe para que Windows resuelva el comando correctamente
+$env:BROWSER = "none"
+$devProcess = Start-Process -FilePath "cmd.exe" -ArgumentList '/c "pnpm dev"' -PassThru -WindowStyle Hidden
+
+# Espera un poco a que Next arranque
+Write-Host "Esperando a que el servidor esté listo..." -ForegroundColor Yellow
+Start-Sleep -Seconds 5
+
+# Abre Chrome externo directamente
+Write-Host "Abriendo Chrome..." -ForegroundColor Green
+$chromePath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+if (Test-Path $chromePath) {
+	Start-Process -FilePath $chromePath -ArgumentList "http://localhost:3000"
+} else {
+	Start-Process -FilePath "chrome" -ArgumentList "http://localhost:3000"
+}
+
+Write-Host "Servidor ejecutándose en http://localhost:3000" -ForegroundColor Green
+Wait-Process -Id $devProcess.Id
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="hooks/useDetectCountry.ts">
+"use client";
+
+import { useEffect, useState } from "react";
+
+export type DetectedCountry = "mexico" | "bolivia" | "peru" | null;
+
+export default function useDetectCountry(): DetectedCountry {
+  const [detected, setDetected] = useState<DetectedCountry>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function tryProviders() {
+      // Provider 1: ipapi.co
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (res.ok) {
+          const json = await res.json();
+          const code = (json.country_code || "").toString().toLowerCase();
+          const name = (json.country_name || "").toString().toLowerCase();
+
+          if (code === "mx" || name.includes("mexic")) {
+            if (mounted) setDetected("mexico");
+            return;
+          }
+          if (code === "bo" || name.includes("boliv")) {
+            if (mounted) setDetected("bolivia");
+            return;
+          }
+          if (code === "pe" || name.includes("peru")) {
+            if (mounted) setDetected("peru");
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore and try next provider
+      }
+
+      // Provider 2: ipwho.is
+      try {
+        const res2 = await fetch("https://ipwho.is/");
+        if (res2.ok) {
+          const j2: any = await res2.json();
+          const code2 = (j2.country_code || "").toString().toLowerCase();
+          const name2 = (j2.country || "").toString().toLowerCase();
+
+          if (code2 === "mx" || name2.includes("mexic")) {
+            if (mounted) setDetected("mexico");
+            return;
+          }
+          if (code2 === "bo" || name2.includes("boliv")) {
+            if (mounted) setDetected("bolivia");
+            return;
+          }
+          if (code2 === "pe" || name2.includes("peru")) {
+            if (mounted) setDetected("peru");
+            return;
+          }
+        }
+      } catch (e) {
+        // all providers failed
+      }
+    }
+
+    tryProviders();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return detected;
+}
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="pnpm-workspace.yaml">
+allowBuilds:
+  sharp: true
+  unrs-resolver: false
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/fonts/README.txt">
+# Fuentes Corporativas
+
+Agrega los siguientes archivos de fuente en esta carpeta:
+
+1. **D-DIN.woff2** - D-Din regular (400)
+2. **D-DIN-Bold.woff2** - D-Din bold (700)
+
+Estas fuentes son propietarias y debes adquirirlas legalmente.
+Puedes descargarlas desde: https://www.dafont.com/d-din.font
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="components/AboutUs.tsx">
+"use client";
+
+import React from "react";
+import { motion, type MotionProps } from "framer-motion";
+import { HiOutlineEye, HiOutlineLightBulb, HiSparkles } from "react-icons/hi";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+export default function AboutUs() {
+  return (
+    <section id="nosotros" className="bg-primary py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <MotionDiv
+          className="grid gap-10 md:grid-cols-2 md:items-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          <MotionDiv variants={itemVariants}>
+            <h2 className="text-3xl font-black text-light sm:text-4xl" >
+              Quiénes somos
+            </h2>
+            <p className="mt-4 max-w-xl text-lg text-light">
+              En Tordoya combinamos experiencia clínica y tecnología para ofrecer
+              diagnósticos precisos y un trato humano. Nuestra misión y visión
+              guían cada decisión estratégica y operativa.
+            </p>
+
+            <MotionDiv className="mt-8 grid gap-4 sm:grid-cols-2" variants={containerVariants}>
+                <article className="group flex gap-4 rounded-lg border border-primary/8 bg-accent/80 p-4 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer" >
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-light">
+                  <HiOutlineLightBulb size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-light">Misión</h3>
+                  <p className="mt-1 text-sm text-light">
+                    Ofrecer servicios de ultrasonido e imagen diagnóstica con el rigor de la alta especialidad y la accesibilidad que cada paciente merece.
+                  </p>
+                </div>
+              </article>
+
+              <article className="group flex gap-4 rounded-lg border border-primary/8 bg-white/80 p-4 shadow-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-pointer" >
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <HiOutlineEye size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-primary">Visión</h3>
+                  <p className="mt-1 text-sm text-foreground/80">
+                    Liderar el diagnóstico por imagen en Bolivia, Perú y México, siendo el aliado que conecta a médicos y pacientes con la información que necesitan para actuar a tiempo.
+                  </p>
+                </div>
+              </article>
+            </MotionDiv>
+          </MotionDiv>
+
+          <MotionDiv className="relative flex items-center justify-center" variants={itemVariants}>
+            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />
+            <div className="absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-accent/5 blur-2xl" />
+
+            <MotionDiv className="z-10 w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-lg" whileHover={{ scale: 1.05 }}>
+              <h4 className="text-lg font-extrabold text-primary" >Nuestros valores</h4>
+              <p className="mt-3 text-foreground/80" >
+                Compromiso, excelencia y cercanía. Trabajamos con calidad
+                humana y protocolos que garantizan resultados reproducibles.
+              </p>
+
+              <ul className="mt-6 grid gap-3" >
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+                    <HiSparkles size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Calidad</strong>
+                    <span className="block text-sm text-foreground/80">Protocolos validados</span>
+                  </div>
+                </li>
+
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <HiOutlineEye size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Precisión</strong>
+                    <span className="block text-sm text-foreground/80">Lecturas confiables</span>
+                  </div>
+                </li>
+
+                <li className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1" >
+                  <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-white">
+                    <HiOutlineLightBulb size={20} />
+                  </span>
+                  <div>
+                    <strong className="block text-sm text-primary">Innovación</strong>
+                    <span className="block text-sm text-foreground/80">Mejora continua</span>
+                  </div>
+                </li>
+              </ul>
+            </MotionDiv>
+          </MotionDiv>
+        </MotionDiv>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="components/WhatsAppButton.tsx">
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+
+const NOTIFICATION_INTERVAL = 3 * 60 * 1000;
+const BUZZ_DURATION = 3000;
+
+export default function WhatsAppButton() {
+  const whatsappNumber = '5491234567890'; // Cambia esto por tu número de WhatsApp
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hola,%20me%20gustaría%20conocer%20más%20sobre%20los%20servicios`;
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isBuzzing, setIsBuzzing] = useState(false);
+  const buzzTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setUnreadCount((prev) => prev + 1);
+      setIsBuzzing(true);
+
+      if (buzzTimeoutRef.current) {
+        window.clearTimeout(buzzTimeoutRef.current);
+      }
+
+      buzzTimeoutRef.current = window.setTimeout(() => {
+        setIsBuzzing(false);
+      }, BUZZ_DURATION);
+    }, NOTIFICATION_INTERVAL);
+
+    return () => {
+      window.clearInterval(intervalId);
+      if (buzzTimeoutRef.current) {
+        window.clearTimeout(buzzTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleClick = () => {
+    setUnreadCount(0);
+    setIsBuzzing(false);
+  };
+
+  const badgeText = unreadCount > 9 ? '9+' : String(unreadCount);
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={handleClick}
+      className={`fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full bg-green-500 p-2.5 text-white shadow-md  transition-all duration-300 hover:scale-110 hover:bg-green-600 ${
+        isBuzzing ? 'animate-whatsapp-vibrate' : ''
+      }`}
+      style={{ boxShadow: '0 2px 8px rgba(34, 197, 94, 0.4)' }}
+      aria-label="Contactanos por WhatsApp"
+      title="Contactanos por WhatsApp"
+    >
+      <FaWhatsapp size={20} />
+      {unreadCount > 0 && (
+        <span
+          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white"
+          aria-live="polite"
+        >
+          {badgeText}
+        </span>
+      )}
+    </a>
+  );
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "tordoya-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "framer-motion": "11.0.3",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-icons": "4.10.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+<file path="app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --color-primary: #01155a;
+  --color-secondary: #155bb3;
+  --color-accent: #00b7fa;
+  --color-light: #F8F9FA;
+  --color-dark: #1A1A2E;
+
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-light: var(--color-light);
+  --color-dark: var(--color-dark);
+  --font-heading: var(--font-d-din);
+  --font-body: var(--font-manrope);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.875rem;
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+p, span, li, a, button {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@keyframes whatsapp-vibrate {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  15% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  30% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  45% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+}
+
+.animate-whatsapp-vibrate {
+  animation: whatsapp-vibrate 0.6s linear infinite;
+}
+</file>
+
+<file path="components/PortalResultados.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import { FaLock } from "react-icons/fa";
+
+export default function PortalResultados() {
+	const [folioInput, setFolioInput] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const [message, setMessage] = useState("");
+	const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+	const [activeIndicator, setActiveIndicator] = useState(0);
+
+	useEffect(() => {
+		const interval = window.setInterval(() => {
+			setActiveIndicator((prev) => (prev + 1) % 3);
+		}, 6000);
+
+		return () => window.clearInterval(interval);
+	}, []);
+
+	const handleVerResultados = async (e: React.FormEvent) => {
+		e.preventDefault();
+		
+		if (!folioInput.trim()) {
+			setMessageType("error");
+			setMessage("Por favor ingresa un número de folio válido");
+			setTimeout(() => setMessage(""), 4000);
+			return;
+		}
+
+		setIsLoading(true);
+		
+		// Simular búsqueda de resultados
+		setTimeout(() => {
+			setIsLoading(false);
+			// Aquí iría la redirección real a tu portal
+			window.open(`https://tuportal.com/resultados?folio=${folioInput}`, "_blank");
+			setMessageType("success");
+			setMessage("¡Redirigiendo a tus resultados...");
+			setFolioInput("");
+			setTimeout(() => setMessage(""), 3000);
+		}, 1500);
+	};
+
+	const handleWhatsApp = () => {
+		const telefono = "573001234567"; // Reemplaza con tu número
+		const mensaje = encodeURIComponent(
+			`Hola, me gustaría solicitar mis resultados médicos. Mi número de folio es: ${folioInput || "[No especificado]"}`
+		);
+		window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+	};
+
+	return (
+		<section
+			id="resultados"
+			className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,var(--color-primary)_0%,#09429a_48%,#0d5ab8_100%)] py-16 text-white sm:py-20 lg:py-24"
+		>
+			{/* Gradientes animados de fondo */}
+			<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,183,250,0.18),_transparent_32%)]" />
+
+			<div className="pointer-events-none absolute top-20 right-10 h-72 w-72 rounded-full bg-[--color-accent]/10 blur-3xl opacity-20" />
+			<div className="pointer-events-none absolute bottom-20 left-10 h-96 w-96 rounded-full bg-[--color-secondary]/15 blur-3xl opacity-15" />
+
+			<div className="relative mx-auto flex max-w-4xl flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
+				{/* Badge */}
+				<span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-semibold tracking-[0.2em] uppercase text-white/88 backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/25">
+					<FaLock size={14} className="text-white/90" aria-hidden="true" />
+					Portal seguro
+				</span>
+
+				{/* Títulos */}
+				<h1 className="mt-7 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+					Accede a tus resultados
+				</h1>
+
+				<p className="mt-5 text-base leading-8 text-white/82 sm:text-lg">
+					Ingresa tu número de folio para ver de forma segura tus resultados diagnósticos
+				</p>
+
+				{/* Card Principal */}
+				<div className="mx-auto mt-12 max-w-lg rounded-[2rem] border border-white/16 bg-white/10 p-6 text-left shadow-2xl shadow-black/20 backdrop-blur-2xl transition-all duration-300 hover:border-white/25 hover:bg-white/15 sm:p-8">
+					
+					{/* Encabezado Card */}
+					<div className="flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[--color-accent]">
+						<FaLock size={14} className="text-[--color-accent]" aria-hidden="true" />
+						Portal seguro
+					</div>
+
+					{/* Formulario */}
+					<form onSubmit={handleVerResultados} className="mt-6 space-y-4">
+						<div>
+							<label className="block text-sm font-semibold text-white/92 mb-2">
+								Número de Folio / Número de Paciente
+							</label>
+
+							<div className="relative group">
+								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[--color-accent]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur" />
+								<div className="relative flex items-center gap-3 rounded-2xl border border-white/12 bg-[linear-gradient(180deg,rgba(248,249,250,0.98),rgba(235,241,252,0.98))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] transition-all duration-300 group-hover:border-white/25">
+									<input
+										type="text"
+										placeholder="Ej: TOR-2024-12345"
+										value={folioInput}
+										onChange={(e) => setFolioInput(e.target.value)}
+										className="w-full bg-transparent text-[15px] text-[#23324d] outline-none placeholder:text-[#8f9bb3] font-medium"
+									/>
+									<svg className="h-5 w-5 shrink-0 text-[#90a0bb] transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+										<circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8" />
+									</svg>
+								</div>
+							</div>
+						</div>
+
+						{/* Botón Ver Resultados */}
+						<button
+							type="submit"
+							disabled={isLoading}
+							className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#0000FF] px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_14px_35px_rgba(0,80,179,0.32)] transition-all duration-300 hover:bg-[#003f8f] hover:shadow-[0_20px_50px_rgba(0,63,143,0.45)] disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 active:scale-95"
+						>
+							{isLoading ? (
+								<>
+									<svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+										<path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+									</svg>
+									Buscando...
+								</>
+							) : (
+								<>
+									<svg className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+										<path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									</svg>
+									Ver Resultados
+								</>
+							)}
+						</button>
+					</form>
+
+					{/* Divider */}
+					<div className="mt-6 flex items-center gap-4 text-white/38">
+						<div className="h-px flex-1 bg-white/20" />
+						<span className="text-sm font-medium">o</span>
+						<div className="h-px flex-1 bg-white/20" />
+					</div>
+
+					{/* Botón WhatsApp */}
+					<button
+						onClick={handleWhatsApp}
+						className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/18 bg-gradient-to-r from-white/12 to-white/8 px-6 py-3.5 text-[15px] font-semibold text-white/95 backdrop-blur-md transition-all duration-300 hover:from-white/20 hover:to-white/15 hover:border-white/30 hover:shadow-[0_8px_20px_rgba(0,183,250,0.2)] hover:scale-105 active:scale-95"
+					>
+						<svg className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+							<path
+								d="M12 20.5c4.7 0 8.5-3.3 8.5-7.4S16.7 5.7 12 5.7 3.5 9 3.5 13.1c0 1.4.5 2.8 1.4 4l-.9 3.2 3.3-1.1c1.2.8 2.7 1.3 4.7 1.3Z"
+								stroke="currentColor"
+								strokeWidth="1.6"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+						Solicitar por WhatsApp
+					</button>
+
+					{/* Mensaje de estado */}
+					{message && (
+						<div
+							className={`mt-6 flex items-center gap-2 rounded-2xl border px-4 py-3 text-left text-sm leading-5 transition-all duration-300 ${
+								messageType === "success"
+									? "border-green-500/30 bg-green-500/10 text-green-200"
+									: "border-red-500/30 bg-red-500/10 text-red-200"
+							}`}
+						>
+							<svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								{messageType === "success" ? (
+									<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+								) : (
+									<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+								)}
+							</svg>
+							{message}
+						</div>
+					)}
+
+					{/* Security Message */}
+					<div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-left text-[12px] leading-5 text-white/72 transition-all duration-300 hover:border-white/15 hover:bg-white/8">
+						<FaLock size={16} className="mt-0.5 text-white/70 flex-shrink-0" aria-hidden="true" />
+						<p>
+							Con TORDOYA tu información médica es mas que segura 
+						</p>
+					</div>
+				</div>
+
+				
+			</div>
+		</section>
+	);
+}
+</file>
+
+<file path="app/layout.tsx">
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import SelectCountry from "@/components/SelectCountry";
+
+const manrope = localFont({
+  src: [
+    {
+      path: "../public/fonts/Manrope-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Manrope-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const dDin = localFont({
+  src: [
+    {
+      path: "../public/fonts/D-DIN.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/D-DIN-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-d-din",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Tordoya | Soluciones Integrales",
+  description: "Empresa líder en soluciones integrales para tu negocio",
+  icons: [
+    { rel: 'icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'shortcut icon', url: '/image/icono.webp?v=2', type: 'image/webp' },
+    { rel: 'apple-touch-icon', url: '/image/icono.webp?v=2', sizes: '180x180' },
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="es"
+      className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-white text-foreground">
+        <SelectCountry />
+        <Header />
+        <main className="flex-1 pt-20">{children}</main>
+        <Footer />
+        <WhatsAppButton />
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="components/Footer.tsx">
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone } from "react-icons/hi";
+
+const navLinks = [
+	{ label: "Inicio", href: "#inicio" },
+	{ label: "Nosotros", href: "#nosotros" },
+	{ label: "Servicios", href: "#servicios" },
+	{ label: "Contáctanos", href: "#contacto" },
+];
+
+export default function Footer() {
+	return (
+		<footer className="mt-auto border-t border-white/20 bg-primary text-white">
+			<div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+				<div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1fr] lg:items-start">
+					<div>
+						<Link href="#inicio" className="inline-flex items-center rounded-xl px-3 py-2 shadow-sm">
+							<Image
+								src="/image/logo-white.webp"
+								alt="Tordoya"
+								width={180}
+								height={60}
+								className="h-10 w-auto"
+								priority={false}
+							/>
+						</Link>
+
+						<p className="mt-4 max-w-md text-sm leading-6 text-white/80">
+							Servicios avanzados de imagenología médica y diagnóstico con tecnología de vanguardia
+						</p>
+
+						<div className="mt-6 flex flex-wrap gap-3 text-sm font-semibold text-white">
+							<span className="rounded-full bg-white/12 px-4 py-2">Calidad</span>
+							<span className="rounded-full bg-white/12 px-4 py-2">Precisión</span>
+							<span className="rounded-full bg-white/12 px-4 py-2">Confianza</span>
+						</div>
+					</div>
+
+					<div>
+						<h3 className="text-lg font-black text-white">Explora</h3>
+						<ul className="mt-5 space-y-3 text-sm">
+							{navLinks.map((link) => (
+								<li key={link.label}>
+									<a
+										href={link.href}
+										className="inline-flex items-center text-white/80 transition-colors duration-200 hover:text-white"
+									>
+										{link.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+
+					<div>
+						<h3 className="text-lg font-black text-white">Contacto</h3>
+
+						<ul className="mt-5 space-y-4 text-sm text-white/80">
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-17 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlineLocationMarker size={18} />
+								</span>
+								<span>Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.</span>
+							</li>
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlinePhone size={18} />
+								</span>
+								<span>+52 1 55 4715 7971</span>
+							</li>
+							<li className="flex items-start gap-3">
+								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
+									<HiOutlineMail size={18} />
+								</span>
+								<span>diagnosticoultrasonidotordoya@gmail.com</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div className="mt-12 flex flex-col gap-4 border-t border-white/20 pt-6 text-sm text-white/80 md:flex-row md:items-center md:justify-between">
+					<p>© {new Date().getFullYear()} Tordoya. Todos los derechos reservados.</p>
+					<p className="text-white/75">
+						Soluciones integrales en diagnóstico por ultrasonido.
+					</p>
+				</div>
+			</div>
+		</footer>
+	);
+}
+</file>
+
+<file path="components/Header.tsx">
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { label: "Inicio", href: "#inicio" },
+    { label: "Nosotros", href: "#nosotros" },
+    { label: "Servicios", href: "#servicios" },
+    { label: "Contáctanos", href: "#contacto" },
+  ];
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-primary/10 bg-white/95 backdrop-blur-sm shadow-sm">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Principal">
+        <div className="grid h-16 sm:h-20 md:h-28 grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-6">
+          <a href="#inicio" className="flex min-w-0 items-center gap-3 justify-self-start">
+            <Image
+              src="/image/logo_h.webp"
+              alt="Isotipo Tordoya"
+              width={1920}
+              height={1920}
+              className="h-10 w-auto shrink-0 sm:h-12 md:h-16 lg:h-12"
+              priority
+            />
+           
+          </a>
+
+          <div className="hidden md:flex items-center justify-center gap-6 lg:gap-8 xl:gap-10">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="relative text-sm md:text-base font-light text-primary transition-colors duration-200 hover:text-secondary after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:origin-center after:scale-x-0 after:bg-secondary after:transition-transform after:duration-200 hover:after:scale-x-100"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href="#contacto"
+            className="hidden min-w-42.5 justify-self-end md:inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2 md:px-6 md:py-3 text-sm md:text-base font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-secondary hover:shadow-secondary/30"
+          >
+            Agenda tu cita
+          </a>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="ml-auto rounded-md p-2 text-primary transition-colors hover:bg-primary/5 md:hidden"
+            aria-label="Menú"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <div id="mobile-menu" className="border-t border-primary/10 pb-5 pt-4 md:hidden">
+            <div className="flex flex-col space-y-3">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="rounded-md px-2 py-2 text-lg font-semibold text-primary transition-colors duration-200 hover:bg-primary/5 hover:text-secondary"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <a
+                href="#contacto"
+                onClick={() => setIsMenuOpen(false)}
+                className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-center font-bold text-white transition-colors duration-200 hover:bg-secondary"
+              >
+                Agenda tu cita
+              </a>
+            </div>
+          </div>
+        )}
+      </nav>
+    </header>
+  );
+}
+</file>
+
+<file path="components/Hero.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+const slides = [
+	{
+		eyebrow: "Estrategia comercial",
+		title: "Impulsa tu negocio con una presencia que convierte",
+		description:
+			"Creamos experiencias claras, visuales y orientadas a resultados para que tu marca destaque desde el primer impacto.",
+		cta: "Conocer más",
+		href: "#servicios",
+		image: "/image/logo_tordoya.webp",
+		accent: "from-[#01155a]/95 to-[#155bb3]/90",
+	},
+	{
+		eyebrow: "Diseño premium",
+		title: "Un hero inmersivo, limpio y directo al mensaje",
+		description:
+			"La sección principal ocupa toda la pantalla con una estructura moderna, pensada para enganchar sin distraer.",
+		cta: "Ver nosotros",
+		href: "#nosotros",
+		image: "/image/logo_h.webp",
+		accent: "from-[#0b2d7a]/95 to-[#00b7fa]/80",
+	},
+	{
+		eyebrow: "Atención cercana",
+		title: "Tres mensajes, una misma meta: generar confianza",
+		description:
+			"Rotamos contenido clave dentro de un slider para reforzar tu propuesta de valor sin salir del primer pantallazo.",
+		cta: "Contactar ahora",
+		href: "#contacto",
+		image: "/image/icono.webp",
+		accent: "from-[#01155a]/95 to-[#1a1a2e]/90",
+	},
+];
+
+export default function Hero() {
+	const [activeSlide, setActiveSlide] = useState(0);
+
+	useEffect(() => {
+		const interval = window.setInterval(() => {
+			setActiveSlide((currentSlide) => (currentSlide + 1) % slides.length);
+		}, 6000);
+
+		return () => window.clearInterval(interval);
+	}, []);
+
+	return (
+		<section
+			id="inicio"
+			className="relative h-screen overflow-hidden bg-[--color-primary] text-white"
+		>
+			{slides.map((slide, index) => {
+				const isActive = index === activeSlide;
+
+				return (
+					<div
+						key={slide.title}
+						className={`absolute inset-0 transition-opacity duration-700 ${
+							isActive ? "opacity-100" : "pointer-events-none opacity-0"
+						}`}
+						aria-hidden={!isActive}
+					>
+						<div
+							className={`absolute inset-0 bg-gradient-to-br ${slide.accent}`}
+						/>
+						<div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.18),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(0,183,250,0.22),_transparent_32%)]" />
+
+						<div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pt-32 sm:pt-24 md:pt-16 lg:pt-0 sm:px-6 lg:px-8">
+							<div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+								<div className="max-w-3xl">
+									<span className="mb-4 sm:mb-6 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-base font-semibold tracking-[0.2em] uppercase text-white/90 backdrop-blur-sm">
+										{slide.eyebrow}
+									</span>
+									<h1 className="max-w-4xl text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold tracking-tight text-balance">
+										{slide.title}
+									</h1>
+									<p className="mt-4 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl lg:text-2xl leading-6 sm:leading-8 text-white/85">
+										{slide.description}
+									</p>
+
+									<div className="mt-6 sm:mt-10 flex flex-col gap-3 sm:gap-5 sm:flex-row sm:items-center">
+										<a
+											href={slide.href}
+											className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-[--color-primary] shadow-xl shadow-black/20 transition-transform duration-200 hover:-translate-y-0.5"
+										>
+											{slide.cta}
+										</a>
+										<a
+											href="#contacto"
+											className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/20"
+										>
+											Agenda tu cita
+										</a>
+									</div>
+								</div>
+
+								<div className="relative mx-auto w-full max-w-md lg:max-w-none">
+									<div className="absolute inset-0 rounded-[2rem] bg-white/10 blur-3xl" />
+									<div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/15 bg-white/10 p-4 sm:p-6 shadow-2xl shadow-black/20 backdrop-blur-md">
+										<div className="flex items-center justify-between gap-2">
+										<span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-white/70\">
+											Slide {String(index + 1).padStart(2, "0")}
+										</span>
+										<span className="rounded-full bg-white/15 px-2.5 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold text-white/80\">
+											100vh
+										</span>
+										</div>
+
+										<div className="mt-4 sm:mt-8 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] bg-white/10 p-4 sm:p-8\">
+											<Image
+												src={slide.image}
+												alt={slide.title}
+												width={520}
+												height={520}
+												className="h-32 w-auto object-contain sm:h-56 md:h-72 lg:h-96\"
+												priority={isActive}
+											/>
+										</div>
+
+										<div className="mt-6 grid grid-cols-3 gap-3">
+											{slides.map((otherSlide, otherIndex) => {
+												const isCurrent = otherIndex === activeSlide;
+
+												return (
+													<button
+														key={otherSlide.title}
+														type="button"
+														onClick={() => setActiveSlide(otherIndex)}
+														className={`h-2 rounded-full transition-all duration-200 ${
+															isCurrent ? "bg-white" : "bg-white/30 hover:bg-white/50"
+														}`}
+														aria-label={`Ir al slide ${otherIndex + 1}`}
+														aria-pressed={isCurrent}
+													/>
+												);
+											})}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				);
+			})}
+		</section>
+	);
+}
+</file>
+
+<file path="components/SelectCountry.tsx">
+"use client";
+
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import useDetectCountry from "../hooks/useDetectCountry";
+
+type CountryOption = {
+	id: "mexico" | "bolivia" | "peru";
+	name: string;
+	flagSrc: string;
+};
+
+const STORAGE_KEY = "tordoya_country";
+
+const countryOptions: CountryOption[] = [
+	{ id: "mexico", name: "Mexico", flagSrc: "/image/mexico.png" },
+	{ id: "bolivia", name: "Bolivia", flagSrc: "/image/bolivia.png" },
+	{ id: "peru", name: "Peru", flagSrc: "/image/peru.png" },
+];
+
+export default function SelectCountry() {
+	const [isOpen, setIsOpen] = useState(true);
+	const [selectedCountry, setSelectedCountry] = useState<CountryOption["id"] | null>(null);
+	const [highlightedCountry, setHighlightedCountry] = useState<CountryOption["id"] | null>(null);
+	const detectedCountry = useDetectCountry();
+	const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+
+	useEffect(() => {
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (storedCountry) {
+			setSelectedCountry(storedCountry);
+			setIsOpen(false);
+		}
+
+		setHasLoadedStorage(true);
+	}, []);
+
+	useEffect(() => {
+		if (!isOpen) {
+			document.body.style.overflow = "";
+			return;
+		}
+
+		document.body.style.overflow = "hidden";
+
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
+
+	const handleSelectCountry = (countryId: CountryOption["id"]) => {
+		setSelectedCountry(countryId);
+		window.localStorage.setItem(STORAGE_KEY, countryId);
+		setIsOpen(false);
+	};
+
+	useEffect(() => {
+		if (!detectedCountry || !hasLoadedStorage) {
+			return;
+		}
+
+		setHighlightedCountry(detectedCountry);
+
+		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
+
+		if (!storedCountry) {
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		if (storedCountry !== detectedCountry) {
+			window.localStorage.removeItem(STORAGE_KEY);
+			setSelectedCountry(null);
+			setIsOpen(true);
+			return;
+		}
+
+		setSelectedCountry(storedCountry);
+		setIsOpen(false);
+	}, [detectedCountry]);
+
+	if (!isOpen) {
+		return null;
+	}
+
+	return (
+		<div className="fixed inset-0 z-100 flex items-center justify-center bg-primary/70 px-4 backdrop-blur-sm">
+			<div className="w-full max-w-xl rounded-3xl border border-white/20 bg-white p-6 shadow-2xl sm:p-8">
+				<div className="text-center">
+					<p className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary/80">
+						Bienvenido
+					</p>
+					<h2 className="mt-2 text-3xl font-bold text-primary sm:text-4xl">
+						Selecciona tu pais
+					</h2>
+					<p className="mt-3 text-sm text-foreground/65 sm:text-base">
+						Accede a los servicios de tu sede más cercana
+					</p>
+				</div>
+
+				<div className="mt-8 grid gap-3">
+					{countryOptions.map((country) => {
+						const isSelected = selectedCountry === country.id;
+						const isHighlighted = highlightedCountry === country.id;
+
+						return (
+							<button
+								key={country.id}
+								type="button"
+								onClick={() => handleSelectCountry(country.id)}
+								className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 sm:px-5 ${
+									isSelected
+										? "border-accent bg-accent/10"
+										: isHighlighted
+										? "border-accent/40 bg-accent/6 ring-2 ring-accent/20"
+										: "border-primary/15 bg-white hover:border-secondary/40 hover:bg-secondary/5"
+								}`}
+								aria-label={`Seleccionar ${country.name}`}>
+								<div className="flex items-center gap-3">
+									<span className="overflow-hidden rounded-sm border border-primary/10 shadow-sm" aria-hidden="true">
+										<Image
+											src={country.flagSrc}
+											alt={`Bandera de ${country.name}`}
+											width={40}
+											height={28}
+											className="h-7 w-10 object-cover"
+										/>
+									</span>
+									<span className="text-base font-semibold text-primary sm:text-lg">
+										{country.name}
+									</span>
+									{isHighlighted && !isSelected && (
+										<span className="ml-3 inline-flex items-center rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
+											
+										</span>
+									)}
+								</div>
+
+								<span className="rounded-full bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+									Entrar
+								</span>
+							</button>
+						);
+					})}
+				</div>
+			</div>
+		</div>
+	);
+}
+</file>
+
+<file path="components/Services.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+  HiChevronDown,
+  HiOutlineCalendar,
+} from "react-icons/hi";
+import { especialidades } from "@/data/especialidades";
+
+const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+const servicesPanelTransition = {
+  duration: 0.42,
+  ease: [0.22, 1, 0.36, 1],
+};
+
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+const MotionButton = motion.button as React.ComponentType<
+  React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
+>;
+
+export default function Services() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  return (
+    <section id="servicios" className="bg-light py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <MotionDiv
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 text-center"
+        >
+          <h2 className="text-4xl font-black text-primary sm:text-5xl">
+            Nuestros Servicios
+          </h2>
+          <p className="mt-4 text-lg text-foreground/70">
+            Servicios integrales de imagenología diagnóstica con tecnología de última generación
+          </p>
+        </MotionDiv>
+
+        <MotionDiv
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={containerVariants}
+        >
+          {especialidades.map((especialidad) => {
+            const IconComponent = iconMap[especialidad.icon];
+            const isExpanded = expandedId === especialidad.id;
+
+            return (
+              <MotionDiv
+                key={especialidad.id}
+                variants={cardVariants}
+                className="group overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg"
+              >
+                <div 
+                  className={`${
+                    especialidad.color === "primary"
+                      ? "bg-linear-to-br from-primary to-primary/70"
+                      : especialidad.color === "secondary"
+                      ? "bg-linear-to-br from-secondary to-secondary/70"
+                      : "bg-linear-to-br from-accent to-accent/70"
+                  } p-6 transition-all duration-300`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
+                        {IconComponent && <IconComponent size={24} />}
+                      </div>
+                      <h3 className="text-xl font-bold text-white">
+                        {especialidad.nombre}
+                      </h3>
+                      <p className="mt-1 text-sm text-white/80">
+                        {especialidad.servicios.length} servicios disponibles
+                      </p>
+                    </div>
+                  </div>
+
+                  <MotionButton
+                    onClick={() => toggleExpanded(especialidad.id)}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>{isExpanded ? "Ocultar" : "Ver"} servicios</span>
+                    <MotionDiv
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-white"
+                    >
+                      <HiChevronDown size={18} />
+                    </MotionDiv>
+                  </MotionButton>
+                </div>
+
+                <MotionDiv
+                  initial={false}
+                  animate={{
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0,
+                  }}
+                  transition={servicesPanelTransition}
+                  className="overflow-hidden bg-white"
+                  aria-hidden={!isExpanded}
+                >
+                  <MotionDiv
+                    animate={{ y: isExpanded ? 0 : -8 }}
+                    transition={servicesPanelTransition}
+                    className="space-y-2 px-6 py-4"
+                  >
+                    {especialidad.servicios.map((servicio) => (
+                      <MotionDiv
+                        key={servicio.id}
+                        animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+                        transition={{ duration: 0.28 }}
+                        className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
+                      >
+                        <span className="text-sm font-medium text-foreground">
+                          {servicio.nombre}
+                        </span>
+                        <MotionButton
+                          animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
+                          transition={{ duration: 0.22 }}
+                          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          tabIndex={isExpanded ? 0 : -1}
+                        >
+                          <span className="text-white">
+                            <HiOutlineCalendar size={14} />
+                          </span>
+                          <span>Agendar</span>
+                        </MotionButton>
+                      </MotionDiv>
+                    ))}
+                  </MotionDiv>
+                </MotionDiv>
+              </MotionDiv>
+            );
+          })}
+        </MotionDiv>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="app/page.tsx">
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import AboutUs from "@/components/AboutUs";
+import Services from "@/components/Services";
+import PortalResultados from "@/components/PortalResultados";
+import FormContact from "@/components/FormContact";
+
+export default function Home() {
+  return (
+    <>
+      <Header />
+      
+
+      <main className="">
+        <Hero />
+        <AboutUs />
+        <Services />
+        <PortalResultados />
+        <FormContact />
+      </main>
+    </>
+  );
+}
+</file>
+
+</files>
+</file>
+
+<file path="client/services/auth.service.ts">
+import { apiRequest } from "@/lib/api-client";
+import { saveAuthToken } from "@/lib/auth";
+
+export type LoginPayload = {
+	email: string;
+	password: string;
+};
+
+export type LoginResponse = {
+	ok: boolean;
+	message?: string;
+	token?: string;
+	user?: {
+		email: string;
+		role: string;
+	};
+};
+
+export async function login(payload: LoginPayload): Promise<LoginResponse> {
+	const data = await apiRequest<LoginResponse>("/auth/login", {
+		method: "POST",
+		body: JSON.stringify(payload),
+	});
+
+	if (data?.token) {
+		saveAuthToken(data.token);
+	}
+
+	return data;
+}
+</file>
+
+<file path="client/tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="server/.gitignore">
+# compiled output
+/dist
+/node_modules
+/build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# temp directory
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+/generated/prisma
+</file>
+
+<file path="server/.prettierrc">
+{
+  "singleQuote": true,
+  "trailingComma": "all"
+}
+</file>
+
+<file path="server/eslint.config.mjs">
+// @ts-check
+import eslint from '@eslint/js';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  {
+    ignores: ['eslint.config.mjs'],
+  },
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  eslintPluginPrettierRecommended,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
+      sourceType: 'commonjs',
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      "prettier/prettier": ["error", { endOfLine: "auto" }],
+    },
+  },
+);
+</file>
+
+<file path="server/nest-cli.json">
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true
+  }
+}
+</file>
+
+<file path="server/package.json">
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.24",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.1.24",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "*",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.24",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcrypt": "^6.0.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.21.0",
+    "prisma": "^7.8.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^7.0.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^17.0.0",
+    "jest": "^30.0.0",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
+</file>
+
+<file path="server/prisma.config.ts">
+// This file was generated by Prisma, and assumes you have installed the following:
+// npm install --save-dev prisma dotenv
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+  },
+  datasource: {
+    url: process.env["DATABASE_URL"],
+  },
+});
+</file>
+
+<file path="server/prisma/migrations/20260530030027_init/migration.sql">
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'EDITOR');
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+</file>
+
+<file path="server/prisma/migrations/20260530044247_init/migration.sql">
+/*
+  Warnings:
+
+  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
+
+*/
+-- DropTable
+DROP TABLE "User";
+
+-- CreateTable
+CREATE TABLE "Users" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
+</file>
+
+<file path="server/prisma/migrations/20260530044452_init/migration.sql">
+/*
+  Warnings:
+
+  - You are about to drop the `Users` table. If the table is not empty, all the data it contains will be lost.
+
+*/
+-- DropTable
+DROP TABLE "Users";
+
+-- CreateTable
+CREATE TABLE "usuarios" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
+</file>
+
+<file path="server/prisma/migrations/migration_lock.toml">
+# Please do not edit this file manually
+# It should be added in your version-control system (e.g., Git)
+provider = "postgresql"
+</file>
+
+<file path="server/prisma/schema.prisma">
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("usuarios")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+</file>
+
+<file path="server/README.md">
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
+
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
+
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+
+## Description
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+## Project setup
+
+```bash
+$ pnpm install
+```
+
+## Compile and run the project
+
+```bash
+# development
+$ pnpm run start
+
+# watch mode
+$ pnpm run start:dev
+
+# production mode
+$ pnpm run start:prod
+```
+
+## Run tests
+
+```bash
+# unit tests
+$ pnpm run test
+
+# e2e tests
+$ pnpm run test:e2e
+
+# test coverage
+$ pnpm run test:cov
+```
+
+## Deployment
+
+When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+
+If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+
+```bash
+$ pnpm install -g @nestjs/mau
+$ mau deploy
+```
+
+With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## Resources
+
+Check out a few resources that may come in handy when working with NestJS:
+
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+
+## Support
+
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Stay in touch
+
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
+
+## License
+
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+</file>
+
+<file path="server/src/app.controller.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+describe('AppController', () => {
+  let appController: AppController;
+
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [AppService],
+    }).compile();
+
+    appController = app.get<AppController>(AppController);
+  });
+
+  describe('root', () => {
+    it('should return "Hello World!"', () => {
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+  });
+});
+</file>
+
+<file path="server/src/app.controller.ts">
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+}
+</file>
+
+<file path="server/src/app.module.ts">
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PrismaModule,
+    AuthModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+</file>
+
+<file path="server/src/app.service.ts">
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class AppService {
+  getHello(): string {
+    return 'Hello World!';
+  }
+}
+</file>
+
+<file path="server/src/auth/auth.controller.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+
+describe('AuthController', () => {
+  let controller: AuthController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [AuthController],
+      providers: [AuthService],
+    }).compile();
+
+    controller = module.get<AuthController>(AuthController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
+</file>
+
+<file path="server/src/auth/auth.controller.ts">
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import type { LoginDto } from './dto/login.dto';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() body: LoginDto) {
+    const result = await this.authService.login(body);
+
+    if (!result) {
+      return {
+        ok: false,
+        message: 'Credenciales invalidas',
+      };
+    }
+
+    return {
+      ok: true,
+      ...result,
+    };
+  }
+}
+</file>
+
+<file path="server/src/auth/auth.module.ts">
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+
+@Module({
+  controllers: [AuthController],
+  providers: [AuthService],
+})
+export class AuthModule {}
+</file>
+
+<file path="server/src/auth/auth.service.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthService } from './auth.service';
+
+describe('AuthService', () => {
+  let service: AuthService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [AuthService],
+    }).compile();
+
+    service = module.get<AuthService>(AuthService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
+</file>
+
+<file path="server/src/auth/auth.service.ts">
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import type { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../prisma/prisma.service';
+@Injectable()
+export class AuthService {
+  constructor(private prisma: PrismaService) {}
+
+  async login(payload: LoginDto) {
+    const email = payload.email.trim().toLowerCase();
+
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+    const users = await this.prisma.$queryRaw<
+      Array<{ id: string; email: string; password: string; role: string }>
+    >(
+      Prisma.sql`
+        SELECT id, email, password, role
+        FROM usuarios
+        WHERE lower(email) = lower(${email})
+        LIMIT 1
+      `,
+    );
+
+    const user = users[0];
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+    if (!user || user.password !== payload.password) {
+      return null;
+    }
+
+    return {
+      token: 'demo-token',
+      user: {
+        email: user.email,
+        role: user.role,
+      },
+    };
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+  }
+}
+</file>
+
+<file path="server/src/auth/dto/login.dto.ts">
+export type LoginDto = {
+  email: string;
+  password: string;
+};
+</file>
+
+<file path="server/src/main.ts">
+import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  });
+
+  const configService = app.get(ConfigService);
+
+  const port = configService.get<number>('PORT') || 5000;
+
+  await app.listen(port);
+
+  console.log(`Backend running on http://localhost:${port}`);
+}
+bootstrap();
+</file>
+
+<file path="server/src/prisma/prisma.module.ts">
+import { Global, Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
+
+@Global()
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService],
+})
+export class PrismaModule {}
+</file>
+
+<file path="server/src/prisma/prisma.service.ts">
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  constructor() {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL is not set');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    super({
+      adapter: new PrismaPg({ connectionString: databaseUrl }),
+    });
+  }
+
+  async onModuleInit() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await this.$connect();
+  }
+}
+</file>
+
+<file path="server/test/app.e2e-spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import request from 'supertest';
+import { App } from 'supertest/types';
+import { AppModule } from './../src/app.module';
+
+describe('AppController (e2e)', () => {
+  let app: INestApplication<App>;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  it('/ (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/')
+      .expect(200)
+      .expect('Hello World!');
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+});
+</file>
+
+<file path="server/test/jest-e2e.json">
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  }
+}
+</file>
+
+<file path="server/tsconfig.build.json">
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}
+</file>
+
+<file path="server/tsconfig.json">
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "types": ["node", "jest", "@prisma/client"]
+  }
+}
+</file>
+
+<file path="client/components/Services.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+  HiChevronDown,
+  HiOutlineCalendar,
+} from "react-icons/hi";
+import { especialidades } from "@/data/especialidades";
+
+const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+const servicesPanelTransition = {
+  duration: 0.42,
+  ease: [0.22, 1, 0.36, 1],
+};
+
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+const MotionButton = motion.button as React.ComponentType<
+  React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
+>;
+
+export default function Services() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  return (
+    <section id="servicios" className="bg-light py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <MotionDiv
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 text-center"
+        >
+          <h2 className="text-4xl font-black text-primary sm:text-5xl">
+            Nuestros Servicios
+          </h2>
+          <p className="mt-4 text-lg text-foreground/70">
+            Servicios integrales de imagenologia diagnostica con tecnologia de ultima generacion
+          </p>
+        </MotionDiv>
+
+        <MotionDiv
+          className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={containerVariants}
+        >
+          {especialidades.map((especialidad) => {
+            const IconComponent = iconMap[especialidad.icon];
+            const isExpanded = expandedId === especialidad.id;
+
+            return (
+              <MotionDiv
+                key={especialidad.id}
+                variants={cardVariants}
+                className="group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
+              >
+                <div
+                  className={`relative overflow-hidden ${
+                    especialidad.color === "primary"
+                      ? "bg-linear-to-br from-primary to-primary/70"
+                      : especialidad.color === "secondary"
+                      ? "bg-linear-to-br from-secondary to-secondary/70"
+                      : "bg-linear-to-br from-accent to-accent/70"
+                  } p-6 transition-all duration-300`}
+                >
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60"
+                    style={{ backgroundImage: `url(${especialidad.imagen})` }}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/40"
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10 flex items-start justify-between">
+                    <div className="relative flex-1">
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
+                        {IconComponent && <IconComponent size={24} />}
+                      </div>
+                      <h3 className="text-xl font-bold text-white">
+                        {especialidad.nombre}
+                      </h3>
+                      <p className="mt-1 text-sm text-white/80">
+                        {especialidad.servicios.length} servicios disponibles
+                      </p>
+                    </div>
+                  </div>
+
+                  <MotionButton
+                    onClick={() => toggleExpanded(especialidad.id)}
+                    className="relative z-10 mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>{isExpanded ? "Ocultar" : "Ver"} servicios</span>
+                    <MotionDiv
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-white"
+                    >
+                      <HiChevronDown size={18} />
+                    </MotionDiv>
+                  </MotionButton>
+                </div>
+
+                <MotionDiv
+                  initial={false}
+                  animate={{
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0,
+                  }}
+                  transition={servicesPanelTransition}
+                  className="overflow-hidden bg-white"
+                  aria-hidden={!isExpanded}
+                >
+                  <MotionDiv
+                    animate={{ y: isExpanded ? 0 : -8 }}
+                    transition={servicesPanelTransition}
+                    className="space-y-2 px-6 py-4"
+                  >
+                    {especialidad.servicios.map((servicio) => (
+                      <MotionDiv
+                        key={servicio.id}
+                        animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+                        transition={{ duration: 0.28 }}
+                        className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
+                      >
+                        <span className="text-sm font-medium text-foreground">
+                          {servicio.nombre}
+                        </span>
+                        <MotionButton
+                          animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
+                          transition={{ duration: 0.22 }}
+                          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          tabIndex={isExpanded ? 0 : -1}
+                        >
+                          <span className="text-white">
+                            <HiOutlineCalendar size={14} />
+                          </span>
+                          <span>Agendar</span>
+                        </MotionButton>
+                      </MotionDiv>
+                    ))}
+                  </MotionDiv>
+                </MotionDiv>
+              </MotionDiv>
+            );
+          })}
+        </MotionDiv>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="client/data/especialidades.ts">
+export interface Servicio {
+  id: string;
+  nombre: string;
+}
+
+export interface Especialidad {
+  id: string;
+  nombre: string;
+  icon: string;
+  color: string;
+  imagen: string;
+  servicios: Servicio[];
+}
+
+export const especialidades: Especialidad[] = [
+  {
+    id: "abdominal",
+    nombre: "Abdominal",
+    icon: "HiOutlineViewList",
+    color: "primary",
+    imagen: "/image/especialidades/ABDOMINAL.webp",
+    servicios: [
+      { id: "abd-1", nombre: "Ecografía abdominal completa" },
+      { id: "abd-2", nombre: "Ecografía hepática y Vías Biliares" },
+      { id: "abd-3", nombre: "Ecografía de vesícula y vías biliares" },
+      { id: "abd-4", nombre: "Ecografía de páncreas" },
+      { id: "abd-5", nombre: "Ecografía de bazo" },
+      { id: "abd-6", nombre: "Ecografia abdominopelvico" },
+    ],
+  },
+  {
+    id: "ginecologica",
+    nombre: "Ginecológica",
+    icon: "HiOutlineHeart",
+    color: "secondary",
+    imagen: "/image/especialidades/GINECOLÓGICA.webp",
+    servicios: [
+      { id: "gin-1", nombre: "Ecografía pélvica o ginecológica" },
+      { id: "gin-2", nombre: "Ecografía transvaginal" },
+      { id: "gin-3", nombre: "Monitoreo ó seguimiento folicular" },
+    ],
+  },
+  {
+    id: "obstetricia",
+    nombre: "Obstétrica",
+    icon: "HiOutlineArrowUp",
+    color: "accent",
+    imagen: "/image/especialidades/OBSTÉTRICA.webp",
+    servicios: [
+      { id: "obs-1", nombre: "Obstétrico Biometría fetal (tradicional)" },
+      { id: "obs-2", nombre: "Obstétrica cromosómica ó estructural I trimestre" },
+      { id: "obs-3", nombre: "Obstétrica estructural del 2do y 3er trimestre" },
+      { id: "obs-4", nombre: "Obstétrico Gemelar" },
+      { id: "obs-5", nombre: "Obstétrica 3D Y 4D" },
+      { id: "obs-6", nombre: "Perfil biofísico fetal" },
+      { id: "obs-7", nombre: "Doppler obstétrico" },
+    ],
+  },
+  {
+    id: "urologica",
+    nombre: "Urológica",
+    icon: "HiOutlineBeaker",
+    color: "primary",
+    imagen: "/image/especialidades/UROLÓGICA.webp",
+    servicios: [
+      { id: "uro-1", nombre: "Ecografía renal bilateral" },
+      { id: "uro-2", nombre: "Ecografía vesical, vías urinarias transabdominal" },
+      { id: "uro-3", nombre: "Ecografía prostática suprapúbica" },
+      { id: "uro-4", nombre: "Ecografía prostática transrectal" },
+      { id: "uro-5", nombre: "Ecografia testicular" },
+    ],
+  },
+  {
+    id: "partes-blandas",
+    nombre: "Partes Blandas",
+    icon: "HiOutlineShieldExclamation",
+    color: "secondary",
+    imagen: "/image/especialidades/PARTES_BLANDAS.webp",
+    servicios: [
+      { id: "pb-1", nombre: "Ecografía de tiroides" },
+      { id: "pb-2", nombre: "Ecografía mamaria" },
+      { id: "pb-3", nombre: "Ecografía de partes blandas localizada" },
+      { id: "pb-4", nombre: "Ecografía de pared Abdominal e inguinal (hernias)" },
+      { id: "pb-5", nombre: "Ecografía ganglionar" },
+    ],
+  },
+  {
+    id: "doppler",
+    nombre: "Doppler",
+    icon: "HiOutlineTrendingUp",
+    color: "accent",
+    imagen: "/image/especialidades/DOPPLER.webp",
+    servicios: [
+      { id: "dop-1", nombre: "Doppler carotídeo y/o vertebrales" },
+      { id: "dop-2", nombre: "Doppler arterial miembros inferiores" },
+      { id: "dop-3", nombre: "Doppler venoso miembros inferiores" },
+      { id: "dop-4", nombre: "Doppler arterial miembros superiores" },
+      { id: "dop-5", nombre: "Doppler venoso miembros superiores" },
+      { id: "dop-6", nombre: "Doppler testicular" },
+      { id: "dop-7", nombre: "Doppler hepatoportal" },
+      { id: "dop-8", nombre: "Doppler tiroideo" },
+      { id: "dop-9", nombre: "Doppler pelvico ginecológico" },
+      { id: "dop-10", nombre: "Doppler renal" },
+    ],
+  },
+  {
+    id: "musculoesquetica",
+    nombre: "Musculoesquelética",
+    icon: "HiOutlineArchive",
+    color: "primary",
+    imagen: "/image/especialidades/MUSCULOESQUELÉTICA.webp",
+    servicios: [
+      { id: "msk-1", nombre: "Ecografía MSK hombro" },
+      { id: "msk-2", nombre: "Ecografía MSK rodilla" },
+      { id: "msk-3", nombre: "Ecografía MSK codo" },
+      { id: "msk-4", nombre: "Ecografía MSK tobillo" },
+      { id: "msk-5", nombre: "Ecografía MSK muñeca" },
+    ],
+  },
+  {
+    id: "emergencias",
+    nombre: "Emergencias",
+    icon: "HiOutlineExclamation",
+    color: "secondary",
+    imagen: "/image/especialidades/EMERGENCIAS.webp",
+    servicios: [
+      { id: "emg-1", nombre: "Abdomen agudo (apendicitis, colecistitis, pancreatitis aguda, peritonitis)" },
+    ],
+  },
+  {
+    id: "otros",
+    nombre: "Otros",
+    icon: "HiOutlineInformationCircle",
+    color: "accent",
+    imagen: "/image/especialidades/OTROS.webp",
+    servicios: [
+      { id: "oth-1", nombre: "Colposcopia" },
+      { id: "oth-2", nombre: "Citología Cervico vaginal (Papanicolau, PAP)" },
+    ],
+  },
+];
+</file>
+
+<file path="README.md">
+# Tordoya App
+
+Monorepo con cliente (Next.js) y servidor (NestJS + Prisma).
+
+## Requisitos
+
+- Node.js 20+ (recomendado)
+- pnpm
+- Postgres
+
+## Estructura
+
+- client: Next.js App Router
+- server: NestJS + Prisma
+
+## Configuracion de base de datos
+
+1) Levanta Postgres local y crea la base de datos:
+
+- Database: tordoya_db
+- Usuario: postgres
+- Password: password
+- Puerto: 5433
+
+2) Crea el archivo server/.env con:
+
+```
+PORT=5000
+JWT_SECRET=mi_super_secreto_temporal
+DATABASE_URL="postgresql://postgres:password@localhost:5433/tordoya_db"
+```
+
+## Instalacion
+
+Desde la raiz:
+
+```
+pnpm install
+```
+
+## Prisma (migraciones y tablas)
+
+```
+cd server
+npx prisma generate
+npx prisma migrate dev
+```
+
+Esto crea las tablas segun el schema y aplica las migraciones.
+
+## Ejecutar en desarrollo
+
+Servidor:
+
+```
+cd server
+pnpm start:dev
+```
+
+Cliente:
+
+```
+cd client
+pnpm dev
+```
+
+## Login demo
+
+El login se conecta al backend en http://localhost:5000.
+Asegura que el cliente tenga NEXT_PUBLIC_API_URL si usas otro puerto.
+
+Ejemplo en client/.env.local:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+</file>
+
+</files>
