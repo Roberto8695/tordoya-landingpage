@@ -40,6 +40,7 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+<<<<<<< HEAD
 client/.gitignore
 client/app/(auth)/layout.tsx
 client/app/(auth)/portal-auth/page.tsx
@@ -2321,6 +2322,8 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
+=======
+>>>>>>> 6b89220b26577020172a8253e8924767ace331e7
 .gitignore
 app/favicon.ico
 app/globals.css
@@ -4366,6 +4369,7 @@ export default function Home() {
 </file>
 
 </files>
+<<<<<<< HEAD
 </file>
 
 <file path="client/services/auth.service.ts">
@@ -5652,3 +5656,5 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 </file>
 
 </files>
+=======
+>>>>>>> 6b89220b26577020172a8253e8924767ace331e7
