@@ -58,6 +58,37 @@ model Servicio {
   @@map("servicios")
 }
 
+model ConfigHeader {
+  id        String   @id @default(uuid())
+  logo      String   @default("/image/logo_h.webp")
+  ctaText   String   @default("Agenda tu cita")
+  ctaLink   String   @default("#contacto")
+  navItems  Json     @default("[{\"label\":\"Inicio\",\"href\":\"#inicio\"},{\"label\":\"Nosotros\",\"href\":\"#nosotros\"},{\"label\":\"Servicios\",\"href\":\"#servicios\"},{\"label\":\"Contáctanos\",\"href\":\"#contacto\"}]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("config_header")
+}
+
+model ConfigFooter {
+  id              String   @id @default(uuid())
+  logo            String   @default("/image/logo-white.webp")
+  description     String   @default("Servicios avanzados de imagenología médica y diagnóstico con tecnología de vanguardia")
+  tags            Json     @default("[\"Calidad\",\"Precisión\",\"Confianza\"]")
+  navItems        Json     @default("[{\"label\":\"Inicio\",\"href\":\"#inicio\"},{\"label\":\"Nosotros\",\"href\":\"#nosotros\"},{\"label\":\"Servicios\",\"href\":\"#servicios\"},{\"label\":\"Contáctanos\",\"href\":\"#contacto\"}]")
+  contactAddress  String   @default("Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.")
+  contactPhone    String   @default("+52 1 55 4715 7971")
+  contactEmail    String   @default("diagnosticoultrasonidotordoya@gmail.com")
+  copyrightText   String   @default("© {year} Tordoya. Todos los derechos reservados.")
+  copyrightSubtext String  @default("Soluciones integrales en diagnóstico por ultrasonido.")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("config_footer")
+}
+
 enum Role {
   ADMIN
   EDITOR

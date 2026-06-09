@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SiteConfigProvider } from "@/features/configuraciones/site-config-context";
 
 const manrope = localFont({
   src: [
@@ -57,7 +58,7 @@ export default function RootLayout({
       className={`${manrope.variable} ${dDin.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white text-foreground">
-        {children}
+        <SiteConfigProvider>{children}</SiteConfigProvider>
       </body>
     </html>
   );
