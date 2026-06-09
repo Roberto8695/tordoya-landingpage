@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, type MotionProps } from "framer-motion";
 import type { ComponentPropsWithoutRef } from "react";
 import {
@@ -26,6 +27,7 @@ const MotionButton = motion.button as unknown as React.FC<MotionButtonProps>;
 const MotionDiv = motion.div as unknown as React.FC<MotionDivProps>;
 
 export default function LoginForm() {
+	const router = useRouter();
 	const [formState, setFormState] = useState<FormState>({ email: "", password: "" });
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -74,6 +76,11 @@ export default function LoginForm() {
 			}
 
 			setSuccessMessage("Acceso correcto. Bienvenido al panel.");
+
+			// Redirigir al dashboard después de 800ms para que el usuario vea el mensaje de éxito
+			setTimeout(() => {
+				router.push("/admin");
+			}, 800);
 		} catch {
 			setErrorMessage("No se pudo conectar con el servidor.");
 		} finally {
