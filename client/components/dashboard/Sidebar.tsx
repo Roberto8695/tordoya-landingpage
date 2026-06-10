@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   HiOutlineViewGrid,
+  HiOutlineViewList,
   HiOutlineUserGroup,
   HiOutlineCalendar,
   HiOutlineDocumentText,
@@ -48,11 +49,10 @@ export interface SidebarUser {
 
 const mainNavItems: SidebarNavItem[] = [
   { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
-  { label: "Especialidades", icon: HiOutlineUserGroup, href: "/admin/especialidades" },
-  { label: "Citas", icon: HiOutlineCalendar, href: "/admin/citas", badge: 8 },
-  { label: "Estudios", icon: HiOutlineDocumentText, href: "/admin/estudios" },
-  { label: "Reportes", icon: HiOutlineChartBar, href: "/admin/reportes" },
-  { label: "Facturación", icon: HiOutlineCash, href: "/admin/facturacion" },
+  { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades" },
+  { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: 46 },
+
+ 
 ];
 
 const secondaryNavItems: SidebarNavItem[] = [
