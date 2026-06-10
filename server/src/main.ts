@@ -7,11 +7,16 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  // CORS: permite localhost en desarrollo y el dominio de Vercel en producción
+  // CORS: acepta desarrollo local y los dominios de producción en Vercel
   const corsOrigin = configService.get<string>('CORS_ORIGIN');
   const allowedOrigins = corsOrigin
     ? corsOrigin.split(',').map((o) => o.trim())
-    : ['http://localhost:3000', 'http://localhost:3001', 'https://consultorio-tordoya.vercel.app/'];
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://consultorio-tordoya.vercel.app',
+        'https://tordoya.vercel.app',
+      ];
 
   app.enableCors({
     origin: allowedOrigins,
