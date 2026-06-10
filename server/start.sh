@@ -28,5 +28,28 @@ npx ts-node prisma/seed.ts || echo "Seed ya ejecutado"
 
 echo ""
 echo "🚀 Paso 6: Iniciar servidor..."
-ls -la dist/ | head -20
-node dist/main
+echo "Contenido de dist/:"
+ls -la dist/
+echo ""
+echo "Buscando archivo principal..."
+find dist/ -name "main*" -type f 2>/dev/null | head -10
+
+# Intentar varias ubicaciones posibles
+if [ -f "dist/main.js" ]; then
+  echo "✅ main.js en dist/"
+  node dist/main.js
+elif [ -f "dist/main" ]; then
+  echo "✅ main en dist/"
+  node dist/main
+elif [ -f "dist/src/main.js" ]; then
+  echo "✅ main.js en dist/src/"
+  node dist/src/main.js
+elif [ -f "dist/src/main" ]; then
+  echo "✅ main en dist/src/"
+  node dist/src/main
+else
+  echo "❌ No se encontró el archivo principal"
+  echo "Buscando archivos .js en dist/..."
+  find dist/ -name "*.js" -type f 2>/dev/null | head -20
+  exit 1
+fi
