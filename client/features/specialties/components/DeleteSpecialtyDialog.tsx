@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { motion, type MotionProps, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import type { EspecialidadDTO } from "@/services/especialidades.service";
 
 type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;

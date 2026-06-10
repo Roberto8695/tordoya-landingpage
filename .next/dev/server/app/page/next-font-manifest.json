@@ -1,0 +1,13 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/app/page": [
+      "static/media/Manrope_Regular-s.p.0zhaezq1qfw3h.ttf",
+      "static/media/Manrope_Bold-s.p.0wzm2w4pqh6-5.ttf",
+      "static/media/D_DIN-s.p.0axnpy6w8mixr.otf",
+      "static/media/D_DIN_Bold-s.p.0buk1.j8-.6sj.otf"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}
