@@ -57,11 +57,11 @@ const mainNavItems: SidebarNavItem[] = [
 
 const secondaryNavItems: SidebarNavItem[] = [
   { label: "Configuración", icon: HiOutlineCog, href: "/admin/configuracion" },
-  { label: "Ayuda", icon: HiOutlineQuestionMarkCircle, href: "/admin/ayuda" },
+  
 ];
 
 const tertiaryNavItems: SidebarNavItem[] = [
-  { label: "Auditoría", icon: HiOutlineShieldCheck, href: "/admin/auditoria" },
+ 
   { label: "Bitácora", icon: HiOutlinePencilAlt, href: "/admin/bitacora" },
 ];
 
