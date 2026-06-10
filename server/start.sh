@@ -1,9 +1,14 @@
 #!/bin/bash
 # Script de inicio para Render
-# Ejecuta migraciones de Prisma y luego inicia el servidor
+# Usa npx para evitar problemas con pnpm/npm
 
-echo "🔧 Ejecutando migraciones de Prisma..."
+echo "🔧 Instalando dependencias..."
+npm install
+
+echo "🔧 Generando Prisma Client..."
 npx prisma generate
+
+echo "🔧 Ejecutando migraciones..."
 npx prisma migrate deploy
 
 echo "🌱 Ejecutando seed..."
