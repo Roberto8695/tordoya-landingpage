@@ -1,9 +1,6 @@
 #!/bin/bash
 # Script de inicio para Render
-# Usa npx para evitar problemas con pnpm/npm
-
-echo "🔧 Instalando dependencias..."
-npm install
+# NOTA: npm install ya se ejecutó durante la fase de build de Render
 
 echo "🔧 Generando Prisma Client..."
 npx prisma generate
