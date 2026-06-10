@@ -1,15 +1,32 @@
 #!/bin/bash
-# Script de inicio para Render
-# NOTA: npm install ya se ejecutó durante la fase de build de Render
+set -e
 
-echo "🔧 Generando Prisma Client..."
+echo "=== INICIO DEL DEPLOY ==="
+echo "Directorio actual: $(pwd)"
+echo "Contenido:"
+ls -la
+
+echo ""
+echo "🔧 Paso 1: Instalar dependencias..."
+npm install --include=dev
+
+echo ""
+echo "🔧 Paso 2: Generar Prisma Client..."
 npx prisma generate
 
-echo "🔧 Ejecutando migraciones..."
+echo ""
+echo "🔧 Paso 3: Compilar TypeScript..."
+npx nest build
+
+echo ""
+echo "🔧 Paso 4: Ejecutar migraciones..."
 npx prisma migrate deploy
 
-echo "🌱 Ejecutando seed..."
-npx ts-node prisma/seed.ts || echo "Seed ya ejecutado o no aplicable"
+echo ""
+echo "🌱 Paso 5: Sembrar datos..."
+npx ts-node prisma/seed.ts || echo "Seed ya ejecutado"
 
-echo "🚀 Iniciando servidor..."
+echo ""
+echo "🚀 Paso 6: Iniciar servidor..."
+ls -la dist/ | head -20
 node dist/main
