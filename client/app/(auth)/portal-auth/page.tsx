@@ -6,9 +6,9 @@ import SecurityBadge from "../../../components/auth/SecurityBadge";
 
 export default function PortalAuthPage() {
 	return (
-		<main className="relative min-h-screen overflow-hidden bg-[--color-primary] text-white">
+		<main className="relative h-full overflow-hidden bg-[--color-primary] text-white">
 			<LoginBackground />
-			<div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-16 sm:px-10 lg:flex-row lg:items-center lg:gap-10">
+			<div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col px-6 py-16 sm:px-10 lg:flex-row lg:items-center lg:gap-10">
 				<section className="relative flex flex-1 flex-col justify-center gap-10">
 					<SecurityBadge />
 					<div className="space-y-6">
@@ -42,9 +42,6 @@ export default function PortalAuthPage() {
 							Autenticacion multifactor
 						</span>
 					</div>
-
-					
-
 				</section>
 
 				<section className="mt-12 w-full max-w-xl lg:mt-0 lg:flex-1">

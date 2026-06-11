@@ -185,7 +185,7 @@ function NavItem({ item, collapsed, currentPath }: NavItemProps) {
       href={item.disabled ? "#" : item.href}
       className={cn(
         "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-        collapsed ? "justify-center px-0 mx-2" : "",
+        collapsed ? "mx-2 h-10 w-10 justify-center gap-0 px-0" : "",
         active
           ? "bg-white/10 text-accent shadow-[inset_3px_0_0_var(--color-accent)]"
           : "text-white/60 hover:bg-white/[0.06] hover:text-white/85",
@@ -211,13 +211,10 @@ function NavItem({ item, collapsed, currentPath }: NavItemProps) {
         {item.label}
       </span>
 
-      {item.badge && (
+      {!collapsed && item.badge && (
         <span
           className={cn(
             "ml-auto flex shrink-0 items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none transition-all duration-300",
-            collapsed
-              ? "absolute -right-0.5 -top-0.5 h-5 min-w-5 px-1"
-              : "",
             active
               ? "bg-accent/20 text-accent"
               : "bg-white/10 text-white/70"

@@ -12,8 +12,9 @@ import {
   type EspecialidadDTO,
 } from "@/services/especialidades.service";
 import type { SpecialtyFormData } from "@/features/specialties/components/SpecialtyForm";
+import { API_BASE_URL } from "@/lib/constants";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = API_BASE_URL;
 
 type ViewMode = "table" | "grid";
 
