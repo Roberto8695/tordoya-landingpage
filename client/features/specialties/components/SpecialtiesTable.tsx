@@ -234,7 +234,7 @@ export default function SpecialtiesTable({
   return (
     <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
       {/* Header */}
-      <div className="hidden md:grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-primary/5 bg-primary/[0.02] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground/40">
+      <div className="hidden md:grid grid-cols-[1fr_auto_auto_auto_auto] gap-12 border-b border-primary/5 bg-primary/[0.02] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground/40">
         <span>Especialidad</span>
         <span>Estado</span>
         <span>Servicios</span>
@@ -256,7 +256,7 @@ export default function SpecialtiesTable({
               transition={{ duration: 0.2, delay: i * 0.03 }}
               className={cn(
                 "group transition-colors duration-150 hover:bg-primary/[0.02]",
-                "md:grid md:grid-cols-[1fr_auto_auto_auto_auto] md:gap-4 md:items-center md:px-6"
+                "md:grid md:grid-cols-[1fr_auto_auto_auto_auto] md:gap-23 md:items-center md:px-6"
               )}
             >
               <div className="flex items-center gap-4 px-4 py-4 md:px-0 md:py-3">
@@ -265,7 +265,7 @@ export default function SpecialtiesTable({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
-                    <h3 className="truncate text-sm font-semibold text-foreground">{esp.nombre}</h3>
+                    <span className="truncate text-sm font-semibold text-foreground">{esp.nombre}</span>
                     <span className="md:hidden">
                       <SpecialtyStatusBadge active={esp.activo} size="sm" />
                     </span>
