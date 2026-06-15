@@ -8,6 +8,7 @@ import {
 import { ConfiguracionService } from './configuracion.service';
 import type { UpdateHeaderDto } from './dto/update-header.dto';
 import type { UpdateFooterDto } from './dto/update-footer.dto';
+import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
 
 @Controller('configuracion')
 export class ConfiguracionController {
@@ -41,5 +42,22 @@ export class ConfiguracionController {
   @Post('footer/reset')
   resetFooter() {
     return this.configuracionService.resetFooter();
+  }
+
+  // ---- Nosotros ----
+
+  @Get('nosotros')
+  getNosotros() {
+    return this.configuracionService.getNosotros();
+  }
+
+  @Put('nosotros')
+  updateNosotros(@Body() dto: UpdateNosotrosDto) {
+    return this.configuracionService.updateNosotros(dto);
+  }
+
+  @Post('nosotros/reset')
+  resetNosotros() {
+    return this.configuracionService.resetNosotros();
   }
 }

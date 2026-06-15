@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateHeaderDto } from './dto/update-header.dto';
 import type { UpdateFooterDto } from './dto/update-footer.dto';
+import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
 
 @Injectable()
 export class ConfiguracionService {
@@ -105,6 +106,68 @@ export class ConfiguracionService {
         contactEmail: undefined,
         copyrightText: undefined,
         copyrightSubtext: undefined,
+      },
+    });
+  }
+
+  // ---- Nosotros ----
+
+  async getNosotros() {
+    let nosotros = await this.prisma.configNosotros.findFirst();
+    if (!nosotros) {
+      nosotros = await this.prisma.configNosotros.create({
+        data: {},
+      });
+    }
+    return nosotros;
+  }
+
+  async updateNosotros(dto: UpdateNosotrosDto) {
+    let nosotros = await this.prisma.configNosotros.findFirst();
+    if (!nosotros) {
+      nosotros = await this.prisma.configNosotros.create({
+        data: {},
+      });
+    }
+
+    const data: Record<string, unknown> = {};
+    if (dto.titulo !== undefined) data.titulo = dto.titulo;
+    if (dto.descripcion !== undefined) data.descripcion = dto.descripcion;
+    if (dto.misionTitulo !== undefined) data.misionTitulo = dto.misionTitulo;
+    if (dto.misionDescripcion !== undefined) data.misionDescripcion = dto.misionDescripcion;
+    if (dto.misionIcono !== undefined) data.misionIcono = dto.misionIcono;
+    if (dto.visionTitulo !== undefined) data.visionTitulo = dto.visionTitulo;
+    if (dto.visionDescripcion !== undefined) data.visionDescripcion = dto.visionDescripcion;
+    if (dto.visionIcono !== undefined) data.visionIcono = dto.visionIcono;
+    if (dto.valoresTitulo !== undefined) data.valoresTitulo = dto.valoresTitulo;
+    if (dto.valoresDescripcion !== undefined) data.valoresDescripcion = dto.valoresDescripcion;
+    if (dto.valores !== undefined) data.valores = dto.valores;
+
+    return this.prisma.configNosotros.update({
+      where: { id: nosotros.id },
+      data,
+    });
+  }
+
+  async resetNosotros() {
+    let nosotros = await this.prisma.configNosotros.findFirst();
+    if (!nosotros) {
+      return this.prisma.configNosotros.create({ data: {} });
+    }
+    return this.prisma.configNosotros.update({
+      where: { id: nosotros.id },
+      data: {
+        titulo: undefined,
+        descripcion: undefined,
+        misionTitulo: undefined,
+        misionDescripcion: undefined,
+        misionIcono: undefined,
+        visionTitulo: undefined,
+        visionDescripcion: undefined,
+        visionIcono: undefined,
+        valoresTitulo: undefined,
+        valoresDescripcion: undefined,
+        valores: undefined,
       },
     });
   }
