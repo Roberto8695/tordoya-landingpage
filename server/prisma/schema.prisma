@@ -40,11 +40,13 @@ model Especialidad {
 }
 
 model Servicio {
-  id              String       @id @default(uuid())
+id              String       @id @default(uuid())
   slug            String       @unique
   nombre          String
   descripcion     String?
-  precio         ault(true)
+  precio          Decimal?     @db.Decimal(10, 2)
+  duracionMinutos Int?
+  activo          Boolean      @default(true)
   orden           Int          @default(0)
 
   especialidadId  String
