@@ -64,7 +64,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="inicio" className="relative h-screen overflow-hidden text-white">
+    <section id="inicio" className="relative h-screen overflow-hidden  text-white">
       <AnimatePresence mode="wait">
         {slides.map((slide, index) => {
           const isActive = index === activeSlide;
@@ -79,7 +79,7 @@ export default function Hero() {
               className={`absolute inset-0 ${isActive ? "" : "pointer-events-none"}`}
               aria-hidden={!isActive}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${slide.gradient} `} />
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/[0.06] blur-3xl" />
                 <div className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-white/[0.04] blur-3xl" />
@@ -90,9 +90,12 @@ export default function Hero() {
                 backgroundSize: "60px 60px",
               }} />
 
+              {/* Sombra inferior con desvanecimiento progresivo */}
+              <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent to-black/50 pointer-events-none z-20" />
+
               <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8">
-                <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
-                  <div className="z-10 max-w-2xl">
+                <div className="flex h-full flex-col justify-center lg:relative lg:flex-row lg:items-center lg:justify-between">
+                  <div className="z-10 max-w-2xl lg:max-w-xl lg:py-16">
                     <MotionSpan
                       initial={isActive ? { opacity: 0, y: 12 } : {}}
                       animate={isActive ? { opacity: 1, y: 0 } : {}}
@@ -193,14 +196,14 @@ export default function Hero() {
                     initial={isActive ? { opacity: 0, scale: 0.85, x: 40 } : {}}
                     animate={isActive ? { opacity: 1, scale: 1, x: 0 } : {}}
                     transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative mx-auto hidden w-full max-w-sm lg:flex lg:items-center lg:justify-center"
+                    className="relative hidden w-full flex-1 lg:flex lg:items-end lg:overflow-visible lg:pl-12 lg:-mr-20"
                   >
-                    {/* Capa de glow externo pulsante */}
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    {/* Glow externo — centrado detrás del torso */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                       <MotionDiv
-                        animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.8, 0.5] }}
+                        animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.7, 0.4] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className={`h-80 w-80 rounded-full blur-3xl ${
+                        className={`h-[55vh] w-[55vh] rounded-full blur-3xl -translate-y-[10%] ${
                           slide.id === "doctora"
                             ? "bg-[#00b7fa]/20"
                             : "bg-[#e85d9a]/20"
@@ -208,95 +211,77 @@ export default function Hero() {
                       />
                     </div>
 
-                    {/* Círculo decorativo exterior */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className={`h-72 w-72 rounded-full border border-white/10 ${
+                    {/* Círculo decorativo grande — centrado */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                      <div className={`h-[58vh] w-[58vh] rounded-full border border-white/10 -translate-y-[8%] ${
                         slide.id === "doctora" ? "bg-white/[0.04]" : "bg-white/[0.04]"
                       }`} />
                     </div>
 
-                    {/* Círculo decorativo interior */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className={`h-56 w-56 rounded-full border border-white/10 ${
+                    {/* Círculo decorativo interior — centrado */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                      <div className={`h-[32vh] w-[32vh] rounded-full border border-white/10 -translate-y-[5%] ${
                         slide.id === "doctora" ? "bg-white/[0.06]" : "bg-white/[0.06]"
                       }`} />
                     </div>
 
-                    {/* Partículas flotantes slide 1 */}
+                    {/* Partículas flotantes — por encima de la imagen */}
                     {slide.id === "doctora" && (
                       <>
                         <MotionDiv
                           animate={{ y: [0, -12, 0], opacity: [0.4, 0.8, 0.4] }}
                           transition={{ duration: 3, repeat: Infinity, delay: 0.2 }}
-                          className="absolute right-8 top-12 h-2 w-2 rounded-full bg-accent/40"
+                          className="absolute right-12 top-[15%] h-2 w-2 rounded-full bg-accent/40"
                         />
                         <MotionDiv
                           animate={{ y: [0, -15, 0], opacity: [0.3, 0.7, 0.3] }}
                           transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-                          className="absolute bottom-20 left-4 h-3 w-3 rounded-full bg-white/20"
+                          className="absolute left-8 top-[20%] h-3 w-3 rounded-full bg-white/20"
                         />
                         <MotionDiv
                           animate={{ y: [0, -10, 0], opacity: [0.3, 0.6, 0.3] }}
                           transition={{ duration: 3.5, repeat: Infinity, delay: 2 }}
-                          className="absolute right-16 bottom-16 h-1.5 w-1.5 rounded-full bg-accent/30"
+                          className="absolute left-1/3 top-[10%] h-1.5 w-1.5 rounded-full bg-accent/30"
                         />
                       </>
                     )}
 
-                    {/* Partículas flotantes slide 2 */}
                     {slide.id === "mujer" && (
                       <>
                         <MotionDiv
                           animate={{ y: [0, -10, 0], opacity: [0.4, 0.7, 0.4] }}
                           transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
-                          className="absolute right-4 top-16 h-2.5 w-2.5 rounded-full bg-pink-300/40"
+                          className="absolute right-12 top-[15%] h-2.5 w-2.5 rounded-full bg-pink-300/40"
                         />
                         <MotionDiv
                           animate={{ y: [0, -14, 0], opacity: [0.3, 0.6, 0.3] }}
                           transition={{ duration: 4.5, repeat: Infinity, delay: 1.5 }}
-                          className="absolute bottom-24 left-6 h-2 w-2 rounded-full bg-pink-200/30"
+                          className="absolute left-8 top-[20%] h-2 w-2 rounded-full bg-pink-200/30"
                         />
                         <MotionDiv
                           animate={{ y: [0, -8, 0], opacity: [0.3, 0.5, 0.3] }}
                           transition={{ duration: 3, repeat: Infinity, delay: 0.8 }}
-                          className="absolute right-12 bottom-12 h-1.5 w-1.5 rounded-full bg-pink-300/50"
+                          className="absolute left-1/3 top-[10%] h-1.5 w-1.5 rounded-full bg-pink-300/50"
                         />
                       </>
                     )}
 
-                    {/* Imagen con float suave */}
+                    {/* Imagen protagonista — anclada al borde inferior */}
                     <MotionDiv
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                      className="relative z-10"
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      className="relative h-screen z-10 flex items-end self-stretch w-full"
                     >
-                      <Image
-                        src={slide.id === "doctora" ? "/image/banners/dra_evelia.webp" : "/image/banners/utero.webp"}
-                        alt={slide.id === "doctora" ? "Dra. Evelia Martínez" : "Salud femenina"}
-                        width={320}
-                        height={320}
-                        className="h-[28rem] w-auto object-contain drop-shadow-2xl"
-                        priority={isActive}
-                      />
-                    </MotionDiv>
-
-                    {/* Badge flotante inferior */}
-                    <MotionDiv
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8 }}
-                      className="absolute -bottom-2 left-1/2 z-20 -translate-x-1/2"
-                    >
-                      <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold tracking-wider uppercase backdrop-blur-md border shadow-lg ${
-                        slide.id === "doctora"
-                          ? "bg-accent/15 text-white border-accent/20"
-                          : "bg-pink-500/15 text-white border-pink-500/20"
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${
-                          slide.id === "doctora" ? "bg-accent" : "bg-pink-300"
-                        }`} />
-                        {slide.id === "doctora" ? "Especialista" : "Salud Integral"}
-                      </span>
+                      <div className="relative w-full flex items-end justify-center mt-[25px]">
+                        <Image
+                          src={slide.id === "doctora" ? "/image/banners/dra_evelia.webp" : "/image/banners/utero.webp"}
+                          alt={slide.id === "doctora" ? "Dra. Evelia Martínez" : "Salud femenina"}
+                          width={480}
+                          height={600}
+                          className="h-[90vh] w-auto object-contain object-bottom drop-shadow-2xl"
+                          priority={isActive}
+                        />
+                      </div>
                     </MotionDiv>
                   </MotionDiv>
                 </div>
