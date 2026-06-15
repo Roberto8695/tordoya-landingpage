@@ -51,7 +51,7 @@ const mainNavItems: SidebarNavItem[] = [
   { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
   { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades" },
   { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: 46 },
-
+  { label: "Nosotros", icon: HiOutlineDocumentText, href: "/admin/nosotros" },
  
 ];
 

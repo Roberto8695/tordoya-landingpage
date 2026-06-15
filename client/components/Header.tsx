@@ -12,7 +12,7 @@ export default function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-primary/10 bg-white/95 backdrop-blur-sm shadow-sm">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Principal">
-        <div className="grid h-16 sm:h-20 md:h-28 grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-6">
+        <div className="grid h-16 sm:h-20 md:h-22 grid-cols-[1fr_auto] items-center gap-3 md:grid-cols-[1fr_auto_1fr] md:gap-6">
           <a href={header.navItems[0]?.href || "#inicio"} className="flex min-w-0 items-center gap-3 justify-self-start">
             <Image
               src={header.logo}
