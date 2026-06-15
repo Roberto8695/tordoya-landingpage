@@ -44,9 +44,7 @@ model Servicio {
   slug            String       @unique
   nombre          String
   descripcion     String?
-  precio          Decimal?     @db.Decimal(10, 2)
-  duracionMinutos Int?
-  activo          Boolean      @default(true)
+  precio         ault(true)
   orden           Int          @default(0)
 
   especialidadId  String

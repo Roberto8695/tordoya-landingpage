@@ -80,8 +80,7 @@ export default function AboutUs() {
           </MotionDiv>
 
           <MotionDiv className="relative flex items-center justify-center" variants={itemVariants}>
-            <div className="absolute -left-8 -top-8 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />
-            <div className="absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-accent/5 blur-2xl" />
+            
 
             <MotionDiv className="z-10 w-full max-w-md rounded-2xl bg-white/90 p-6 shadow-lg" whileHover={{ scale: 1.05 }}>
               <h4 className="text-lg font-extrabold text-primary" >Nuestros valores</h4>

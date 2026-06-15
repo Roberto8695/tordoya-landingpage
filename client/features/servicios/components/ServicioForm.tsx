@@ -86,8 +86,8 @@ export default function ServicioForm({
             className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
           <MotionDiv initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-lg rounded-2xl border border-primary/10 bg-white shadow-2xl">
-            <div className="rounded-t-2xl bg-accent px-6 py-5 sm:px-8">
+            className="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-primary/10 bg-white shadow-2xl">
+            <div className="shrink-0 rounded-t-2xl bg-accent px-6 py-4 sm:px-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white">{title}</h2>
                 <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30" aria-label="Cerrar">
@@ -95,7 +95,7 @@ export default function ServicioForm({
                 </button>
               </div>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 sm:px-8">
+            <form onSubmit={handleSubmit} className="flex-1 space-y-5 overflow-y-auto px-6 py-6 sm:px-8">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground/70">Nombre</label>
                 <input type="text" placeholder="Ej: Ecografía abdominal completa" value={form.nombre} onChange={(e) => handleChange("nombre", e.target.value)}
@@ -131,7 +131,7 @@ export default function ServicioForm({
                       !form.activo ? "bg-foreground/10 text-foreground/70 shadow-sm" : "text-foreground/50 hover:text-foreground/80")}>Inactivo</button>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              {/* <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-foreground/70">Duración (min)</label>
                   <input type="number" min={0} value={form.duracionMinutos} onChange={(e) => handleChange("duracionMinutos", parseInt(e.target.value) || 0)}
@@ -149,12 +149,12 @@ export default function ServicioForm({
                     className={cn("h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200",
                       errors.orden ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10")} />
                 </div>
-              </div>
-              <div className="space-y-1.5">
+              </div> */}
+              {/* <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground/70">Descripción (opcional)</label>
                 <textarea rows={2} placeholder="Breve descripción del servicio..." value={form.descripcion} onChange={(e) => handleChange("descripcion", e.target.value)}
                   className="h-20 w-full resize-none rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/30 focus:border-accent focus:ring-4 focus:ring-accent/10" />
-              </div>
+              </div> */}
               <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
                 <MotionButton whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} type="button" onClick={onClose} disabled={isSaving}
                   className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50">Cancelar</MotionButton>

@@ -158,8 +158,8 @@ export default function SpecialtyForm({
             className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
           <MotionDiv initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-lg rounded-2xl border border-primary/10 bg-white shadow-2xl">
-            <div className={cn("rounded-t-2xl px-6 py-5 sm:px-8", selectedColorClass)}>
+            className="relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-primary/10 bg-white shadow-2xl">
+            <div className={cn("shrink-0 rounded-t-2xl px-6 py-4 sm:px-8", selectedColorClass)}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <h2 className="text-lg font-bold text-white">{title}</h2>
@@ -174,7 +174,7 @@ export default function SpecialtyForm({
                 </button>
               </div>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 sm:px-8">
+            <form onSubmit={handleSubmit} className="flex-1 space-y-5 overflow-y-auto px-6 py-6 sm:px-8">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground/70">Nombre</label>
                 <input type="text" placeholder="Ej: Ecografía Abdominal" value={form.nombre} onChange={(e) => handleChange("nombre", e.target.value)}
