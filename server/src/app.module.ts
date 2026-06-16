@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { ServiciosModule } from './servicios/servicios.module';
+import { UploadModule } from './upload/upload.module';
+import { ConfiguracionModule } from './configuracion/configuracion.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { ServiciosModule } from './servicios/servicios.module';
     AuthModule,
     EspecialidadesModule,
     ServiciosModule,
+    UploadModule,
+    ConfiguracionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

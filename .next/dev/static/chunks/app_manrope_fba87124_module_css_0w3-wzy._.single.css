@@ -1,0 +1,35 @@
+/* [project]/app/manrope_fba87124.module.css [app-client] (css) */
+@font-face {
+  font-family: manrope;
+  src: url("../media/Manrope_Regular-s.p.0zhaezq1qfw3h.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: manrope;
+  src: url("../media/Manrope_Bold-s.p.0wzm2w4pqh6-5.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: manrope Fallback;
+  src: local(Arial);
+  ascent-override: 102.74%;
+  descent-override: 28.91%;
+  line-gap-override: 0.0%;
+  size-adjust: 103.76%;
+}
+
+.manrope_fba87124-module__B86eQq__className {
+  font-family: manrope, manrope Fallback;
+}
+
+.manrope_fba87124-module__B86eQq__variable {
+  --font-manrope: "manrope", "manrope Fallback";
+}
+
+/*# sourceMappingURL=app_manrope_fba87124_module_css_0w3-wzy._.single.css.map*/

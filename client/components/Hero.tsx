@@ -1,150 +1,325 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+type MotionSpanProps = React.ComponentPropsWithoutRef<"span"> & MotionProps;
+const MotionSpan = motion.span as React.FC<MotionSpanProps>;
+type MotionPProps = React.ComponentPropsWithoutRef<"p"> & MotionProps;
+const MotionP = motion.p as React.FC<MotionPProps>;
+type MotionH1Props = React.ComponentPropsWithoutRef<"h1"> & MotionProps;
+const MotionH1 = motion.h1 as React.FC<MotionH1Props>;
+type MotionUlProps = React.ComponentPropsWithoutRef<"ul"> & MotionProps;
+const MotionUl = motion.ul as React.FC<MotionUlProps>;
+type MotionLiProps = React.ComponentPropsWithoutRef<"li"> & MotionProps;
+const MotionLi = motion.li as React.FC<MotionLiProps>;
 
 const slides = [
-	{
-		eyebrow: "Estrategia comercial",
-		title: "Impulsa tu negocio con una presencia que convierte",
-		description:
-			"Creamos experiencias claras, visuales y orientadas a resultados para que tu marca destaque desde el primer impacto.",
-		cta: "Conocer más",
-		href: "#servicios",
-		image: "/image/logo_tordoya.webp",
-		accent: "from-[#01155a]/95 to-[#155bb3]/90",
-	},
-	{
-		eyebrow: "Diseño premium",
-		title: "Un hero inmersivo, limpio y directo al mensaje",
-		description:
-			"La sección principal ocupa toda la pantalla con una estructura moderna, pensada para enganchar sin distraer.",
-		cta: "Ver nosotros",
-		href: "#nosotros",
-		image: "/image/logo_h.webp",
-		accent: "from-[#0b2d7a]/95 to-[#00b7fa]/80",
-	},
-	{
-		eyebrow: "Atención cercana",
-		title: "Tres mensajes, una misma meta: generar confianza",
-		description:
-			"Rotamos contenido clave dentro de un slider para reforzar tu propuesta de valor sin salir del primer pantallazo.",
-		cta: "Contactar ahora",
-		href: "#contacto",
-		image: "/image/icono.webp",
-		accent: "from-[#01155a]/95 to-[#1a1a2e]/90",
-	},
+  {
+    id: "doctora",
+    gradient: "from-[#01155a] via-[#0a2a7a] to-[#155bb3]",
+    badge: "Conoce a quien te cuida",
+    badgeBg: "bg-white/15",
+    name: "Dra. Evelia Martínez",
+    title: "Máster en Ultrasonografía",
+    bullets: [
+      "Especialista en Cirugía General",
+      "Diagnóstico preciso por imagen",
+      "Atención en CDMX · Benito Juárez",
+    ],
+    cta1: { label: "Agenda tu cita", href: "#contacto", style: "accent" },
+    cta2: null,
+  },
+  {
+    id: "mujer",
+    gradient: "from-[#8a1a5e] via-[#c4287a] to-[#e85d9a]",
+    badge: "Para ella",
+    badgeBg: "bg-white/15",
+    name: null,
+    title: "Tu salud femenina, protegida desde adentro",
+    subtitle: "Estudios especializados para el cuidado integral de la mujer en cada etapa de su vida.",
+    bullets: [
+      "Colposcopía",
+      "Citología Cérvico Vaginal (Papanicolau)",
+      "Ecografía Pélvica / Ginecológica",
+      "Ecografía Transvaginal",
+      "Monitoreo y Seguimiento Folicular",
+    ],
+    cta1: { label: "Agenda tu cita", href: "#contacto", style: "pink" },
+    cta2: { label: "Ver todos los servicios", href: "#servicios", style: "ghost" },
+  },
 ];
 
 export default function Hero() {
-	const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
 
-	useEffect(() => {
-		const interval = window.setInterval(() => {
-			setActiveSlide((currentSlide) => (currentSlide + 1) % slides.length);
-		}, 6000);
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slides.length);
+    }, 8000);
+    return () => window.clearInterval(interval);
+  }, []);
 
-		return () => window.clearInterval(interval);
-	}, []);
+  return (
+    <section id="inicio" className="relative h-screen overflow-hidden  text-white">
+      <AnimatePresence mode="wait">
+        {slides.map((slide, index) => {
+          const isActive = index === activeSlide;
 
-	return (
-		<section
-			id="inicio"
-			className="relative h-screen overflow-hidden bg-[--color-primary] text-white"
-		>
-			{slides.map((slide, index) => {
-				const isActive = index === activeSlide;
+          return (
+            <MotionDiv
+              key={slide.id}
+              initial={isActive ? { opacity: 0 } : {}}
+              animate={isActive ? { opacity: 1 } : { opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              className={`absolute inset-0 ${isActive ? "" : "pointer-events-none"}`}
+              aria-hidden={!isActive}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${slide.gradient} `} />
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/[0.06] blur-3xl" />
+                <div className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-white/[0.04] blur-3xl" />
+                <div className="absolute left-[20%] top-[60%] h-48 w-48 rounded-full bg-white/[0.03] blur-2xl" />
+              </div>
+              <div className="absolute inset-0 opacity-[0.07]" style={{
+                backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                backgroundSize: "60px 60px",
+              }} />
 
-				return (
-					<div
-						key={slide.title}
-						className={`absolute inset-0 transition-opacity duration-700 ${
-							isActive ? "opacity-100" : "pointer-events-none opacity-0"
-						}`}
-						aria-hidden={!isActive}
-					>
-						<div
-							className={`absolute inset-0 bg-gradient-to-br ${slide.accent}`}
-						/>
-						<div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.18),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(0,183,250,0.22),_transparent_32%)]" />
+              {/* Sombra inferior con desvanecimiento progresivo */}
+              <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent to-black/50 pointer-events-none z-20" />
 
-						<div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pt-32 sm:pt-24 md:pt-16 lg:pt-0 sm:px-6 lg:px-8">
-							<div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-								<div className="max-w-3xl">
-									<span className="mb-4 sm:mb-6 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-base font-semibold tracking-[0.2em] uppercase text-white/90 backdrop-blur-sm">
-										{slide.eyebrow}
-									</span>
-									<h1 className="max-w-4xl text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold tracking-tight text-balance">
-										{slide.title}
-									</h1>
-									<p className="mt-4 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl lg:text-2xl leading-6 sm:leading-8 text-white/85">
-										{slide.description}
-									</p>
+              <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6 lg:px-8">
+                <div className="flex h-full flex-col justify-center lg:relative lg:flex-row lg:items-center lg:justify-between">
+                  <div className="z-10 max-w-2xl lg:max-w-xl lg:py-16">
+                    <MotionSpan
+                      initial={isActive ? { opacity: 0, y: 12 } : {}}
+                      animate={isActive ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                      className={`inline-flex items-center gap-2 rounded-full ${slide.badgeBg} backdrop-blur-md px-4 py-2 text-xs sm:text-sm font-semibold tracking-[0.18em] uppercase text-white/95 border border-white/15 shadow-lg`}
+                    >
+                      <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_rgba(0,183,250,0.7)]" />
+                      {slide.badge}
+                    </MotionSpan>
 
-									<div className="mt-6 sm:mt-10 flex flex-col gap-3 sm:gap-5 sm:flex-row sm:items-center">
-										<a
-											href={slide.href}
-											className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-[--color-primary] shadow-xl shadow-black/20 transition-transform duration-200 hover:-translate-y-0.5"
-										>
-											{slide.cta}
-										</a>
-										<a
-											href="#contacto"
-											className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/20"
-										>
-											Agenda tu cita
-										</a>
-									</div>
-								</div>
+                    {slide.name && (
+                      <MotionP
+                        initial={isActive ? { opacity: 0, y: 16 } : {}}
+                        animate={isActive ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="mt-6 text-2xl sm:text-3xl md:text-4xl font-light tracking-wide text-white/90"
+                      >
+                        {slide.name}
+                      </MotionP>
+                    )}
 
-								<div className="relative mx-auto w-full max-w-md lg:max-w-none">
-									<div className="absolute inset-0 rounded-[2rem] bg-white/10 blur-3xl" />
-									<div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] border border-white/15 bg-white/10 p-4 sm:p-6 shadow-2xl shadow-black/20 backdrop-blur-md">
-										<div className="flex items-center justify-between gap-2">
-										<span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-white/70\">
-											Slide {String(index + 1).padStart(2, "0")}
-										</span>
-										<span className="rounded-full bg-white/15 px-2.5 py-0.5 sm:px-3 sm:py-1 text-xs font-semibold text-white/80\">
-											100vh
-										</span>
-										</div>
+                    <MotionH1
+                      initial={isActive ? { opacity: 0, y: 18 } : {}}
+                      animate={isActive ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: slide.name ? 0.3 : 0.2 }}
+                      className={`mt-2 font-bold leading-tight tracking-tight text-balance ${
+                        slide.name ? "text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent" : "text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+                      }`}
+                    >
+                      {slide.title}
+                    </MotionH1>
 
-										<div className="mt-4 sm:mt-8 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] bg-white/10 p-4 sm:p-8\">
-											<Image
-												src={slide.image}
-												alt={slide.title}
-												width={520}
-												height={520}
-												className="h-32 w-auto object-contain sm:h-56 md:h-72 lg:h-96\"
-												priority={isActive}
-											/>
-										</div>
+                    {slide.subtitle && (
+                      <MotionP
+                        initial={isActive ? { opacity: 0, y: 14 } : {}}
+                        animate={isActive ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="mt-4 max-w-xl text-base sm:text-lg leading-7 text-white/80"
+                      >
+                        {slide.subtitle}
+                      </MotionP>
+                    )}
 
-										<div className="mt-6 grid grid-cols-3 gap-3">
-											{slides.map((otherSlide, otherIndex) => {
-												const isCurrent = otherIndex === activeSlide;
+                    <MotionUl
+                      initial={isActive ? { opacity: 0, y: 16 } : {}}
+                      animate={isActive ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.35 }}
+                      className="mt-5 space-y-2.5"
+                    >
+                      {slide.bullets.map((bullet, i) => (
+                        <MotionLi
+                          key={i}
+                          initial={isActive ? { opacity: 0, x: -12 } : {}}
+                          animate={isActive ? { opacity: 1, x: 0 } : {}}
+                          transition={{ duration: 0.35, delay: 0.4 + i * 0.08 }}
+                          className="flex items-start gap-3 text-sm sm:text-base text-white/85"
+                        >
+                          <span className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_8px_rgba(0,183,250,0.5)]" />
+                          {bullet}
+                        </MotionLi>
+                      ))}
+                    </MotionUl>
 
-												return (
-													<button
-														key={otherSlide.title}
-														type="button"
-														onClick={() => setActiveSlide(otherIndex)}
-														className={`h-2 rounded-full transition-all duration-200 ${
-															isCurrent ? "bg-white" : "bg-white/30 hover:bg-white/50"
-														}`}
-														aria-label={`Ir al slide ${otherIndex + 1}`}
-														aria-pressed={isCurrent}
-													/>
-												);
-											})}
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				);
-			})}
-		</section>
-	);
+                    <MotionDiv
+                      initial={isActive ? { opacity: 0, y: 16 } : {}}
+                      animate={isActive ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                      className="mt-8 flex flex-wrap items-center gap-4"
+                    >
+                      <a
+                        href={slide.cta1.href}
+                        className={`inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl ${
+                          slide.cta1.style === "accent"
+                            ? "bg-accent text-primary shadow-accent/40"
+                            : slide.cta1.style === "pink"
+                            ? "bg-white text-[#8a1a5e] shadow-white/30"
+                            : "bg-accent text-primary"
+                        }`}
+                      >
+                        {slide.cta1.label}
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </a>
+
+                      {slide.cta2 && (
+                        <a
+                          href={slide.cta2.href}
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:border-white/50"
+                        >
+                          {slide.cta2.label}
+                        </a>
+                      )}
+                    </MotionDiv>
+                  </div>
+
+                  <MotionDiv
+                    initial={isActive ? { opacity: 0, scale: 0.85, x: 40 } : {}}
+                    animate={isActive ? { opacity: 1, scale: 1, x: 0 } : {}}
+                    transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative hidden w-full flex-1 lg:flex lg:items-end lg:overflow-visible lg:pl-12 lg:-mr-20"
+                  >
+                    {/* Glow externo — centrado detrás del torso */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                      <MotionDiv
+                        animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.7, 0.4] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className={`h-[55vh] w-[55vh] rounded-full blur-3xl -translate-y-[10%] ${
+                          slide.id === "doctora"
+                            ? "bg-[#00b7fa]/20"
+                            : "bg-[#e85d9a]/20"
+                        }`}
+                      />
+                    </div>
+
+                    {/* Círculo decorativo grande — centrado */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                      <div className={`h-[58vh] w-[58vh] rounded-full border border-white/10 -translate-y-[8%] ${
+                        slide.id === "doctora" ? "bg-white/[0.04]" : "bg-white/[0.04]"
+                      }`} />
+                    </div>
+
+                    {/* Círculo decorativo interior — centrado */}
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                      <div className={`h-[32vh] w-[32vh] rounded-full border border-white/10 -translate-y-[5%] ${
+                        slide.id === "doctora" ? "bg-white/[0.06]" : "bg-white/[0.06]"
+                      }`} />
+                    </div>
+
+                    {/* Partículas flotantes — por encima de la imagen */}
+                    {slide.id === "doctora" && (
+                      <>
+                        <MotionDiv
+                          animate={{ y: [0, -12, 0], opacity: [0.4, 0.8, 0.4] }}
+                          transition={{ duration: 3, repeat: Infinity, delay: 0.2 }}
+                          className="absolute right-12 top-[15%] h-2 w-2 rounded-full bg-accent/40"
+                        />
+                        <MotionDiv
+                          animate={{ y: [0, -15, 0], opacity: [0.3, 0.7, 0.3] }}
+                          transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+                          className="absolute left-8 top-[20%] h-3 w-3 rounded-full bg-white/20"
+                        />
+                        <MotionDiv
+                          animate={{ y: [0, -10, 0], opacity: [0.3, 0.6, 0.3] }}
+                          transition={{ duration: 3.5, repeat: Infinity, delay: 2 }}
+                          className="absolute left-1/3 top-[10%] h-1.5 w-1.5 rounded-full bg-accent/30"
+                        />
+                      </>
+                    )}
+
+                    {slide.id === "mujer" && (
+                      <>
+                        <MotionDiv
+                          animate={{ y: [0, -10, 0], opacity: [0.4, 0.7, 0.4] }}
+                          transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
+                          className="absolute right-12 top-[15%] h-2.5 w-2.5 rounded-full bg-pink-300/40"
+                        />
+                        <MotionDiv
+                          animate={{ y: [0, -14, 0], opacity: [0.3, 0.6, 0.3] }}
+                          transition={{ duration: 4.5, repeat: Infinity, delay: 1.5 }}
+                          className="absolute left-8 top-[20%] h-2 w-2 rounded-full bg-pink-200/30"
+                        />
+                        <MotionDiv
+                          animate={{ y: [0, -8, 0], opacity: [0.3, 0.5, 0.3] }}
+                          transition={{ duration: 3, repeat: Infinity, delay: 0.8 }}
+                          className="absolute left-1/3 top-[10%] h-1.5 w-1.5 rounded-full bg-pink-300/50"
+                        />
+                      </>
+                    )}
+
+                    {/* Imagen protagonista — anclada al borde inferior */}
+                    <MotionDiv
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      className="relative h-screen z-10 flex items-end self-stretch w-full"
+                    >
+                      <div className="relative w-full flex items-end justify-center mt-[25px]">
+                        <Image
+                          src={slide.id === "doctora" ? "/image/banners/dra_evelia.webp" : "/image/banners/utero.webp"}
+                          alt={slide.id === "doctora" ? "Dra. Evelia Martínez" : "Salud femenina"}
+                          width={480}
+                          height={600}
+                          className="h-[90vh] w-auto object-contain object-bottom drop-shadow-2xl"
+                          priority={isActive}
+                        />
+                      </div>
+                    </MotionDiv>
+                  </MotionDiv>
+                </div>
+              </div>
+            </MotionDiv>
+          );
+        })}
+      </AnimatePresence>
+
+      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2.5">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setActiveSlide(i)}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              i === activeSlide ? "w-10 bg-white" : "w-2.5 bg-white/30 hover:bg-white/50"
+            }`}
+            aria-label={`Ir al slide ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      <div className="absolute right-6 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-2 md:flex">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setActiveSlide(i)}
+            className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 ${
+              i === activeSlide ? "bg-white/20 text-white" : "bg-white/5 text-white/50 hover:bg-white/15 hover:text-white/80"
+            }`}
+            aria-label={`Ir al slide ${i + 1}`}
+          >
+            <span className="text-xs font-bold">{i + 1}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
 }

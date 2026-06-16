@@ -17,6 +17,7 @@ import {
 } from "react-icons/hi";
 import { getEspecialidades } from "@/services/especialidades.service";
 import type { EspecialidadDTO } from "@/services/especialidades.service";
+import { API_BASE_URL } from "@/lib/constants";
 
 import { especialidades as fallbackData } from "@/data/especialidades";
 
@@ -186,7 +187,13 @@ export default function Services() {
                   {especialidad.imagen && (
                     <div
                       className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
-                      style={{ backgroundImage: `url(${especialidad.imagen})` }}
+                      style={{
+                        backgroundImage: `url(${
+                          especialidad.imagen.startsWith('/')
+                            ? `${API_BASE_URL}${especialidad.imagen}`
+                            : especialidad.imagen
+                        })`,
+                      }}
                       aria-hidden="true"
                     />
                   )}

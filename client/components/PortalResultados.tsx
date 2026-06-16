@@ -24,7 +24,7 @@ export default function PortalResultados() {
 		if (!folioInput.trim()) {
 			setMessageType("error");
 			setMessage("Por favor ingresa un número de folio válido");
-			setTimeout(() => setMessage(""), 4000);
+			setTimeout(() => setMessage(""), 5000);
 			return;
 		}
 

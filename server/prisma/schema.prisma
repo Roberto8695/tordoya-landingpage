@@ -40,7 +40,7 @@ model Especialidad {
 }
 
 model Servicio {
-  id              String       @id @default(uuid())
+id              String       @id @default(uuid())
   slug            String       @unique
   nombre          String
   descripcion     String?
@@ -56,6 +56,67 @@ model Servicio {
   updatedAt       DateTime     @updatedAt
 
   @@map("servicios")
+}
+
+model ConfigHeader {
+  id        String   @id @default(uuid())
+  logo      String   @default("/image/logo_h.webp")
+  ctaText   String   @default("Agenda tu cita")
+  ctaLink   String   @default("#contacto")
+  navItems  Json     @default("[{\"label\":\"Inicio\",\"href\":\"#inicio\"},{\"label\":\"Nosotros\",\"href\":\"#nosotros\"},{\"label\":\"Servicios\",\"href\":\"#servicios\"},{\"label\":\"Contáctanos\",\"href\":\"#contacto\"}]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("config_header")
+}
+
+model ConfigFooter {
+  id              String   @id @default(uuid())
+  logo            String   @default("/image/logo-white.webp")
+  description     String   @default("Servicios avanzados de imagenología médica y diagnóstico con tecnología de vanguardia")
+  tags            Json     @default("[\"Calidad\",\"Precisión\",\"Confianza\"]")
+  navItems        Json     @default("[{\"label\":\"Inicio\",\"href\":\"#inicio\"},{\"label\":\"Nosotros\",\"href\":\"#nosotros\"},{\"label\":\"Servicios\",\"href\":\"#servicios\"},{\"label\":\"Contáctanos\",\"href\":\"#contacto\"}]")
+  contactAddress  String   @default("Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.")
+  contactPhone    String   @default("+52 1 55 4715 7971")
+  contactEmail    String   @default("diagnosticoultrasonidotordoya@gmail.com")
+  copyrightText   String   @default("© {year} Tordoya. Todos los derechos reservados.")
+  copyrightSubtext String  @default("Soluciones integrales en diagnóstico por ultrasonido.")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("config_footer")
+}
+
+model ConfigNosotros {
+  id                 String   @id @default(uuid())
+
+  // Sección principal
+  titulo             String   @default("Quiénes somos")
+  descripcion        String   @default("En Tordoya combinamos experiencia clínica y tecnología para ofrecer diagnósticos precisos y un trato humano. Nuestra misión y visión guían cada decisión estratégica y operativa.")
+
+  // Misión
+  misionTitulo       String   @default("Misión")
+  misionDescripcion  String   @default("Ofrecer servicios de ultrasonido e imagen diagnóstica con el rigor de la alta especialidad y la accesibilidad que cada paciente merece.")
+  misionIcono        String   @default("HiOutlineLightBulb")
+
+  // Visión
+  visionTitulo       String   @default("Visión")
+  visionDescripcion  String   @default("Liderar el diagnóstico por imagen en Bolivia, Perú y México, siendo el aliado que conecta a médicos y pacientes con la información que necesitan para actuar a tiempo.")
+  visionIcono        String   @default("HiOutlineEye")
+
+  // Título y descripción de la sección Valores
+  valoresTitulo      String   @default("Nuestros valores")
+  valoresDescripcion String   @default("Compromiso, excelencia y cercanía. Trabajamos con calidad humana y protocolos que garantizan resultados reproducibles.")
+
+  // Lista de valores (JSON array)
+  valores            Json     @default("[{\"icono\":\"HiSparkles\",\"titulo\":\"Calidad\",\"subtitulo\":\"Protocolos validados\"},{\"icono\":\"HiOutlineEye\",\"titulo\":\"Precisión\",\"subtitulo\":\"Lecturas confiables\"},{\"icono\":\"HiOutlineLightBulb\",\"titulo\":\"Innovación\",\"subtitulo\":\"Mejora continua\"}]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("config_nosotros")
 }
 
 enum Role {

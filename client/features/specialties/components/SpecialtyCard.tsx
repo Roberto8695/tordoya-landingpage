@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion, type MotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/constants";
 import SpecialtyStatusBadge from "./SpecialtyStatusBadge";
 import type { EspecialidadDTO } from "@/services/especialidades.service";
 
@@ -69,7 +70,7 @@ export default function SpecialtyCard({
 
         {especialidad.imagen && (
           <Image
-            src={especialidad.imagen}
+            src={especialidad.imagen.startsWith('/') ? `${API_BASE_URL}${especialidad.imagen}` : especialidad.imagen}
             alt={especialidad.nombre}
             fill
             className="object-cover opacity-60 mix-blend-overlay"
