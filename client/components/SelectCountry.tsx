@@ -88,7 +88,19 @@ export default function SelectCountry() {
 	return (
 		<div className="fixed inset-0 z-100 flex items-center justify-center bg-primary/70 px-4 backdrop-blur-sm">
 			<div className="w-full max-w-xl rounded-3xl border border-white/20 bg-white p-6 shadow-2xl sm:p-8">
-				<div className="text-center">
+				<div className="flex flex-col items-center text-center">
+					{/* Logo de la marca */}
+					<div className="mb-4 flex items-center justify-center">
+						<Image
+							src="/image/logo_h.webp"
+							alt="Tordoya"
+							width={820}
+							height={600}
+							className="h-15 w-auto"
+							priority
+						/>
+					</div>
+
 					<p className="text-xs font-semibold uppercase tracking-[0.25em] text-secondary/80">
 						Bienvenido
 					</p>
@@ -96,7 +108,7 @@ export default function SelectCountry() {
 						Selecciona tu pais
 					</h2>
 					<p className="mt-3 text-sm text-foreground/65 sm:text-base">
-						Accede a los servicios de tu sede más cercana
+						Accede a los servicios de tu sede mas cercana
 					</p>
 				</div>
 
@@ -131,14 +143,15 @@ export default function SelectCountry() {
 									<span className="text-base font-semibold text-primary sm:text-lg">
 										{country.name}
 									</span>
-									{isHighlighted && !isSelected && (
-										<span className="ml-3 inline-flex items-center rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">
-											
-										</span>
-									)}
 								</div>
 
-								<span className="rounded-full bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+								<span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${
+									isSelected
+										? "bg-accent/15 text-accent"
+										: isHighlighted
+										? "bg-accent/10 text-accent"
+										: "bg-primary/8 text-secondary"
+								}`}>
 									Entrar
 								</span>
 							</button>
