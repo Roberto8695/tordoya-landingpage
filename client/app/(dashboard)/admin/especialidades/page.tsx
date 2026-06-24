@@ -55,7 +55,11 @@ export default function EspecialidadesPage() {
     const matchesSearch = esp.nombre
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    return matchesSearch;
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "active" && esp.activo) ||
+      (statusFilter === "inactive" && !esp.activo);
+    return matchesSearch && matchesStatus;
   });
 
   const handleCreateNew = () => {

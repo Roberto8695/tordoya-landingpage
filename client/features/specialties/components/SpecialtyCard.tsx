@@ -1,15 +1,38 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion, type MotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/lib/constants";
 import SpecialtyStatusBadge from "./SpecialtyStatusBadge";
 import type { EspecialidadDTO } from "@/services/especialidades.service";
+import {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+  HiChevronDown,
+} from "react-icons/hi";
 
 type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
 const MotionDiv = motion.div as React.FC<MotionDivProps>;
+
+const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+};
 
 interface SpecialtyCardProps {
   especialidad: EspecialidadDTO;
@@ -18,15 +41,14 @@ interface SpecialtyCardProps {
   onClick?: () => void;
 }
 
-const colorMap: Record<string, string> = {
-  primary: "bg-primary",
-  secondary: "bg-secondary",
-  accent: "bg-accent",
+const colorGradients: Record<string, string> = {
+  primary: "bg-linear-to-br from-primary to-primary/70",
+  secondary: "bg-linear-to-br from-secondary to-secondary/70",
+  accent: "bg-linear-to-br from-accent to-accent/70",
 };
 
 /**
- * Tarjeta visual moderna para representar una especialidad médica.
- * Diseño tipo SaaS premium con glassmorphism y hover elegante.
+ * Tarjeta visual idéntica al diseño de Services.tsx para el home.
  */
 export default function SpecialtyCard({
   especialidad,
@@ -34,7 +56,8 @@ export default function SpecialtyCard({
   onClick,
 }: SpecialtyCardProps) {
   const serviciosCount = especialidad.servicios?.length ?? 0;
-  const headerBg = colorMap[especialidad.color] || "bg-primary";
+  const headerBg = colorGradients[especialidad.color] || "bg-linear-to-br from-primary to-primary/70";
+  const IconComponent = iconMap[especialidad.icon] || HiOutlineViewList;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.key === "Enter" || e.key === " ") && onClick) {
@@ -47,8 +70,7 @@ export default function SpecialtyCard({
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm transition-all duration-300",
-        "hover:shadow-lg hover:border-primary/20",
+        "group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg",
         onClick && "cursor-pointer",
         variant === "compact" && "rounded-xl",
         variant === "dashboard" && "rounded-xl"
@@ -58,75 +80,44 @@ export default function SpecialtyCard({
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={onClick ? handleKeyDown : undefined}
     >
-      {/* Header con imagen de fondo */}
-      <div
-        className={cn(
-          "relative overflow-hidden",
-          variant === "compact" ? "h-24" : "h-40 sm:h-48"
-        )}
-      >
-        <div className={cn("absolute inset-0", headerBg)} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
+      {/* Header — mismo diseño exacto que Services.tsx */}
+      <div className={cn("relative overflow-hidden p-6 transition-all duration-300", headerBg)}>
         {especialidad.imagen && (
-          <Image
-            src={especialidad.imagen.startsWith('/') ? `${API_BASE_URL}${especialidad.imagen}` : especialidad.imagen}
-            alt={especialidad.nombre}
-            fill
-            className="object-cover opacity-60 mix-blend-overlay"
-            sizes={variant === "compact" ? "200px" : "400px"}
+          <div
+            className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
+            style={{
+              backgroundImage: `url(${
+                especialidad.imagen.startsWith('/uploads/')
+                  ? `${API_BASE_URL}${especialidad.imagen}`
+                  : especialidad.imagen
+              })`,
+            }}
+            aria-hidden="true"
           />
         )}
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/40" aria-hidden="true" />
 
-        {/* Etiqueta de servicios */}
-        <div className="absolute bottom-3 left-3">
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
-            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            {serviciosCount} servicios
-          </span>
-        </div>
-      </div>
-
-      {/* Cuerpo */}
-      <div className={cn("space-y-3", variant === "compact" ? "p-4" : "p-5")}>
-        <div className="flex items-start justify-between gap-3">
-          <h3
-            className={cn(
-              "font-bold text-primary leading-tight",
-              variant === "compact" ? "text-sm" : "text-base"
-            )}
-          >
-            {especialidad.nombre}
-          </h3>
+        <div className="relative z-10 flex items-start justify-between">
+          <div className="relative flex-1">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
+              {IconComponent && <IconComponent size={24} />}
+            </div>
+            <h3 className="text-xl font-bold text-white">{especialidad.nombre}</h3>
+            <p className="mt-1 text-sm text-white/80">{serviciosCount} servicios disponibles</p>
+          </div>
           <SpecialtyStatusBadge active={especialidad.activo} size="sm" />
         </div>
 
-        {/* Slugs de servicios como chips */}
-        {variant !== "compact" && serviciosCount > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {especialidad.servicios.slice(0, 3).map((svc) => (
-              <span
-                key={svc.id || svc.slug}
-                className="inline-flex rounded-md bg-primary/[0.04] px-2 py-0.5 text-[11px] font-medium text-foreground/60"
-              >
-                {svc.nombre}
-              </span>
-            ))}
-            {serviciosCount > 3 && (
-              <span className="inline-flex rounded-md bg-primary/[0.04] px-2 py-0.5 text-[11px] font-medium text-foreground/40">
-                +{serviciosCount - 3} más
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center gap-3 text-[11px] text-foreground/40">
-          <span>Orden: {especialidad.orden}</span>
-          <span className="h-1 w-1 rounded-full bg-foreground/20" aria-hidden="true" />
-          <span className="truncate">{especialidad.slug}</span>
+        <div className="relative z-10 mt-4 inline-flex items-center gap-2 rounded-lg  px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30">
+          
+          
         </div>
+      </div>
+
+      {/* Footer info compacto */}
+      <div className="flex items-center justify-between px-6 py-3 text-[11px] text-foreground/40">
+        <span>Orden: {especialidad.orden}</span>
+        <span className="truncate ml-2">{especialidad.slug}</span>
       </div>
     </MotionDiv>
   );
