@@ -66,27 +66,50 @@ const MotionButton = motion.button as React.ComponentType<
   React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
 >;
 
+/** Mapa de slugs de especialidad a sus imágenes locales por defecto */
+const defaultImages: Record<string, string> = {
+  abdominal: "/image/especialidades/ABDOMINAL.webp",
+  ginecologica: "/image/especialidades/GINECOLÓGICA.webp",
+  obstetrica: "/image/especialidades/OBSTÉTRICA.webp",
+  urologica: "/image/especialidades/UROLÓGICA.webp",
+  "partes-blandas": "/image/especialidades/PARTES_BLANDAS.webp",
+  doppler: "/image/especialidades/DOPPLER.webp",
+  musculoesqueletica: "/image/especialidades/MUSCULOESQUELÉTICA.webp",
+  emergencias: "/image/especialidades/EMERGENCIAS.webp",
+  otros: "/image/especialidades/OTROS.webp",
+};
+
+/** Asigna la imagen por defecto si la especialidad no tiene una personalizada */
+function ensureDefaultImage(esp: EspecialidadDTO): EspecialidadDTO {
+  if (!esp.imagen) {
+    return { ...esp, imagen: defaultImages[esp.slug] || "" };
+  }
+  return esp;
+}
+
 function mapFallbackToDTO(data: typeof fallbackData): EspecialidadDTO[] {
-  return data.map((esp) => ({
-    id: esp.id,
-    slug: esp.id,
-    nombre: esp.nombre,
-    icon: esp.icon,
-    color: esp.color,
-    imagen: esp.imagen || "",
-    activo: true,
-    orden: 0,
-    servicios: (esp.servicios || []).map((svc) => ({
-      id: svc.id,
-      slug: svc.id,
-      nombre: svc.nombre,
-      descripcion: null,
-      precio: null,
-      duracionMinutos: null,
+  return data.map((esp) =>
+    ensureDefaultImage({
+      id: esp.id,
+      slug: esp.id,
+      nombre: esp.nombre,
+      icon: esp.icon,
+      color: esp.color,
+      imagen: esp.imagen || "",
       activo: true,
       orden: 0,
-    })),
-  }));
+      servicios: (esp.servicios || []).map((svc) => ({
+        id: svc.id,
+        slug: svc.id,
+        nombre: svc.nombre,
+        descripcion: null,
+        precio: null,
+        duracionMinutos: null,
+        activo: true,
+        orden: 0,
+      })),
+    })
+  );
 }
 
 export default function Services() {
@@ -103,7 +126,7 @@ export default function Services() {
       try {
         const data = await getEspecialidades();
         if (mounted && data?.length) {
-          setAllEspecialidades(data);
+          setAllEspecialidades(data.map(ensureDefaultImage));
         }
       } catch {
         // Fallback ya cargado
@@ -189,7 +212,7 @@ export default function Services() {
                       className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
                       style={{
                         backgroundImage: `url(${
-                          especialidad.imagen.startsWith('/')
+                          especialidad.imagen.startsWith('/uploads/')
                             ? `${API_BASE_URL}${especialidad.imagen}`
                             : especialidad.imagen
                         })`,
