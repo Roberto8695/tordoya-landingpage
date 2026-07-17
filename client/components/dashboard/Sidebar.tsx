@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSidebarCounts } from "@/hooks/use-sidebar-counts";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { clearAuthToken } from "@/lib/auth";
 
 import {
   HiOutlineViewGrid,
@@ -365,8 +367,8 @@ interface SidebarProps {
 }
 
 const DEFAULT_USER: SidebarUser = {
-  name: "Dr. Roberto López",
-  email: "roberto@tordoya.com",
+  name: "Dr. Tordoya",
+  email: "diagnosticoultrasonidotordoya@gmail.com",
   initials: "RL",
   role: "Administrador",
 };
@@ -378,6 +380,7 @@ export default function Sidebar({
   collapsed: externalCollapsed,
   onToggleCollapse,
 }: SidebarProps) {
+  const router = useRouter();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -393,6 +396,19 @@ export default function Sidebar({
     } else {
       setInternalCollapsed(next);
     }
+  };
+
+  const handleLogout = () => {
+    clearAuthToken();
+    setMobileOpen(false);
+
+    if (onLogout) {
+      onLogout();
+      return;
+    }
+
+    router.replace("/portal-auth");
+    router.refresh();
   };
 
   return (
@@ -456,7 +472,7 @@ export default function Sidebar({
         <UserProfile
           user={user}
           collapsed={isCollapsed}
-          onLogout={onLogout}
+          onLogout={handleLogout}
         />
       </aside>
 
@@ -516,7 +532,7 @@ export default function Sidebar({
           />
         </nav>
 
-        <UserProfile user={user} collapsed={false} onLogout={onLogout} />
+        <UserProfile user={user} collapsed={false} onLogout={handleLogout} />
       </aside>
 
       {/* ESPACIADOR PARA CONTENIDO PRINCIPAL */}
