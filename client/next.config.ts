@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "tordoya.onrender.com",
+        hostname: "api.ultrasonidodiagnosticotordoya.com",
       },
       {
         protocol: "http",
@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  output: 'standalone',
 };
 
 export default nextConfig;
