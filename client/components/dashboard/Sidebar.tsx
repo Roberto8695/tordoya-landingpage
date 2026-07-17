@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useSidebarCounts } from "@/hooks/use-sidebar-counts";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+
 import {
   HiOutlineViewGrid,
   HiOutlineViewList,
@@ -20,6 +22,7 @@ import {
   HiOutlineQuestionMarkCircle,
   HiOutlineShieldCheck,
   HiOutlinePencilAlt,
+  HiOutlineInformationCircle,
 } from "react-icons/hi";
 import type { IconType } from "react-icons";
 
@@ -47,23 +50,26 @@ export interface SidebarUser {
    DATOS DE NAVEGACIÓN
    ========================================================================== */
 
-const mainNavItems: SidebarNavItem[] = [
-  { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
-  { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades" },
-  { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: 46 },
-  { label: "Nosotros", icon: HiOutlineDocumentText, href: "/admin/nosotros" },
- 
-];
-
-const secondaryNavItems: SidebarNavItem[] = [
-  { label: "Configuración", icon: HiOutlineCog, href: "/admin/configuracion" },
-  
-];
-
-const tertiaryNavItems: SidebarNavItem[] = [
- 
-  { label: "Bitácora", icon: HiOutlinePencilAlt, href: "/admin/bitacora" },
-];
+function useNavItems(counts: { especialidades: number; servicios: number }): {
+  mainNavItems: SidebarNavItem[];
+  secondaryNavItems: SidebarNavItem[];
+  tertiaryNavItems: SidebarNavItem[];
+} {
+  return {
+    mainNavItems: [
+      { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
+      { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades", badge: counts.especialidades },
+      { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: counts.servicios },
+      { label: "Nosotros", icon: HiOutlineInformationCircle, href: "/admin/nosotros" },
+    ],
+    secondaryNavItems: [
+      { label: "Configuración", icon: HiOutlineCog, href: "/admin/configuracion" },
+    ],
+    tertiaryNavItems: [
+      { label: "Bitácora", icon: HiOutlinePencilAlt, href: "/admin/bitacora" },
+    ],
+  };
+}
 
 /* ==========================================================================
    SUBCOMPONENTES
@@ -376,6 +382,9 @@ export default function Sidebar({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isCollapsed = externalCollapsed ?? internalCollapsed;
+
+  const { especialidades, servicios } = useSidebarCounts();
+  const { mainNavItems, secondaryNavItems, tertiaryNavItems } = useNavItems({ especialidades, servicios });
 
   const handleToggle = () => {
     const next = !isCollapsed;

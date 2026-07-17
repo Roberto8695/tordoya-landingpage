@@ -40,11 +40,14 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
-<<<<<<< HEAD
+.gitignore
 client/.gitignore
 client/app/(auth)/layout.tsx
 client/app/(auth)/portal-auth/page.tsx
+client/app/(dashboard)/admin/especialidades/page.tsx
 client/app/(dashboard)/admin/page.tsx
+client/app/(dashboard)/admin/servicios/page.tsx
+client/app/(dashboard)/layout.tsx
 client/app/(site)/layout.tsx
 client/app/(site)/page.tsx
 client/app/favicon.ico
@@ -55,6 +58,7 @@ client/components/auth/LoginBackground.tsx
 client/components/auth/LoginCard.tsx
 client/components/auth/LoginForm.tsx
 client/components/auth/SecurityBadge.tsx
+client/components/dashboard/Sidebar.tsx
 client/components/Footer.tsx
 client/components/FormContact.tsx
 client/components/Header.tsx
@@ -67,6 +71,17 @@ client/data/especialidades.ts
 client/data/servicios.txt
 client/dev.ps1
 client/eslint.config.mjs
+client/features/servicios/components/DeleteServicioDialog.tsx
+client/features/servicios/components/ServicioFilters.tsx
+client/features/servicios/components/ServicioForm.tsx
+client/features/servicios/components/ServiciosTable.tsx
+client/features/servicios/components/ServicioStatusBadge.tsx
+client/features/specialties/components/DeleteSpecialtyDialog.tsx
+client/features/specialties/components/SpecialtiesTable.tsx
+client/features/specialties/components/SpecialtyCard.tsx
+client/features/specialties/components/SpecialtyFilters.tsx
+client/features/specialties/components/SpecialtyForm.tsx
+client/features/specialties/components/SpecialtyStatusBadge.tsx
 client/hooks/useDetectCountry.ts
 client/lib/api-client.ts
 client/lib/auth.ts
@@ -108,19 +123,26 @@ client/public/window.svg
 client/README.md
 client/repomix-output.xml
 client/services/auth.service.ts
+client/services/especialidades.service.ts
+client/services/servicios.service.ts
 client/tsconfig.json
+next-env.d.ts
 README.md
 server/.gitignore
 server/.prettierrc
 server/eslint.config.mjs
 server/nest-cli.json
 server/package.json
+server/pnpm-workspace.yaml
 server/prisma.config.ts
 server/prisma/migrations/20260530030027_init/migration.sql
 server/prisma/migrations/20260530044247_init/migration.sql
 server/prisma/migrations/20260530044452_init/migration.sql
+server/prisma/migrations/20260606020925_add_especialidades_servicios/migration.sql
+server/prisma/migrations/20260606041245_add_activo_especialidad/migration.sql
 server/prisma/migrations/migration_lock.toml
 server/prisma/schema.prisma
+server/prisma/seed.ts
 server/README.md
 server/src/app.controller.spec.ts
 server/src/app.controller.ts
@@ -132,9 +154,19 @@ server/src/auth/auth.module.ts
 server/src/auth/auth.service.spec.ts
 server/src/auth/auth.service.ts
 server/src/auth/dto/login.dto.ts
+server/src/especialidades/dto/create-especialidad.dto.ts
+server/src/especialidades/dto/update-especialidad.dto.ts
+server/src/especialidades/especialidades.controller.ts
+server/src/especialidades/especialidades.module.ts
+server/src/especialidades/especialidades.service.ts
 server/src/main.ts
 server/src/prisma/prisma.module.ts
 server/src/prisma/prisma.service.ts
+server/src/servicios/dto/create-servicio.dto.ts
+server/src/servicios/servicios.controller.ts
+server/src/servicios/servicios.module.ts
+server/src/servicios/servicios.service.ts
+server/start.sh
 server/test/app.e2e-spec.ts
 server/test/jest-e2e.json
 server/tsconfig.build.json
@@ -143,6 +175,19 @@ server/tsconfig.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="next-env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+</file>
+
+<file path=".gitignore">
+node_modules
+</file>
 
 <file path="client/.gitignore">
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
@@ -257,21 +302,438 @@ export default function PortalAuthPage() {
 }
 </file>
 
-<file path="client/app/(dashboard)/admin/page.tsx">
-export default function AdminPage() {
-	return (
-		<main className="min-h-screen bg-white text-foreground">
-			<div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-16">
-				<p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary/70">
-					Panel
-				</p>
-				<h1 className="text-3xl font-semibold text-primary">Admin</h1>
-				<p className="text-base text-foreground/70">
-					Ruta administrativa en construccion.
-				</p>
-			</div>
-		</main>
-	);
+<file path="client/app/(dashboard)/admin/especialidades/page.tsx">
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Sidebar from "@/components/dashboard/Sidebar";
+import SpecialtyFilters from "@/features/specialties/components/SpecialtyFilters";
+import SpecialtiesTable from "@/features/specialties/components/SpecialtiesTable";
+import SpecialtyCard from "@/features/specialties/components/SpecialtyCard";
+import SpecialtyForm from "@/features/specialties/components/SpecialtyForm";
+import DeleteSpecialtyDialog from "@/features/specialties/components/DeleteSpecialtyDialog";
+import {
+  getEspecialidades,
+  type EspecialidadDTO,
+} from "@/services/especialidades.service";
+import type { SpecialtyFormData } from "@/features/specialties/components/SpecialtyForm";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+type ViewMode = "table" | "grid";
+
+export default function EspecialidadesPage() {
+  const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingEsp, setEditingEsp] = useState<EspecialidadDTO | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deleteEsp, setDeleteEsp] = useState<EspecialidadDTO | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        const data = await getEspecialidades();
+        if (mounted) setEspecialidades(data);
+      } catch (err) {
+        console.error("Error fetching especialidades:", err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const filtered = especialidades.filter((esp) => {
+    const matchesSearch = esp.nombre
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return matchesSearch;
+  });
+
+  const handleCreateNew = () => {
+    setEditingEsp(null);
+    setFormOpen(true);
+  };
+
+  const handleEdit = (esp: EspecialidadDTO) => {
+    setEditingEsp(esp);
+    setFormOpen(true);
+  };
+
+  const handleDelete = (esp: EspecialidadDTO) => {
+    setDeleteEsp(esp);
+  };
+
+  const saveToApi = async (data: SpecialtyFormData, method: string, url: string) => {
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Error al guardar");
+  };
+
+  const handleSaveForm = async (data: SpecialtyFormData) => {
+    setIsSaving(true);
+    try {
+      const url = editingEsp
+        ? `${API_URL}/especialidades/${editingEsp.slug}`
+        : `${API_URL}/especialidades`;
+      await saveToApi(data, editingEsp ? "PUT" : "POST", url);
+      setFormOpen(false);
+      setEditingEsp(null);
+      const updated = await getEspecialidades();
+      setEspecialidades(updated);
+    } catch (err) {
+      console.error("Error saving:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteConfirm = async (esp: EspecialidadDTO) => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`${API_URL}/especialidades/${esp.slug}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Error al eliminar");
+      setDeleteEsp(null);
+      const refreshed = await getEspecialidades();
+      setEspecialidades(refreshed);
+    } catch (err) {
+      console.error("Error deleting:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-light">
+      <Sidebar currentPath="/admin/especialidades" />
+      <main className="flex-1 overflow-auto">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary/70">
+                Gestión
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold text-primary">
+                Especialidades
+              </h1>
+              <p className="mt-1 text-base text-foreground/70">
+                Administra las especialidades médicas y sus servicios.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-1 rounded-xl border border-primary/10 bg-white p-1">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`rounded-lg p-2 transition-all duration-200 ${
+                  viewMode === "table"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-foreground/40 hover:text-foreground/70"
+                }`}
+                aria-label="Vista tabla"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 3h7v7H3V3zM14 3h7v7h-7V3zM14 14h7v7h-7v-7zM3 14h7v7H3v-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`rounded-lg p-2 transition-all duration-200 ${
+                  viewMode === "grid"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-foreground/40 hover:text-foreground/70"
+                }`}
+                aria-label="Vista cuadrícula"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 3h4v4H3V3zM10 3h4v4h-4V3zM17 3h4v4h-4V3zM3 10h4v4H3v-4zM10 10h4v4h-4v-4zM17 10h4v4h-4v-4zM3 17h4v4H3v-4zM10 17h4v4h-4v-4zM17 17h4v4h-4v-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <SpecialtyFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            onCreateNew={handleCreateNew}
+          />
+
+          <div className="flex items-center gap-6 text-xs text-foreground/50">
+            <span>
+              <strong className="text-foreground">{especialidades.length}</strong> especialidades
+            </span>
+            <span className="h-1 w-1 rounded-full bg-foreground/20" aria-hidden="true" />
+            <span>
+              <strong className="text-foreground">
+                {especialidades.reduce((acc, e) => acc + (e.servicios?.length ?? 0), 0)}
+              </strong>{" "}
+              servicios
+            </span>
+          </div>
+
+          {viewMode === "table" && (
+            <SpecialtiesTable
+              especialidades={filtered}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              isLoading={isLoading}
+            />
+          )}
+
+          {viewMode === "grid" && (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((esp) => (
+                <SpecialtyCard
+                  key={esp.id || esp.slug}
+                  especialidad={esp}
+                  variant="dashboard"
+                  onClick={() => handleEdit(esp)}
+                />
+              ))}
+            </div>
+          )}
+
+          {!isLoading && filtered.length === 0 && especialidades.length > 0 && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <p className="text-sm text-foreground/50">
+                No se encontraron especialidades con &ldquo;{searchQuery}&rdquo;
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <SpecialtyForm
+        isOpen={formOpen}
+        onClose={() => {
+          setFormOpen(false);
+          setEditingEsp(null);
+        }}
+        onSave={handleSaveForm}
+        initialData={
+          editingEsp
+            ? {
+                nombre: editingEsp.nombre,
+                slug: editingEsp.slug,
+                icon: editingEsp.icon,
+                color: editingEsp.color,
+                imagen: editingEsp.imagen,
+                activo: editingEsp.activo,
+                orden: editingEsp.orden,
+              }
+            : undefined
+        }
+        isSaving={isSaving}
+        title={editingEsp ? `Editar: ${editingEsp.nombre}` : "Nueva Especialidad"}
+      />
+
+      <DeleteSpecialtyDialog
+        especialidad={deleteEsp}
+        isOpen={deleteEsp !== null}
+        onClose={() => setDeleteEsp(null)}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="client/app/(dashboard)/admin/servicios/page.tsx">
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Sidebar from "@/components/dashboard/Sidebar";
+import ServicioFilters from "@/features/servicios/components/ServicioFilters";
+import ServiciosTable from "@/features/servicios/components/ServiciosTable";
+import ServicioForm from "@/features/servicios/components/ServicioForm";
+import DeleteServicioDialog from "@/features/servicios/components/DeleteServicioDialog";
+import { getServicios, getServicioBySlug, type ServicioDTO, type CreateServicioPayload } from "@/services/servicios.service";
+import { getEspecialidades, type EspecialidadDTO } from "@/services/especialidades.service";
+import type { ServicioFormData } from "@/features/servicios/components/ServicioForm";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+export default function ServiciosPage() {
+  const [servicios, setServicios] = useState<ServicioDTO[]>([]);
+  const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [especialidadFilter, setEspecialidadFilter] = useState("all");
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingSvc, setEditingSvc] = useState<ServicioDTO | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deleteSvc, setDeleteSvc] = useState<ServicioDTO | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const [svcs, esps] = await Promise.all([getServicios(), getEspecialidades()]);
+        if (mounted) { setServicios(svcs); setEspecialidades(esps); }
+      } catch { /* ignore */ } finally {
+        if (mounted) setIsLoading(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  const filtered = servicios.filter((svc) => {
+    const matchesSearch = svc.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesEsp = especialidadFilter === "all" || svc.especialidad?.slug === especialidadFilter;
+    return matchesSearch && matchesEsp;
+  });
+
+  const especialidadOptions = especialidades.map((e) => ({ slug: e.slug, nombre: e.nombre }));
+
+  const handleCreateNew = () => { setEditingSvc(null); setFormOpen(true); };
+  const handleEdit = (svc: ServicioDTO) => { setEditingSvc(svc); setFormOpen(true); };
+  const handleDelete = (svc: ServicioDTO) => { setDeleteSvc(svc); };
+
+  const handleSave = async (data: ServicioFormData) => {
+    setIsSaving(true);
+    try {
+      const payload: CreateServicioPayload = {
+        slug: data.slug,
+        nombre: data.nombre,
+        descripcion: data.descripcion || undefined,
+        precio: data.precio || undefined,
+        duracionMinutos: data.duracionMinutos || undefined,
+        activo: data.activo,
+        orden: data.orden,
+        especialidadSlug: data.especialidadSlug,
+      };
+
+      if (editingSvc) {
+        await fetch(`${API_URL}/servicios/${editingSvc.slug}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch(`${API_URL}/servicios`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      setFormOpen(false);
+      setEditingSvc(null);
+      const updated = await getServicios();
+      setServicios(updated);
+    } catch (err) {
+      console.error("Error saving servicio:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteConfirm = async (svc: ServicioDTO) => {
+    setIsDeleting(true);
+    try {
+      await fetch(`${API_URL}/servicios/${svc.slug}`, { method: "DELETE" });
+      setDeleteSvc(null);
+      const updated = await getServicios();
+      setServicios(updated);
+    } catch (err) {
+      console.error("Error deleting servicio:", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-light">
+      <Sidebar currentPath="/admin/servicios" />
+      <main className="flex-1 overflow-auto">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary/70">Gestión</p>
+            <h1 className="mt-1 text-3xl font-semibold text-primary">Servicios</h1>
+            <p className="mt-1 text-base text-foreground/70">Administra los servicios médicos de cada especialidad.</p>
+          </div>
+
+          <ServicioFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            especialidadFilter={especialidadFilter}
+            onEspecialidadFilterChange={setEspecialidadFilter}
+            especialidadOptions={especialidadOptions}
+            onCreateNew={handleCreateNew}
+          />
+
+          <div className="flex items-center gap-6 text-xs text-foreground/50">
+            <span><strong className="text-foreground">{servicios.length}</strong> servicios</span>
+            <span className="h-1 w-1 rounded-full bg-foreground/20" aria-hidden="true" />
+            <span><strong className="text-foreground">{especialidades.length}</strong> especialidades</span>
+          </div>
+
+          <ServiciosTable
+            servicios={filtered}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isLoading={isLoading}
+          />
+        </div>
+      </main>
+
+      <ServicioForm
+        isOpen={formOpen}
+        onClose={() => { setFormOpen(false); setEditingSvc(null); }}
+        onSave={handleSave}
+        initialData={editingSvc ? {
+          slug: editingSvc.slug,
+          nombre: editingSvc.nombre,
+          descripcion: editingSvc.descripcion || "",
+          precio: editingSvc.precio || 0,
+          duracionMinutos: editingSvc.duracionMinutos || 30,
+          activo: editingSvc.activo,
+          orden: editingSvc.orden,
+          especialidadSlug: editingSvc.especialidad?.slug || "",
+        } : undefined}
+        isSaving={isSaving}
+        title={editingSvc ? `Editar: ${editingSvc.nombre}` : "Nuevo Servicio"}
+        especialidadOptions={especialidadOptions}
+      />
+
+      <DeleteServicioDialog
+        servicio={deleteSvc}
+        isOpen={deleteSvc !== null}
+        onClose={() => setDeleteSvc(null)}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="client/app/(dashboard)/layout.tsx">
+export default function DashboardLayout({
+	children,
+}: Readonly<{ children: React.ReactNode }>) {
+	return <div className="min-h-full bg-light">{children}</div>;
 }
 </file>
 
@@ -313,112 +775,6 @@ export default function Home() {
 			<FormContact />
 		</div>
 	);
-}
-</file>
-
-<file path="client/app/globals.css">
-@import "tailwindcss";
-
-:root {
-  --color-primary: #01155a;
-  --color-secondary: #155bb3;
-  --color-accent: #00b7fa;
-  --color-light: #F8F9FA;
-  --color-dark: #1A1A2E;
-
-  --background: #ffffff;
-  --foreground: #171717;
-
-    --color-card: rgba(255,255,255,0.08);
-  --color-border: rgba(255,255,255,0.12);
-  --color-glow: rgba(0,183,250,0.35);
-  --color-success: #22c55e;
-  --color-danger: #ef4444;
-
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
-  --color-accent: var(--color-accent);
-  --color-light: var(--color-light);
-  --color-dark: var(--color-dark);
-  --font-heading: var(--font-d-din);
-  --font-body: var(--font-manrope);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-body), system-ui, sans-serif;
-  
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), system-ui, sans-serif;
-  font-weight: 700;
-}
-
-h1 {
-  font-size: 3rem;
-  line-height: 1.2;
-}
-
-h2 {
-  font-size: 2.25rem;
-  line-height: 1.3;
-}
-
-h3 {
-  font-size: 1.875rem;
-  line-height: 1.4;
-}
-
-h4 {
-  font-size: 1.5rem;
-  line-height: 1.4;
-}
-
-p, span, li, a, button {
-  font-family: var(--font-body), system-ui, sans-serif;
-}
-
-@keyframes whatsapp-vibrate {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  15% {
-    transform: translateX(-2px) rotate(-2deg);
-  }
-  30% {
-    transform: translateX(2px) rotate(2deg);
-  }
-  45% {
-    transform: translateX(-2px) rotate(-2deg);
-  }
-  60% {
-    transform: translateX(2px) rotate(2deg);
-  }
-  75% {
-    transform: translateX(-1px) rotate(-1deg);
-  }
-}
-
-.animate-whatsapp-vibrate {
-  animation: whatsapp-vibrate 0.6s linear infinite;
 }
 </file>
 
@@ -683,215 +1039,6 @@ export default function LoginCard({ children, className }: LoginCardProps) {
 			<div className="pointer-events-none absolute inset-0 rounded-[28px] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]" />
 			<div className="relative z-10">{children}</div>
 		</MotionDiv>
-	);
-}
-</file>
-
-<file path="client/components/auth/LoginForm.tsx">
-"use client";
-
-import Image from "next/image";
-import { useState } from "react";
-import { motion, type MotionProps } from "framer-motion";
-import type { ComponentPropsWithoutRef } from "react";
-import {
-	HiOutlineEye,
-	HiOutlineEyeOff,
-	HiOutlineLockClosed,
-	HiOutlineMail,
-} from "react-icons/hi";
-import { login } from "@/services/auth.service";
-
-type FormState = {
-	email: string;
-	password: string;
-};
-
-type MotionLabelProps = ComponentPropsWithoutRef<"label"> & MotionProps;
-type MotionButtonProps = ComponentPropsWithoutRef<"button"> & MotionProps;
-type MotionDivProps = ComponentPropsWithoutRef<"div"> & MotionProps;
-
-const MotionLabel = motion.label as unknown as React.FC<MotionLabelProps>;
-const MotionButton = motion.button as unknown as React.FC<MotionButtonProps>;
-const MotionDiv = motion.div as unknown as React.FC<MotionDivProps>;
-
-export default function LoginForm() {
-	const [formState, setFormState] = useState<FormState>({ email: "", password: "" });
-	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-	const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-	const containerVariants = {
-		hidden: { opacity: 0, y: 14 },
-		show: {
-			opacity: 1,
-			y: 0,
-			transition: { duration: 0.45, ease: "easeOut", staggerChildren: 0.08 },
-		},
-	};
-
-	const itemVariants = {
-		hidden: { opacity: 0, y: 10 },
-		show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-	};
-
-	const handleChange = (field: keyof FormState, value: string) => {
-		setFormState((prev) => ({ ...prev, [field]: value }));
-	};
-
-	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setErrorMessage(null);
-		setSuccessMessage(null);
-
-		if (!formState.email.trim() || !formState.password.trim()) {
-			setErrorMessage("Completa el correo y la contrasena para continuar.");
-			return;
-		}
-
-		setIsLoading(true);
-
-		try {
-			const data = await login({
-				email: formState.email,
-				password: formState.password,
-			});
-
-			if (!data?.ok) {
-				setErrorMessage(data?.message || "Credenciales invalidas.");
-				return;
-			}
-
-			setSuccessMessage("Acceso correcto. Bienvenido al panel.");
-		} catch {
-			setErrorMessage("No se pudo conectar con el servidor.");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return (
-		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
-			<MotionDiv variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6">
-				<MotionDiv variants={itemVariants} className="flex flex-col items-start gap-4">
-					<div className="flex items-center gap-3">
-						<Image
-							src="/image/logo-white.webp"
-							alt="Tordoya"
-							width={132}
-							height={32}
-							className="h-8 w-auto"
-							priority
-						/>
-						
-					</div>
-
-					<div>
-						<h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-							Portal Administrativo Seguro
-						</h1>
-						<p className="mt-2 text-sm leading-6 text-white/65 sm:text-base">
-							Gestiona la operacion clinica con controles avanzados y acceso cifrado.
-						</p>
-					</div>
-				</MotionDiv>
-
-				<div className="space-y-4">
-					<MotionLabel
-						variants={itemVariants}
-						className="flex flex-col gap-2 text-sm font-medium text-white/80"
-					>
-					Correo
-						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
-							<HiOutlineMail className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
-						<input
-							type="email"
-							required
-							placeholder="nombre@tordoya.com"
-							value={formState.email}
-							onChange={(event) => handleChange("email", event.target.value)}
-								className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
-							aria-label="Correo corporativo"
-						/>
-					</div>
-				</MotionLabel>
-
-					<MotionLabel
-						variants={itemVariants}
-						className="flex flex-col gap-2 text-sm font-medium text-white/80"
-					>
-					Contraseña
-						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
-							<HiOutlineLockClosed className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
-						<input
-							type={showPassword ? "text" : "password"}
-							required
-							placeholder="Contraseña segura"
-							value={formState.password}
-							onChange={(event) => handleChange("password", event.target.value)}
-							className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
-							aria-label="Contrasena"
-						/>
-						<button
-							type="button"
-							onClick={() => setShowPassword((prev) => !prev)}
-								className="rounded-full p-1 text-white/60 transition hover:text-white"
-							aria-label={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
-						>
-							{showPassword ? (
-								<HiOutlineEyeOff className="h-5 w-5" />
-							) : (
-								<HiOutlineEye className="h-5 w-5" />
-							)}
-						</button>
-					</div>
-					</MotionLabel>
-				</div>
-
-				{errorMessage && (
-					<div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-						{errorMessage}
-					</div>
-				)}
-
-				{successMessage && (
-					<div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-						{successMessage}
-					</div>
-				)}
-
-				<MotionButton
-					variants={itemVariants}
-					whileHover={{ scale: 1.02, y: -1 }}
-					whileTap={{ scale: 0.98 }}
-					type="submit"
-					disabled={isLoading}
-					className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[linear-gradient(120deg,#00b7fa_0%,#55d7ff_45%,#00b7fa_100%)] px-6 py-3 text-sm font-semibold text-primary shadow-[0_16px_45px_rgba(0,183,250,0.45)] transition-all duration-300 hover:shadow-[0_24px_65px_rgba(0,183,250,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
-				>
-					<span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-						<span className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_55%)]" />
-					</span>
-				{isLoading ? (
-					<>
-						<span className="h-4 w-4 animate-spin rounded-full border-2 border-[#01155a] border-t-transparent" />
-						Validando acceso...
-					</>
-				) : (
-					<>
-						Ingresar al panel
-						<span className="text-base transition-transform duration-300 group-hover:translate-x-1">
-							→
-						</span>
-					</>
-				)}
-				</MotionButton>
-
-				<p className="text-xs text-white/55">
-					Acceso exclusivo para personal autorizado. Todas las sesiones quedan registradas.
-				</p>
-			</MotionDiv>
-		</form>
 	);
 }
 </file>
@@ -1956,6 +2103,1287 @@ const eslintConfig = defineConfig([
 export default eslintConfig;
 </file>
 
+<file path="client/features/servicios/components/DeleteServicioDialog.tsx">
+"use client";
+
+import React from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import type { ServicioDTO } from "@/services/servicios.service";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+interface DeleteServicioDialogProps {
+  servicio: ServicioDTO | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (servicio: ServicioDTO) => void;
+  isDeleting?: boolean;
+}
+
+export default function DeleteServicioDialog({
+  servicio, isOpen, onClose, onConfirm, isDeleting = false,
+}: DeleteServicioDialogProps) {
+  return (
+    <AnimatePresence>
+      {isOpen && servicio && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+          <MotionDiv initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-md rounded-2xl border border-primary/10 bg-white p-6 shadow-2xl sm:p-8" role="alertdialog"
+            aria-labelledby="delete-servicio-title" aria-describedby="delete-servicio-description">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
+              <svg className="h-6 w-6 text-danger" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 9v4M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h2 id="delete-servicio-title" className="mt-4 text-center text-lg font-bold text-foreground">Eliminar servicio</h2>
+            <div id="delete-servicio-description" className="mt-2 text-center text-sm text-foreground/60">
+              <p>¿Estás seguro de eliminar <strong className="text-foreground">{servicio.nombre}</strong>?</p>
+              <p className="mt-2 rounded-xl bg-danger/5 px-4 py-3 text-xs font-medium text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <MotionButton whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={onClose} disabled={isDeleting}
+                className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50">Cancelar</MotionButton>
+              <MotionButton whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={() => onConfirm(servicio)} disabled={isDeleting}
+                className="flex h-10 items-center justify-center gap-2 rounded-xl bg-danger px-5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-danger/90 disabled:opacity-50">
+                {isDeleting ? <><svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" /><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Eliminando...</> : "Eliminar"}
+              </MotionButton>
+            </div>
+          </MotionDiv>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+</file>
+
+<file path="client/features/servicios/components/ServicioFilters.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+interface ServicioFiltersProps {
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
+  especialidadFilter: string;
+  onEspecialidadFilterChange: (val: string) => void;
+  especialidadOptions: { slug: string; nombre: string }[];
+  onCreateNew: () => void;
+}
+
+export default function ServicioFilters({
+  searchQuery,
+  onSearchChange,
+  especialidadFilter,
+  onEspecialidadFilterChange,
+  especialidadOptions,
+  onCreateNew,
+}: ServicioFiltersProps) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+        <div className="relative flex-1 sm:max-w-xs">
+          <div className={cn(
+            "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 transition-colors duration-200",
+            isSearchFocused ? "text-accent" : "text-foreground/40"
+          )}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar servicio..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            className={cn(
+              "h-10 w-full rounded-xl border bg-white pl-10 pr-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/35",
+              "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10"
+            )}
+            aria-label="Buscar servicio"
+          />
+        </div>
+
+        <div className="relative">
+          <select
+            value={especialidadFilter}
+            onChange={(e) => onEspecialidadFilterChange(e.target.value)}
+            className="h-10 w-full appearance-none rounded-xl border border-primary/10 bg-white px-4 pr-10 text-sm text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10 sm:w-56"
+            aria-label="Filtrar por especialidad"
+          >
+            <option value="all">Todas las especialidades</option>
+            {especialidadOptions.map((opt) => (
+              <option key={opt.slug} value={opt.slug}>{opt.nombre}</option>
+            ))}
+          </select>
+          <svg className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+
+      <MotionButton
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={onCreateNew}
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary active:scale-[0.97]"
+      >
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Nuevo Servicio
+      </MotionButton>
+    </div>
+  );
+}
+</file>
+
+<file path="client/features/servicios/components/ServicioForm.tsx">
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+export interface ServicioFormData {
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  duracionMinutos: number;
+  activo: boolean;
+  orden: number;
+  especialidadSlug: string;
+}
+
+interface ServicioFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: ServicioFormData) => void;
+  initialData?: Partial<ServicioFormData>;
+  isSaving?: boolean;
+  title?: string;
+  especialidadOptions: { slug: string; nombre: string }[];
+}
+
+export default function ServicioForm({
+  isOpen, onClose, onSave, initialData, isSaving = false,
+  title = "Nuevo Servicio", especialidadOptions,
+}: ServicioFormProps) {
+  const [form, setForm] = useState<ServicioFormData>({
+    slug: "", nombre: "", descripcion: "", precio: 0, duracionMinutos: 30, activo: true, orden: 0, especialidadSlug: "",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof ServicioFormData, string>>>({});
+
+  useEffect(() => {
+    setForm({
+      slug: initialData?.slug ?? "",
+      nombre: initialData?.nombre ?? "",
+      descripcion: initialData?.descripcion ?? "",
+      precio: initialData?.precio ?? 0,
+      duracionMinutos: initialData?.duracionMinutos ?? 30,
+      activo: initialData?.activo ?? true,
+      orden: initialData?.orden ?? 0,
+      especialidadSlug: initialData?.especialidadSlug ?? (especialidadOptions[0]?.slug ?? ""),
+    });
+    setErrors({});
+  }, [initialData, isOpen, especialidadOptions]);
+
+  const handleChange = (field: keyof ServicioFormData, value: string | number | boolean) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    if (field === "nombre") {
+      const slug = (value as string).toLowerCase()
+        .replace(/[^a-záéíóúñ\s0-9]/g, "")
+        .replace(/[áéíóú]/g, (c: string) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" })[c] || c)
+        .replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+      setForm((prev) => ({ ...prev, slug }));
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: typeof errors = {};
+    if (!form.nombre.trim()) newErrors.nombre = "El nombre es obligatorio";
+    if (!form.slug.trim()) newErrors.slug = "El slug es obligatorio";
+    if (!form.especialidadSlug) newErrors.especialidadSlug = "Selecciona una especialidad";
+    if (form.duracionMinutos < 0) newErrors.duracionMinutos = "Duración inválida";
+    if (form.orden < 0) newErrors.orden = "El orden debe ser 0 o mayor";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); if (validate()) onSave(form); };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+          <MotionDiv initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-lg rounded-2xl border border-primary/10 bg-white shadow-2xl">
+            <div className="rounded-t-2xl bg-accent px-6 py-5 sm:px-8">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-white">{title}</h2>
+                <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30" aria-label="Cerrar">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 sm:px-8">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Nombre</label>
+                <input type="text" placeholder="Ej: Ecografía abdominal completa" value={form.nombre} onChange={(e) => handleChange("nombre", e.target.value)}
+                  className={cn("h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/30",
+                    errors.nombre ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10")} />
+                {errors.nombre && <p className="text-xs font-medium text-danger">{errors.nombre}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Slug</label>
+                <div className="flex h-10 items-center gap-2 rounded-xl border border-primary/10 bg-primary/[0.02] px-4 text-sm text-foreground/50">
+                  <span className="text-foreground/30">/admin/servicios/</span>
+                  <span className="font-medium text-foreground/70">{form.slug || "..."}</span>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Especialidad</label>
+                <select value={form.especialidadSlug} onChange={(e) => handleChange("especialidadSlug", e.target.value)}
+                  className={cn("h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 appearance-none",
+                    errors.especialidadSlug ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10")}>
+                  <option value="">Seleccionar especialidad</option>
+                  {especialidadOptions.map((opt) => <option key={opt.slug} value={opt.slug}>{opt.nombre}</option>)}
+                </select>
+                {errors.especialidadSlug && <p className="text-xs font-medium text-danger">{errors.especialidadSlug}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Estado</label>
+                <div className="flex h-10 items-center gap-3 rounded-xl border border-primary/10 bg-white px-4">
+                  <button type="button" onClick={() => handleChange("activo", true)}
+                    className={cn("rounded-lg px-4 py-1.5 text-xs font-medium transition-all duration-200",
+                      form.activo ? "bg-success text-white shadow-sm" : "text-foreground/50 hover:text-foreground/80")}>Activo</button>
+                  <button type="button" onClick={() => handleChange("activo", false)}
+                    className={cn("rounded-lg px-4 py-1.5 text-xs font-medium transition-all duration-200",
+                      !form.activo ? "bg-foreground/10 text-foreground/70 shadow-sm" : "text-foreground/50 hover:text-foreground/80")}>Inactivo</button>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground/70">Duración (min)</label>
+                  <input type="number" min={0} value={form.duracionMinutos} onChange={(e) => handleChange("duracionMinutos", parseInt(e.target.value) || 0)}
+                    className={cn("h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200",
+                      errors.duracionMinutos ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10")} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground/70">Precio ($)</label>
+                  <input type="number" min={0} step="0.01" value={form.precio} onChange={(e) => handleChange("precio", parseFloat(e.target.value) || 0)}
+                    className="h-10 w-full rounded-xl border border-primary/10 bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground/70">Orden</label>
+                  <input type="number" min={0} value={form.orden} onChange={(e) => handleChange("orden", parseInt(e.target.value) || 0)}
+                    className={cn("h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200",
+                      errors.orden ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10")} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Descripción (opcional)</label>
+                <textarea rows={2} placeholder="Breve descripción del servicio..." value={form.descripcion} onChange={(e) => handleChange("descripcion", e.target.value)}
+                  className="h-20 w-full resize-none rounded-xl border border-primary/10 bg-white px-4 py-3 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/30 focus:border-accent focus:ring-4 focus:ring-accent/10" />
+              </div>
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+                <MotionButton whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} type="button" onClick={onClose} disabled={isSaving}
+                  className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50">Cancelar</MotionButton>
+                <MotionButton whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} type="submit" disabled={isSaving}
+                  className="flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary disabled:opacity-50">
+                  {isSaving ? <><svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" /><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Guardando...</> : "Guardar"}
+                </MotionButton>
+              </div>
+            </form>
+          </MotionDiv>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+</file>
+
+<file path="client/features/servicios/components/ServiciosTable.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import ServicioStatusBadge from "./ServicioStatusBadge";
+import type { ServicioDTO } from "@/services/servicios.service";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+
+const ITEMS_PER_PAGE = 7;
+
+interface ServiciosTableProps {
+  servicios: ServicioDTO[];
+  onEdit: (servicio: ServicioDTO) => void;
+  onDelete: (servicio: ServicioDTO) => void;
+  isLoading?: boolean;
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.04]">
+        <svg className="h-8 w-8 text-primary/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </div>
+      <h3 className="mt-4 text-sm font-semibold text-foreground">No hay servicios</h3>
+      <p className="mt-1 text-xs text-foreground/50">Crea tu primer servicio para comenzar.</p>
+    </div>
+  );
+}
+
+function Pagination({ currentPage, totalPages, onPageChange }: {
+  currentPage: number; totalPages: number; onPageChange: (p: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between border-t border-primary/5 px-6 py-3">
+      <span className="text-xs text-foreground/40">Página {currentPage} de {totalPages}</span>
+      <div className="flex items-center gap-1">
+        <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-foreground/50 transition-colors hover:bg-primary/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Página anterior">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter(p => totalPages <= 7 || p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+          .reduce<(number | "ellipsis")[]>((acc, p, idx, arr) => {
+            if (idx > 0 && p - arr[idx - 1] > 1) acc.push("ellipsis");
+            acc.push(p); return acc;
+          }, [])
+          .map((item, i) =>
+            item === "ellipsis" ? (
+              <span key={`e${i}`} className="flex h-8 w-4 items-center justify-center text-xs text-foreground/30">...</span>
+            ) : (
+              <button key={item} onClick={() => onPageChange(item)}
+                className={cn("flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all duration-200",
+                  currentPage === item ? "bg-primary text-white shadow-sm" : "text-foreground/50 hover:bg-primary/5 hover:text-foreground"
+                )}
+                aria-label={`Página ${item}`} aria-current={currentPage === item ? "page" : undefined}>{item}</button>
+            )
+          )}
+        <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= totalPages}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-foreground/50 transition-colors hover:bg-primary/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Página siguiente">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ActionMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-primary/5 hover:text-foreground/70" aria-label="Acciones">
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.5" fill="currentColor" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /><circle cx="12" cy="19" r="1.5" fill="currentColor" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} aria-hidden="true" />
+            <MotionDiv initial={{ opacity: 0, scale: 0.95, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: -4 }} transition={{ duration: 0.12 }}
+              className="absolute right-0 z-20 w-44 origin-top-right overflow-hidden rounded-xl border border-primary/10 bg-white shadow-lg">
+              <button onClick={() => { onEdit(); setIsOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-foreground/70 transition-colors hover:bg-primary/5">
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>Editar
+              </button>
+              <button onClick={() => { onDelete(); setIsOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-danger/80 transition-colors hover:bg-danger/5">
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>Eliminar
+              </button>
+            </MotionDiv>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function ServiciosTable({ servicios, onEdit, onDelete, isLoading = false }: ServiciosTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(servicios.length / ITEMS_PER_PAGE));
+  if (currentPage > totalPages && totalPages > 0) setCurrentPage(1);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginated = servicios.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  if (isLoading) {
+    return (
+      <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+        <div className="divide-y divide-primary/5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex animate-pulse items-center gap-4 px-6 py-4">
+              <div className="h-10 w-10 rounded-lg bg-primary/5" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-40 rounded bg-primary/5" />
+                <div className="h-3 w-24 rounded bg-primary/5" />
+              </div>
+              <div className="h-5 w-16 rounded-full bg-primary/5" />
+              <div className="h-3 w-20 rounded bg-primary/5" />
+              <div className="h-8 w-20 rounded-lg bg-primary/5" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (servicios.length === 0) return <EmptyState />;
+
+  const colorMap: Record<string, string> = { primary: "bg-primary/10 text-primary", secondary: "bg-secondary/10 text-secondary", accent: "bg-accent/10 text-accent" };
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+      <div className="hidden  md:grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-10 border-b border-primary/5 bg-primary/[0.02] px-1 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground/40  ">
+        <span>Servicio</span><span>Especialidad</span><span>Estado</span><span>Orden</span><span className="w-20 text-center">Acciones</span>
+      </div>
+      <div className="divide-y divide-primary/5">
+        {paginated.map((svc, i) => {
+          const espColor = colorMap[svc.especialidad?.color || "primary"] || "bg-primary/10 text-primary";
+          return (
+            <MotionDiv key={svc.id || svc.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: i * 0.03 }}
+              className="group transition-colors duration-150 hover:bg-primary/[0.02] md:grid md:grid-cols-[1fr_auto_auto_auto_auto_auto] md:gap-14 md:items-center md:px-6"
+            >
+              <div className="flex items-center gap-4 px-4 py-4 md:px-0 md:py-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-4">
+                    <span className="truncate text-lg font-bold text-foreground">{svc.nombre}</span>
+                    <span className="md:hidden"><ServicioStatusBadge active={svc.activo} size="sm" /></span>
+                  </div>
+                  <p className="truncate text-[11px] text-foreground/40">{svc.slug}</p>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <span className={cn("inline-flex rounded-md px-2 py-0.5 text-[11px] font-medium", espColor)}>{svc.especialidad?.nombre || "—"}</span>
+              </div>
+              <div className="hidden md:block"><ServicioStatusBadge active={svc.activo} size="sm" /></div>
+              
+              <div className="hidden md:block text-sm text-foreground/60">{svc.orden}</div>
+              <div className="hidden md:flex items-center justify-center"><ActionMenu onEdit={() => onEdit(svc)} onDelete={() => onDelete(svc)} /></div>
+              <div className="flex items-center gap-2 border-t border-primary/5 px-4 pb-3 pt-2 md:hidden">
+                <div className="flex-1"><ServicioStatusBadge active={svc.activo} size="sm" /></div>
+                <button onClick={() => onEdit(svc)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-primary/10 px-3 py-1.5 text-[11px] font-medium text-foreground/60 transition-colors hover:bg-primary/5">
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>Editar
+                </button>
+                <button onClick={() => onDelete(svc)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-danger/10 px-3 py-1.5 text-[11px] font-medium text-danger/60 transition-colors hover:bg-danger/5">
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>Eliminar
+                </button>
+              </div>
+            </MotionDiv>
+          );
+        })}
+      </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+    </div>
+  );
+}
+</file>
+
+<file path="client/features/servicios/components/ServicioStatusBadge.tsx">
+"use client";
+
+import { cn } from "@/lib/utils";
+
+interface ServicioStatusBadgeProps {
+  active?: boolean;
+  size?: "sm" | "md";
+}
+
+export default function ServicioStatusBadge({
+  active = true,
+  size = "sm",
+}: ServicioStatusBadgeProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full font-medium leading-none transition-all duration-200",
+        size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs",
+        active
+          ? "bg-success/10 text-success"
+          : "bg-foreground/5 text-foreground/45"
+      )}
+    >
+      <span
+        className={cn(
+          "h-1.5 w-1.5 rounded-full",
+          active ? "bg-success" : "bg-foreground/25"
+        )}
+        aria-hidden="true"
+      />
+      {active ? "Activo" : "Inactivo"}
+    </span>
+  );
+}
+</file>
+
+<file path="client/features/specialties/components/DeleteSpecialtyDialog.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import type { EspecialidadDTO } from "@/services/especialidades.service";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+interface DeleteSpecialtyDialogProps {
+  especialidad: EspecialidadDTO | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (especialidad: EspecialidadDTO) => void;
+  isDeleting?: boolean;
+}
+
+/**
+ * Modal de confirmación profesional para eliminar especialidades.
+ * Diseño minimalista tipo SaaS con advertencia clara sin ser alarmista.
+ */
+export default function DeleteSpecialtyDialog({
+  especialidad,
+  isOpen,
+  onClose,
+  onConfirm,
+  isDeleting = false,
+}: DeleteSpecialtyDialogProps) {
+  const serviciosCount = especialidad?.servicios?.length ?? 0;
+
+  return (
+    <AnimatePresence>
+      {isOpen && especialidad && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Overlay */}
+          <MotionDiv
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+
+          {/* Dialog */}
+          <MotionDiv
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-md rounded-2xl border border-primary/10 bg-white p-6 shadow-2xl sm:p-8"
+            role="alertdialog"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-description"
+          >
+            {/* Icono */}
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
+              <svg className="h-6 w-6 text-danger" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 9v4M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* Título */}
+            <h2
+              id="delete-dialog-title"
+              className="mt-4 text-center text-lg font-bold text-foreground"
+            >
+              Eliminar especialidad
+            </h2>
+
+            {/* Descripción */}
+            <div id="delete-dialog-description" className="mt-2 text-center text-sm text-foreground/60">
+              <p>
+                ¿Estás seguro de eliminar <strong className="text-foreground">{especialidad.nombre}</strong>?
+              </p>
+              {serviciosCount > 0 && (
+                <p className="mt-2 rounded-xl bg-danger/5 px-4 py-3 text-xs font-medium text-danger">
+                  Esta especialidad tiene <strong>{serviciosCount} servicios</strong> asociados que también serán eliminados. Esta acción no se puede deshacer.
+                </p>
+              )}
+            </div>
+
+            {/* Botones */}
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <MotionButton
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={onClose}
+                disabled={isDeleting}
+                className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50"
+              >
+                Cancelar
+              </MotionButton>
+              <MotionButton
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => onConfirm(especialidad)}
+                disabled={isDeleting}
+                className="flex h-10 items-center justify-center gap-2 rounded-xl bg-danger px-5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-danger/90 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+                      <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Eliminando...
+                  </>
+                ) : (
+                  <>Eliminar</>
+                )}
+              </MotionButton>
+            </div>
+          </MotionDiv>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+</file>
+
+<file path="client/features/specialties/components/SpecialtyCard.tsx">
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { motion, type MotionProps } from "framer-motion";
+import { cn } from "@/lib/utils";
+import SpecialtyStatusBadge from "./SpecialtyStatusBadge";
+import type { EspecialidadDTO } from "@/services/especialidades.service";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+
+interface SpecialtyCardProps {
+  especialidad: EspecialidadDTO;
+  /** Variante de diseño */
+  variant?: "default" | "compact" | "dashboard";
+  onClick?: () => void;
+}
+
+const colorMap: Record<string, string> = {
+  primary: "bg-primary",
+  secondary: "bg-secondary",
+  accent: "bg-accent",
+};
+
+/**
+ * Tarjeta visual moderna para representar una especialidad médica.
+ * Diseño tipo SaaS premium con glassmorphism y hover elegante.
+ */
+export default function SpecialtyCard({
+  especialidad,
+  variant = "default",
+  onClick,
+}: SpecialtyCardProps) {
+  const serviciosCount = especialidad.servicios?.length ?? 0;
+  const headerBg = colorMap[especialidad.color] || "bg-primary";
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && onClick) {
+      onClick();
+    }
+  };
+
+  return (
+    <MotionDiv
+      whileHover={{ y: -4, scale: 1.01 }}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm transition-all duration-300",
+        "hover:shadow-lg hover:border-primary/20",
+        onClick && "cursor-pointer",
+        variant === "compact" && "rounded-xl",
+        variant === "dashboard" && "rounded-xl"
+      )}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? handleKeyDown : undefined}
+    >
+      {/* Header con imagen de fondo */}
+      <div
+        className={cn(
+          "relative overflow-hidden",
+          variant === "compact" ? "h-24" : "h-40 sm:h-48"
+        )}
+      >
+        <div className={cn("absolute inset-0", headerBg)} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+        {especialidad.imagen && (
+          <Image
+            src={especialidad.imagen}
+            alt={especialidad.nombre}
+            fill
+            className="object-cover opacity-60 mix-blend-overlay"
+            sizes={variant === "compact" ? "200px" : "400px"}
+          />
+        )}
+
+        {/* Etiqueta de servicios */}
+        <div className="absolute bottom-3 left-3">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            {serviciosCount} servicios
+          </span>
+        </div>
+      </div>
+
+      {/* Cuerpo */}
+      <div className={cn("space-y-3", variant === "compact" ? "p-4" : "p-5")}>
+        <div className="flex items-start justify-between gap-3">
+          <h3
+            className={cn(
+              "font-bold text-primary leading-tight",
+              variant === "compact" ? "text-sm" : "text-base"
+            )}
+          >
+            {especialidad.nombre}
+          </h3>
+          <SpecialtyStatusBadge active={especialidad.activo} size="sm" />
+        </div>
+
+        {/* Slugs de servicios como chips */}
+        {variant !== "compact" && serviciosCount > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {especialidad.servicios.slice(0, 3).map((svc) => (
+              <span
+                key={svc.id || svc.slug}
+                className="inline-flex rounded-md bg-primary/[0.04] px-2 py-0.5 text-[11px] font-medium text-foreground/60"
+              >
+                {svc.nombre}
+              </span>
+            ))}
+            {serviciosCount > 3 && (
+              <span className="inline-flex rounded-md bg-primary/[0.04] px-2 py-0.5 text-[11px] font-medium text-foreground/40">
+                +{serviciosCount - 3} más
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 text-[11px] text-foreground/40">
+          <span>Orden: {especialidad.orden}</span>
+          <span className="h-1 w-1 rounded-full bg-foreground/20" aria-hidden="true" />
+          <span className="truncate">{especialidad.slug}</span>
+        </div>
+      </div>
+    </MotionDiv>
+  );
+}
+</file>
+
+<file path="client/features/specialties/components/SpecialtyFilters.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+interface SpecialtyFiltersProps {
+  /** Valor actual de búsqueda */
+  searchQuery: string;
+  /** Callback al cambiar búsqueda */
+  onSearchChange: (query: string) => void;
+  /** Filtro por estado */
+  statusFilter: "all" | "active" | "inactive";
+  /** Callback al cambiar filtro de estado */
+  onStatusFilterChange: (status: "all" | "active" | "inactive") => void;
+  /** Callback al crear nueva especialidad */
+  onCreateNew: () => void;
+}
+
+/**
+ * Barra superior de filtros y acciones para la gestión de especialidades.
+ * Diseño compacto, limpio y responsive tipo SaaS profesional.
+ */
+export default function SpecialtyFilters({
+  searchQuery,
+  onSearchChange,
+  statusFilter,
+  onStatusFilterChange,
+  onCreateNew,
+}: SpecialtyFiltersProps) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Búsqueda y filtros */}
+      <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+        {/* Input de búsqueda */}
+        <div className="relative flex-1 sm:max-w-xs">
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 transition-colors duration-200",
+              isSearchFocused ? "text-accent" : "text-foreground/40"
+            )}
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar especialidad..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            className={cn(
+              "h-10 w-full rounded-xl border bg-white pl-10 pr-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/35",
+              "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10"
+            )}
+            aria-label="Buscar especialidad"
+          />
+        </div>
+
+        {/* Filtro por estado */}
+        <div className="flex items-center gap-1 rounded-xl border border-primary/10 bg-white p-1">
+          {[
+            { value: "all" as const, label: "Todas" },
+            { value: "active" as const, label: "Activas" },
+            { value: "inactive" as const, label: "Inactivas" },
+          ].map((option) => (
+            <button
+              key={option.value}
+              onClick={() => onStatusFilterChange(option.value)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200",
+                statusFilter === option.value
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-foreground/50 hover:text-foreground/80 hover:bg-primary/5"
+              )}
+              aria-pressed={statusFilter === option.value}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Botón crear */}
+      <MotionButton
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={onCreateNew}
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary active:scale-[0.97]"
+      >
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Nueva Especialidad
+      </MotionButton>
+    </div>
+  );
+}
+</file>
+
+<file path="client/features/specialties/components/SpecialtyForm.tsx">
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+type MotionButtonProps = React.ComponentPropsWithoutRef<"button"> & MotionProps;
+const MotionButton = motion.button as React.FC<MotionButtonProps>;
+
+export interface SpecialtyFormData {
+  nombre: string;
+  slug: string;
+  icon: string;
+  color: string;
+  imagen: string;
+  activo: boolean;
+  orden: number;
+}
+
+interface SpecialtyFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: SpecialtyFormData) => void;
+  initialData?: Partial<SpecialtyFormData>;
+  isSaving?: boolean;
+  title?: string;
+}
+
+const COLOR_OPTIONS = [
+  { value: "primary", label: "Azul", class: "bg-primary" },
+  { value: "secondary", label: "Azul medio", class: "bg-secondary" },
+  { value: "accent", label: "Cian", class: "bg-accent" },
+];
+
+/**
+ * Formulario moderno tipo modal para crear/editar especialidades.
+ * Se sincroniza con initialData cada vez que cambia (editar diferente especialidad).
+ */
+export default function SpecialtyForm({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+  isSaving = false,
+  title = "Nueva Especialidad",
+}: SpecialtyFormProps) {
+  const [form, setForm] = useState<SpecialtyFormData>({
+    nombre: "",
+    slug: "",
+    icon: "HiOutlineViewList",
+    color: "primary",
+    imagen: "",
+    activo: true,
+    orden: 0,
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof SpecialtyFormData, string>>>({});
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  // Sincronizar estado cuando cambia initialData (al editar diferente especialidad)
+  useEffect(() => {
+    setForm({
+      nombre: initialData?.nombre ?? "",
+      slug: initialData?.slug ?? "",
+      icon: initialData?.icon ?? "HiOutlineViewList",
+      color: initialData?.color ?? "primary",
+      imagen: initialData?.imagen ?? "",
+      activo: initialData?.activo ?? true,
+      orden: initialData?.orden ?? 0,
+    });
+    setPreviewUrl(initialData?.imagen ?? "");
+    setErrors({});
+  }, [initialData, isOpen]);
+
+  const handleChange = (field: keyof SpecialtyFormData, value: string | number | boolean) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+
+    if (field === "nombre") {
+      const slug = (value as string)
+        .toLowerCase()
+        .replace(/[^a-záéíóúñ\s]/g, "")
+        .replace(/[áéíóú]/g, (c: string) => ({ á: "a", é: "e", í: "i", ó: "o", ú: "u" })[c] || c)
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+      setForm((prev) => ({ ...prev, slug }));
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: typeof errors = {};
+    if (!form.nombre.trim()) newErrors.nombre = "El nombre es obligatorio";
+    if (!form.slug.trim()) newErrors.slug = "El slug es obligatorio";
+    if (form.orden < 0) newErrors.orden = "El orden debe ser 0 o mayor";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) onSave(form);
+  };
+
+  const selectedColorClass = COLOR_OPTIONS.find((c) => c.value === form.color)?.class ?? "bg-primary";
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <MotionDiv
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          <MotionDiv
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-lg rounded-2xl border border-primary/10 bg-white shadow-2xl"
+          >
+            <div className={cn("rounded-t-2xl px-6 py-5 sm:px-8", selectedColorClass)}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-lg font-bold text-white">{title}</h2>
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                    form.activo ? "bg-success/20 text-success" : "bg-white/20 text-white/70"
+                  )}>
+                    <span className={cn("h-1.5 w-1.5 rounded-full", form.activo ? "bg-success" : "bg-white/50")} />
+                    {form.activo ? "Activo" : "Inactivo"}
+                  </span>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
+                  aria-label="Cerrar"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 sm:px-8">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Nombre</label>
+                <input
+                  type="text"
+                  placeholder="Ej: Ecografía Abdominal"
+                  value={form.nombre}
+                  onChange={(e) => handleChange("nombre", e.target.value)}
+                  className={cn(
+                    "h-10 w-full rounded-xl border bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/30",
+                    errors.nombre ? "border-danger ring-4 ring-danger/10" : "border-primary/10 focus:border-accent focus:ring-4 focus:ring-accent/10"
+                  )}
+                  aria-label="Nombre de la especialidad"
+                />
+                {errors.nombre && <p className="text-xs font-medium text-danger">{errors.nombre}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Slug</label>
+                <div className="flex h-10 items-center gap-2 rounded-xl border border-primary/10 bg-primary/[0.02] px-4 text-sm text-foreground/50">
+                  <span className="text-foreground/30">/admin/especialidades/</span>
+                  <span className="font-medium text-foreground/70">{form.slug || "..."}</span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">Estado</label>
+                <div className="flex h-10 items-center gap-3 rounded-xl border border-primary/10 bg-white px-4">
+                  <button
+                    type="button"
+                    onClick={() => handleChange("activo", true)}
+                    className={cn(
+                      "rounded-lg px-4 py-1.5 text-xs font-medium transition-all duration-200",
+                      form.activo
+                        ? "bg-success text-white shadow-sm"
+                        : "text-foreground/50 hover:text-foreground/80"
+                    )}
+                  >
+                    Activo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleChange("activo", false)}
+                    className={cn(
+                      "rounded-lg px-4 py-1.5 text-xs font-medium transition-all duration-200",
+                      !form.activo
+                        ? "bg-foreground/10 text-foreground/70 shadow-sm"
+                        : "text-foreground/50 hover:text-foreground/80"
+                    )}
+                  >
+                    Inactivo
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground/70">Color</label>
+                  <div className="flex gap-2">
+                    {COLOR_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => handleChange("color", opt.value)}
+                        className={cn(
+                          "h-8 w-8 rounded-full transition-all duration-200",
+                          opt.class,
+                          form.color === opt.value ? "ring-2 ring-primary ring-offset-2 scale-110" : "opacity-60 hover:opacity-100"
+                        )}
+                        aria-label={opt.label}
+                        title={opt.label}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground/70">Orden</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={form.orden}
+                    onChange={(e) => handleChange("orden", parseInt(e.target.value) || 0)}
+                    className="h-10 w-full rounded-xl border border-primary/10 bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10"
+                    aria-label="Orden de visualización"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground/70">URL de imagen</label>
+                <input
+                  type="url"
+                  placeholder="/image/especialidades/ejemplo.webp"
+                  value={form.imagen}
+                  onChange={(e) => { handleChange("imagen", e.target.value); setPreviewUrl(e.target.value); }}
+                  className="h-10 w-full rounded-xl border border-primary/10 bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 placeholder:text-foreground/30 focus:border-accent focus:ring-4 focus:ring-accent/10"
+                  aria-label="URL de la imagen"
+                />
+                {previewUrl && (
+                  <div className="mt-2 flex items-center gap-3 rounded-xl border border-primary/10 bg-primary/[0.02] p-3">
+                    <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", selectedColorClass)}>
+                      <span className="text-lg font-black text-white">T</span>
+                    </div>
+                    <span className="truncate text-xs text-foreground/50">{previewUrl}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+                <MotionButton
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSaving}
+                  className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50"
+                >
+                  Cancelar
+                </MotionButton>
+                <MotionButton
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary disabled:opacity-50"
+                >
+                  {isSaving ? (
+                    <>
+                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar"
+                  )}
+                </MotionButton>
+              </div>
+            </form>
+          </MotionDiv>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+</file>
+
+<file path="client/features/specialties/components/SpecialtyStatusBadge.tsx">
+"use client";
+
+import { cn } from "@/lib/utils";
+
+interface SpecialtyStatusBadgeProps {
+  /** Si la especialidad está activa o inactiva */
+  active?: boolean;
+  /** Tamaño del badge */
+  size?: "sm" | "md";
+}
+
+/**
+ * Badge reutilizable para mostrar el estado de una especialidad.
+ * Diseño minimalista tipo SaaS profesional.
+ */
+export default function SpecialtyStatusBadge({
+  active = true,
+  size = "sm",
+}: SpecialtyStatusBadgeProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full font-medium leading-none transition-all duration-200",
+        size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs",
+        active
+          ? "bg-success/10 text-success"
+          : "bg-foreground/5 text-foreground/45"
+      )}
+    >
+      <span
+        className={cn(
+          "h-1.5 w-1.5 rounded-full",
+          active ? "bg-success" : "bg-foreground/25"
+        )}
+        aria-hidden="true"
+      />
+      {active ? "Activa" : "Inactiva"}
+    </span>
+  );
+}
+</file>
+
 <file path="client/hooks/useDetectCountry.ts">
 "use client";
 
@@ -2094,13 +3522,6 @@ export function clearAuthToken(): void {
 }
 </file>
 
-<file path="client/lib/constants.ts">
-export const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-export const AUTH_TOKEN_KEY = "auth_token";
-</file>
-
 <file path="client/lib/permissions.ts">
 export type UserRole = "ADMIN" | "EDITOR" | string;
 
@@ -2132,12 +3553,6 @@ export function removeStorageItem(key: string): void {
 	}
 
 	window.localStorage.removeItem(key);
-}
-</file>
-
-<file path="client/lib/utils.ts">
-export function toTrimLower(value: string): string {
-	return value.trim().toLowerCase();
 }
 </file>
 
@@ -2322,8 +3737,6 @@ The content is organized as follows:
 </file_summary>
 
 <directory_structure>
-=======
->>>>>>> 6b89220b26577020172a8253e8924767ace331e7
 .gitignore
 app/favicon.ico
 app/globals.css
@@ -4369,7 +5782,6 @@ export default function Home() {
 </file>
 
 </files>
-<<<<<<< HEAD
 </file>
 
 <file path="client/services/auth.service.ts">
@@ -4402,6 +5814,61 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 	}
 
 	return data;
+}
+</file>
+
+<file path="client/services/servicios.service.ts">
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export interface ServicioDTO {
+  id: string;
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  precio: number | null;
+  duracionMinutos: number | null;
+  activo: boolean;
+  orden: number;
+  especialidadId: string;
+  especialidad?: {
+    id: string;
+    slug: string;
+    nombre: string;
+    color: string;
+  };
+}
+
+export interface EspecialidadOption {
+  id: string;
+  slug: string;
+  nombre: string;
+}
+
+export async function getServicios(): Promise<ServicioDTO[]> {
+  const res = await fetch(`${API_URL}/servicios`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+  return res.json();
+}
+
+export async function getServicioBySlug(slug: string): Promise<ServicioDTO> {
+  const res = await fetch(`${API_URL}/servicios/${slug}`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+  return res.json();
+}
+
+export interface CreateServicioPayload {
+  slug: string;
+  nombre: string;
+  descripcion?: string;
+  precio?: number;
+  duracionMinutos?: number;
+  activo?: boolean;
+  orden?: number;
+  especialidadSlug?: string;
 }
 </file>
 
@@ -4559,107 +6026,13 @@ export default tseslint.config(
 }
 </file>
 
-<file path="server/package.json">
-{
-  "name": "server",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
-  "scripts": {
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
-  },
-  "dependencies": {
-    "@nestjs/common": "^11.1.24",
-    "@nestjs/config": "^4.0.4",
-    "@nestjs/core": "^11.1.24",
-    "@nestjs/jwt": "^11.0.2",
-    "@nestjs/mapped-types": "*",
-    "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^11.1.24",
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "bcrypt": "^6.0.0",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "pg": "^8.21.0",
-    "prisma": "^7.8.0",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
-    "@types/bcrypt": "^6.0.0",
-    "@types/express": "^5.0.0",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.0",
-    "@types/supertest": "^7.0.0",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
-    "globals": "^17.0.0",
-    "jest": "^30.0.0",
-    "prettier": "^3.4.2",
-    "source-map-support": "^0.5.21",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  }
-}
-</file>
-
-<file path="server/prisma.config.ts">
-// This file was generated by Prisma, and assumes you have installed the following:
-// npm install --save-dev prisma dotenv
-import "dotenv/config";
-import { defineConfig } from "prisma/config";
-
-export default defineConfig({
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
-  datasource: {
-    url: process.env["DATABASE_URL"],
-  },
-});
+<file path="server/pnpm-workspace.yaml">
+allowBuilds:
+  '@nestjs/core': true
+  '@prisma/engines': true
+  bcrypt: true
+  prisma: true
+  unrs-resolver: true
 </file>
 
 <file path="server/prisma/migrations/20260530030027_init/migration.sql">
@@ -4734,43 +6107,241 @@ CREATE TABLE "usuarios" (
 CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
 </file>
 
+<file path="server/prisma/migrations/20260606020925_add_especialidades_servicios/migration.sql">
+-- CreateTable
+CREATE TABLE "especialidades" (
+    "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "nombre" TEXT NOT NULL,
+    "icon" TEXT NOT NULL DEFAULT 'HiOutlineViewList',
+    "color" TEXT NOT NULL DEFAULT 'primary',
+    "imagen" TEXT NOT NULL,
+    "orden" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "especialidades_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "servicios" (
+    "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "nombre" TEXT NOT NULL,
+    "descripcion" TEXT,
+    "precio" DECIMAL(10,2),
+    "duracionMinutos" INTEGER,
+    "activo" BOOLEAN NOT NULL DEFAULT true,
+    "orden" INTEGER NOT NULL DEFAULT 0,
+    "especialidadId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "servicios_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "especialidades_slug_key" ON "especialidades"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "servicios_slug_key" ON "servicios"("slug");
+
+-- AddForeignKey
+ALTER TABLE "servicios" ADD CONSTRAINT "servicios_especialidadId_fkey" FOREIGN KEY ("especialidadId") REFERENCES "especialidades"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+</file>
+
+<file path="server/prisma/migrations/20260606041245_add_activo_especialidad/migration.sql">
+-- AlterTable
+ALTER TABLE "especialidades" ADD COLUMN     "activo" BOOLEAN NOT NULL DEFAULT true;
+</file>
+
 <file path="server/prisma/migrations/migration_lock.toml">
 # Please do not edit this file manually
 # It should be added in your version-control system (e.g., Git)
 provider = "postgresql"
 </file>
 
-<file path="server/prisma/schema.prisma">
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+<file path="server/prisma/seed.ts">
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/@prisma/client/.prisma/client"
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not set. Check your .env file.');
 }
 
-datasource db {
-  provider = "postgresql"
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: databaseUrl }),
+});
+
+async function main() {
+  console.log('🌱 Seeding database...');
+
+  await prisma.servicio.deleteMany();
+  await prisma.especialidad.deleteMany();
+
+  const especialidades = [
+    {
+      slug: 'abdominal',
+      nombre: 'Abdominal',
+      icon: 'HiOutlineViewList',
+      color: 'primary',
+      imagen: '/image/especialidades/ABDOMINAL.webp',
+      orden: 1,
+      servicios: [
+        { slug: 'eco-abdominal-completa', nombre: 'Ecografía abdominal completa', orden: 1 },
+        { slug: 'eco-hepatica-vias-biliares', nombre: 'Ecografía hepática y Vías Biliares', orden: 2 },
+        { slug: 'eco-vesicula-vias-biliares', nombre: 'Ecografía de vesícula y vías biliares', orden: 3 },
+        { slug: 'eco-pancreas', nombre: 'Ecografía de páncreas', orden: 4 },
+        { slug: 'eco-bazo', nombre: 'Ecografía de bazo', orden: 5 },
+        { slug: 'eco-abdominopelvico', nombre: 'Ecografía abdominopelvico', orden: 6 },
+      ],
+    },
+    {
+      slug: 'ginecologica',
+      nombre: 'Ginecológica',
+      icon: 'HiOutlineHeart',
+      color: 'secondary',
+      imagen: '/image/especialidades/GINECOLÓGICA.webp',
+      orden: 2,
+      servicios: [
+        { slug: 'eco-pelvica-ginecologica', nombre: 'Ecografía pélvica o ginecológica', orden: 1 },
+        { slug: 'eco-transvaginal', nombre: 'Ecografía transvaginal', orden: 2 },
+        { slug: 'monitoreo-folicular', nombre: 'Monitoreo ó seguimiento folicular', orden: 3 },
+      ],
+    },
+    {
+      slug: 'obstetrica',
+      nombre: 'Obstétrica',
+      icon: 'HiOutlineArrowUp',
+      color: 'accent',
+      imagen: '/image/especialidades/OBSTÉTRICA.webp',
+      orden: 3,
+      servicios: [
+        { slug: 'obstetrico-biometria-fetal', nombre: 'Obstétrico Biometría fetal (tradicional)', orden: 1 },
+        { slug: 'obstetrica-cromosomica-i-trimestre', nombre: 'Obstétrica cromosómica ó estructural I trimestre', orden: 2 },
+        { slug: 'obstetrica-estructural-ii-iii-trimestre', nombre: 'Obstétrica estructural del 2do y 3er trimestre', orden: 3 },
+        { slug: 'obstetrico-gemelar', nombre: 'Obstétrico Gemelar', orden: 4 },
+        { slug: 'obstetrica-3d-4d', nombre: 'Obstétrica 3D Y 4D', orden: 5 },
+        { slug: 'perfil-biofisico-fetal', nombre: 'Perfil biofísico fetal', orden: 6 },
+        { slug: 'doppler-obstetrico', nombre: 'Doppler obstétrico', orden: 7 },
+      ],
+    },
+    {
+      slug: 'urologica',
+      nombre: 'Urológica',
+      icon: 'HiOutlineBeaker',
+      color: 'primary',
+      imagen: '/image/especialidades/UROLÓGICA.webp',
+      orden: 4,
+      servicios: [
+        { slug: 'eco-renal-bilateral', nombre: 'Ecografía renal bilateral', orden: 1 },
+        { slug: 'eco-vesical-vias-urinarias', nombre: 'Ecografía vesical, vías urinarias transabdominal', orden: 2 },
+        { slug: 'eco-prostatica-suprapubica', nombre: 'Ecografía prostática suprapúbica', orden: 3 },
+        { slug: 'eco-prostatica-transrectal', nombre: 'Ecografía prostática transrectal', orden: 4 },
+        { slug: 'eco-testicular', nombre: 'Ecografía testicular', orden: 5 },
+      ],
+    },
+    {
+      slug: 'partes-blandas',
+      nombre: 'Partes Blandas',
+      icon: 'HiOutlineShieldExclamation',
+      color: 'secondary',
+      imagen: '/image/especialidades/PARTES_BLANDAS.webp',
+      orden: 5,
+      servicios: [
+        { slug: 'eco-tiroides', nombre: 'Ecografía de tiroides', orden: 1 },
+        { slug: 'eco-mamaria', nombre: 'Ecografía mamaria', orden: 2 },
+        { slug: 'eco-partes-blandas-localizada', nombre: 'Ecografía de partes blandas localizada', orden: 3 },
+        { slug: 'eco-pared-abdominal-inguinal', nombre: 'Ecografía de pared Abdominal e inguinal (hernias)', orden: 4 },
+        { slug: 'eco-ganglionar', nombre: 'Ecografía ganglionar', orden: 5 },
+      ],
+    },
+    {
+      slug: 'doppler',
+      nombre: 'Doppler',
+      icon: 'HiOutlineTrendingUp',
+      color: 'accent',
+      imagen: '/image/especialidades/DOPPLER.webp',
+      orden: 6,
+      servicios: [
+        { slug: 'doppler-carotideo-vertebral', nombre: 'Doppler carotídeo y/o vertebrales', orden: 1 },
+        { slug: 'doppler-arterial-miembros-inferiores', nombre: 'Doppler arterial miembros inferiores', orden: 2 },
+        { slug: 'doppler-venoso-miembros-inferiores', nombre: 'Doppler venoso miembros inferiores', orden: 3 },
+        { slug: 'doppler-arterial-miembros-superiores', nombre: 'Doppler arterial miembros superiores', orden: 4 },
+        { slug: 'doppler-venoso-miembros-superiores', nombre: 'Doppler venoso miembros superiores', orden: 5 },
+        { slug: 'doppler-testicular', nombre: 'Doppler testicular', orden: 6 },
+        { slug: 'doppler-hepatoportal', nombre: 'Doppler hepatoportal', orden: 7 },
+        { slug: 'doppler-tiroideo', nombre: 'Doppler tiroideo', orden: 8 },
+        { slug: 'doppler-pelvico-ginecologico', nombre: 'Doppler pélvico ginecológico', orden: 9 },
+        { slug: 'doppler-renal', nombre: 'Doppler renal', orden: 10 },
+      ],
+    },
+    {
+      slug: 'musculoesqueletica',
+      nombre: 'Musculoesquelética',
+      icon: 'HiOutlineArchive',
+      color: 'primary',
+      imagen: '/image/especialidades/MUSCULOESQUELÉTICA.webp',
+      orden: 7,
+      servicios: [
+        { slug: 'msk-hombro', nombre: 'Ecografía MSK hombro', orden: 1 },
+        { slug: 'msk-rodilla', nombre: 'Ecografía MSK rodilla', orden: 2 },
+        { slug: 'msk-codo', nombre: 'Ecografía MSK codo', orden: 3 },
+        { slug: 'msk-tobillo', nombre: 'Ecografía MSK tobillo', orden: 4 },
+        { slug: 'msk-muneca', nombre: 'Ecografía MSK muñeca', orden: 5 },
+      ],
+    },
+    {
+      slug: 'emergencias',
+      nombre: 'Emergencias',
+      icon: 'HiOutlineExclamation',
+      color: 'secondary',
+      imagen: '/image/especialidades/EMERGENCIAS.webp',
+      orden: 8,
+      servicios: [
+        { slug: 'abdomen-agudo', nombre: 'Abdomen agudo (apendicitis, colecistitis, pancreatitis, peritonitis)', orden: 1 },
+      ],
+    },
+    {
+      slug: 'otros',
+      nombre: 'Otros',
+      icon: 'HiOutlineInformationCircle',
+      color: 'accent',
+      imagen: '/image/especialidades/OTROS.webp',
+      orden: 9,
+      servicios: [
+        { slug: 'colposcopia', nombre: 'Colposcopia', orden: 1 },
+        { slug: 'citologia-cervico-vaginal', nombre: 'Citología Cervico vaginal (Papanicolau, PAP)', orden: 2 },
+      ],
+    },
+  ];
+
+  for (const esp of especialidades) {
+    const { servicios, ...especialidadData } = esp;
+    const created = await prisma.especialidad.create({
+      data: {
+        ...especialidadData,
+        servicios: {
+          create: servicios,
+        },
+      },
+    });
+    console.log(`  ✅ ${created.nombre} (${created.slug}) - ${servicios.length} servicios`);
+  }
+
+  console.log('\n🌱 Seed completed successfully!');
 }
 
-model Usuario {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(ADMIN)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("usuarios")
-}
-
-enum Role {
-  ADMIN
-  EDITOR
-}
+main()
+  .catch((e) => {
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
 </file>
 
 <file path="server/README.md">
@@ -4914,28 +6485,6 @@ export class AppController {
 }
 </file>
 
-<file path="server/src/app.module.ts">
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    PrismaModule,
-    AuthModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
-</file>
-
 <file path="server/src/app.service.ts">
 import { Injectable } from '@nestjs/common';
 
@@ -5032,50 +6581,6 @@ describe('AuthService', () => {
 });
 </file>
 
-<file path="server/src/auth/auth.service.ts">
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import type { LoginDto } from './dto/login.dto';
-import { PrismaService } from '../prisma/prisma.service';
-@Injectable()
-export class AuthService {
-  constructor(private prisma: PrismaService) {}
-
-  async login(payload: LoginDto) {
-    const email = payload.email.trim().toLowerCase();
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-    const users = await this.prisma.$queryRaw<
-      Array<{ id: string; email: string; password: string; role: string }>
-    >(
-      Prisma.sql`
-        SELECT id, email, password, role
-        FROM usuarios
-        WHERE lower(email) = lower(${email})
-        LIMIT 1
-      `,
-    );
-
-    const user = users[0];
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-    if (!user || user.password !== payload.password) {
-      return null;
-    }
-
-    return {
-      token: 'demo-token',
-      user: {
-        email: user.email,
-        role: user.role,
-      },
-    };
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-  }
-}
-</file>
-
 <file path="server/src/auth/dto/login.dto.ts">
 export type LoginDto = {
   email: string;
@@ -5083,28 +6588,191 @@ export type LoginDto = {
 };
 </file>
 
-<file path="server/src/main.ts">
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { AppModule } from './app.module';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  app.enableCors({
-    origin: ['http://localhost:3000'],
-    credentials: true,
-  });
-
-  const configService = app.get(ConfigService);
-
-  const port = configService.get<number>('PORT') || 5000;
-
-  await app.listen(port);
-
-  console.log(`Backend running on http://localhost:${port}`);
+<file path="server/src/especialidades/dto/create-especialidad.dto.ts">
+export class CreateEspecialidadDto {
+  slug: string;
+  nombre: string;
+  icon?: string;
+  color?: string;
+  imagen: string;
+  activo?: boolean;
+  orden?: number;
 }
-bootstrap();
+
+export class CreateServicioDto {
+  slug: string;
+  nombre: string;
+  descripcion?: string;
+  precio?: number;
+  duracionMinutos?: number;
+  activo?: boolean;
+  orden?: number;
+}
+
+export class CreateEspecialidadWithServiciosDto {
+  slug: string;
+  nombre: string;
+  icon?: string;
+  color?: string;
+  imagen: string;
+  activo?: boolean;
+  orden?: number;
+  servicios?: CreateServicioDto[];
+}
+</file>
+
+<file path="server/src/especialidades/dto/update-especialidad.dto.ts">
+import { CreateEspecialidadDto } from './create-especialidad.dto';
+
+export class UpdateEspecialidadDto extends CreateEspecialidadDto {}
+</file>
+
+<file path="server/src/especialidades/especialidades.controller.ts">
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { EspecialidadesService } from './especialidades.service';
+import type { CreateEspecialidadWithServiciosDto } from './dto/create-especialidad.dto';
+import type { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
+
+@Controller('especialidades')
+export class EspecialidadesController {
+  constructor(private readonly especialidadesService: EspecialidadesService) {}
+
+  @Get()
+  async findAll() {
+    return this.especialidadesService.findAll();
+  }
+
+  @Get(':slug')
+  async findBySlug(@Param('slug') slug: string) {
+    return this.especialidadesService.findBySlug(slug);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() body: CreateEspecialidadWithServiciosDto) {
+    return this.especialidadesService.create(body);
+  }
+
+  @Put(':slug')
+  async update(
+    @Param('slug') slug: string,
+    @Body() body: UpdateEspecialidadDto,
+  ) {
+    return this.especialidadesService.update(slug, body);
+  }
+
+  @Delete(':slug')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('slug') slug: string) {
+    await this.especialidadesService.remove(slug);
+  }
+}
+</file>
+
+<file path="server/src/especialidades/especialidades.module.ts">
+import { Module } from '@nestjs/common';
+import { EspecialidadesController } from './especialidades.controller';
+import { EspecialidadesService } from './especialidades.service';
+
+@Module({
+  controllers: [EspecialidadesController],
+  providers: [EspecialidadesService],
+  exports: [EspecialidadesService],
+})
+export class EspecialidadesModule {}
+</file>
+
+<file path="server/src/especialidades/especialidades.service.ts">
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import type { CreateEspecialidadWithServiciosDto } from './dto/create-especialidad.dto';
+import type { UpdateEspecialidadDto } from './dto/update-especialidad.dto';
+
+@Injectable()
+export class EspecialidadesService {
+  constructor(private prisma: PrismaService) {}
+
+  async findAll() {
+    return this.prisma.especialidad.findMany({
+      include: {
+        servicios: {
+          where: { activo: true },
+          orderBy: { orden: 'asc' },
+        },
+      },
+      orderBy: { orden: 'asc' },
+    });
+  }
+
+  async findBySlug(slug: string) {
+    const especialidad = await this.prisma.especialidad.findUnique({
+      where: { slug },
+      include: {
+        servicios: {
+          where: { activo: true },
+          orderBy: { orden: 'asc' },
+        },
+      },
+    });
+
+    if (!especialidad) {
+      throw new NotFoundException(`Especialidad "${slug}" no encontrada`);
+    }
+
+    return especialidad;
+  }
+
+  async create(data: CreateEspecialidadWithServiciosDto) {
+    const { servicios, ...especialidadData } = data;
+    return this.prisma.especialidad.create({
+      data: {
+        ...especialidadData,
+        servicios: servicios?.length
+          ? { create: servicios }
+          : undefined,
+      },
+      include: { servicios: true },
+    });
+  }
+
+  async update(slug: string, data: UpdateEspecialidadDto) {
+    const existing = await this.prisma.especialidad.findUnique({
+      where: { slug },
+    });
+    if (!existing) {
+      throw new NotFoundException(`Especialidad "${slug}" no encontrada`);
+    }
+
+    return this.prisma.especialidad.update({
+      where: { slug },
+      data,
+      include: { servicios: true },
+    });
+  }
+
+  async remove(slug: string) {
+    const existing = await this.prisma.especialidad.findUnique({
+      where: { slug },
+    });
+    if (!existing) {
+      throw new NotFoundException(`Especialidad "${slug}" no encontrada`);
+    }
+
+    return this.prisma.especialidad.delete({
+      where: { slug },
+    });
+  }
+}
 </file>
 
 <file path="server/src/prisma/prisma.module.ts">
@@ -5119,28 +6787,187 @@ import { PrismaService } from './prisma.service';
 export class PrismaModule {}
 </file>
 
-<file path="server/src/prisma/prisma.service.ts">
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+<file path="server/src/servicios/dto/create-servicio.dto.ts">
+export class CreateServicioDto {
+  slug: string;
+  nombre: string;
+  descripcion?: string;
+  precio?: number;
+  duracionMinutos?: number;
+  activo?: boolean;
+  orden?: number;
+  especialidadId?: string;
+  especialidadSlug?: string;
+}
+</file>
+
+<file path="server/src/servicios/servicios.controller.ts">
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { ServiciosService } from './servicios.service';
+import type { CreateServicioDto } from './dto/create-servicio.dto';
+
+@Controller('servicios')
+export class ServiciosController {
+  constructor(private readonly serviciosService: ServiciosService) {}
+
+  @Get()
+  async findAll() {
+    return this.serviciosService.findAll();
+  }
+
+  @Get('especialidad/:slug')
+  async findByEspecialidad(@Param('slug') slug: string) {
+    return this.serviciosService.findByEspecialidad(slug);
+  }
+
+  @Get(':slug')
+  async findOne(@Param('slug') slug: string) {
+    return this.serviciosService.findOne(slug);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() body: CreateServicioDto) {
+    return this.serviciosService.create(body);
+  }
+
+  @Put(':slug')
+  async update(@Param('slug') slug: string, @Body() body: Partial<CreateServicioDto>) {
+    return this.serviciosService.update(slug, body);
+  }
+
+  @Delete(':slug')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('slug') slug: string) {
+    await this.serviciosService.remove(slug);
+  }
+}
+</file>
+
+<file path="server/src/servicios/servicios.module.ts">
+import { Module } from '@nestjs/common';
+import { ServiciosController } from './servicios.controller';
+import { ServiciosService } from './servicios.service';
+
+@Module({
+  controllers: [ServiciosController],
+  providers: [ServiciosService],
+  exports: [ServiciosService],
+})
+export class ServiciosModule {}
+</file>
+
+<file path="server/src/servicios/servicios.service.ts">
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import type { CreateServicioDto } from './dto/create-servicio.dto';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
-  constructor() {
-    const databaseUrl = process.env.DATABASE_URL;
-    if (!databaseUrl) {
-      throw new Error('DATABASE_URL is not set');
-    }
+export class ServiciosService {
+  constructor(private prisma: PrismaService) {}
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    super({
-      adapter: new PrismaPg({ connectionString: databaseUrl }),
+  async findAll() {
+    return this.prisma.servicio.findMany({
+      include: {
+        especialidad: {
+          select: { id: true, slug: true, nombre: true, color: true },
+        },
+      },
+      orderBy: [{ especialidadId: 'asc' }, { orden: 'asc' }],
     });
   }
 
-  async onModuleInit() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await this.$connect();
+  async findByEspecialidad(slug: string) {
+    const especialidad = await this.prisma.especialidad.findUnique({
+      where: { slug },
+    });
+    if (!especialidad) {
+      throw new NotFoundException(`Especialidad "${slug}" no encontrada`);
+    }
+
+    return this.prisma.servicio.findMany({
+      where: { especialidadId: especialidad.id },
+      orderBy: { orden: 'asc' },
+    });
+  }
+
+  async findOne(slug: string) {
+    const servicio = await this.prisma.servicio.findUnique({
+      where: { slug },
+      include: {
+        especialidad: {
+          select: { id: true, slug: true, nombre: true, color: true },
+        },
+      },
+    });
+    if (!servicio) {
+      throw new NotFoundException(`Servicio "${slug}" no encontrado`);
+    }
+    return servicio;
+  }
+
+  async create(data: CreateServicioDto) {
+    const { especialidadSlug, ...rest } = data;
+
+    let especialidadId = data.especialidadId;
+    if (especialidadSlug && !especialidadId) {
+      const esp = await this.prisma.especialidad.findUnique({
+        where: { slug: especialidadSlug },
+      });
+      if (!esp) {
+        throw new NotFoundException(`Especialidad "${especialidadSlug}" no encontrada`);
+      }
+      especialidadId = esp.id;
+    }
+
+    return this.prisma.servicio.create({
+      data: {
+        ...rest,
+        especialidadId: especialidadId!,
+      },
+      include: {
+        especialidad: {
+          select: { id: true, slug: true, nombre: true, color: true },
+        },
+      },
+    });
+  }
+
+  async update(slug: string, data: Partial<CreateServicioDto>) {
+    const existing = await this.prisma.servicio.findUnique({ where: { slug } });
+    if (!existing) {
+      throw new NotFoundException(`Servicio "${slug}" no encontrado`);
+    }
+
+    const { especialidadSlug, ...rest } = data;
+
+    return this.prisma.servicio.update({
+      where: { slug },
+      data: rest,
+      include: {
+        especialidad: {
+          select: { id: true, slug: true, nombre: true, color: true },
+        },
+      },
+    });
+  }
+
+  async remove(slug: string) {
+    const existing = await this.prisma.servicio.findUnique({ where: { slug } });
+    if (!existing) {
+      throw new NotFoundException(`Servicio "${slug}" no encontrado`);
+    }
+    await this.prisma.servicio.delete({ where: { slug } });
   }
 }
 </file>
@@ -5224,211 +7051,419 @@ describe('AppController (e2e)', () => {
 }
 </file>
 
-<file path="client/components/Services.tsx">
+<file path="client/app/(dashboard)/admin/page.tsx">
+import Sidebar from "@/components/dashboard/Sidebar";
+
+export default function AdminPage() {
+	return (
+		<div className="flex min-h-screen bg-light">
+			<Sidebar currentPath="/admin" />
+			<main className="flex-1 overflow-auto">
+				<div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8">
+					{/* Header */}
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary/70">
+								Panel
+							</p>
+							<h1 className="mt-1 text-3xl font-semibold text-primary">Dashboard</h1>
+							<p className="mt-1 text-base text-foreground/70">
+								Resumen general de la operación clínica.
+							</p>
+						</div>
+					</div>
+
+					{/* Grid de tarjetas de resumen */}
+					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{/* Card: Pacientes */}
+						<div className="rounded-xl border border-primary/10 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md">
+							<div className="flex items-center justify-between">
+								<span className="text-sm font-medium text-foreground/60">Pacientes</span>
+								<span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+									+12%
+								</span>
+							</div>
+							<p className="mt-2 text-3xl font-bold text-primary">1,248</p>
+							<p className="mt-1 text-xs text-foreground/50">Últimos 30 días</p>
+						</div>
+
+						{/* Card: Citas */}
+						<div className="rounded-xl border border-primary/10 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md">
+							<div className="flex items-center justify-between">
+								<span className="text-sm font-medium text-foreground/60">Citas</span>
+								<span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
+									Hoy
+								</span>
+							</div>
+							<p className="mt-2 text-3xl font-bold text-primary">24</p>
+							<p className="mt-1 text-xs text-foreground/50">8 pendientes de confirmar</p>
+						</div>
+
+						{/* Card: Estudios */}
+						<div className="rounded-xl border border-primary/10 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:col-span-2 lg:col-span-1">
+							<div className="flex items-center justify-between">
+								<span className="text-sm font-medium text-foreground/60">Estudios</span>
+								<span className="rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-semibold text-secondary">
+									Semanal
+								</span>
+							</div>
+							<p className="mt-2 text-3xl font-bold text-primary">89</p>
+							<p className="mt-1 text-xs text-foreground/50">Esta semana</p>
+						</div>
+					</div>
+
+					{/* Sección de actividad reciente */}
+					<div className="rounded-xl border border-primary/10 bg-white p-6 shadow-sm">
+						<h2 className="text-lg font-semibold text-primary">Actividad reciente</h2>
+						<div className="mt-4 space-y-3">
+							{[
+								{ action: "Nuevo paciente registrado", detail: "María García", time: "Hace 15 min" },
+								{ action: "Cita confirmada", detail: "Ultrasonido abdominal - #1024", time: "Hace 32 min" },
+								{ action: "Resultados publicados", detail: "Dr. López - Doppler carotídeo", time: "Hace 1h" },
+								{ action: "Pago registrado", detail: "Factura #F-2024-089", time: "Hace 2h" },
+							].map((item, i) => (
+								<div
+									key={i}
+									className="flex items-center justify-between rounded-lg border border-primary/5 bg-primary/[0.02] px-4 py-3 transition-colors duration-200 hover:bg-primary/[0.05]"
+								>
+									<div>
+										<p className="text-sm font-medium text-foreground">{item.action}</p>
+										<p className="text-xs text-foreground/50">{item.detail}</p>
+									</div>
+									<span className="shrink-0 text-xs text-foreground/40">{item.time}</span>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	);
+}
+</file>
+
+<file path="client/app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --color-primary: #01155a;
+  --color-secondary: #155bb3;
+  --color-accent: #00b7fa;
+  --color-light: #F8F9FA;
+  --color-dark: #1A1A2E;
+
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --color-card: rgba(255,255,255,0.08);
+  --color-border: rgba(255,255,255,0.12);
+  --color-glow: rgba(0,183,250,0.35);
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+}
+
+@theme inline {
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-primary: #01155a;
+  --color-secondary: #155bb3;
+  --color-accent: #00b7fa;
+  --color-light: #F8F9FA;
+  --color-dark: #1A1A2E;
+  --color-card: rgba(255,255,255,0.08);
+  --color-border: rgba(255,255,255,0.12);
+  --color-glow: rgba(0,183,250,0.35);
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --font-heading: var(--font-d-din);
+  --font-body: var(--font-manrope);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.875rem;
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+p, span, li, a, button {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@keyframes whatsapp-vibrate {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  15% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  30% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  45% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+}
+
+.animate-whatsapp-vibrate {
+  animation: whatsapp-vibrate 0.6s linear infinite;
+}
+</file>
+
+<file path="client/components/auth/LoginForm.tsx">
 "use client";
 
-import React, { useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, type MotionProps } from "framer-motion";
+import type { ComponentPropsWithoutRef } from "react";
 import {
-  HiOutlineViewList,
-  HiOutlineHeart,
-  HiOutlineArrowUp,
-  HiOutlineBeaker,
-  HiOutlineTrendingUp,
-  HiOutlineExclamation,
-  HiOutlineShieldExclamation,
-  HiOutlineArchive,
-  HiOutlineInformationCircle,
-  HiChevronDown,
-  HiOutlineCalendar,
+	HiOutlineEye,
+	HiOutlineEyeOff,
+	HiOutlineLockClosed,
+	HiOutlineMail,
 } from "react-icons/hi";
-import { especialidades } from "@/data/especialidades";
+import { login } from "@/services/auth.service";
 
-const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
-  HiOutlineViewList,
-  HiOutlineHeart,
-  HiOutlineArrowUp,
-  HiOutlineBeaker,
-  HiOutlineTrendingUp,
-  HiOutlineExclamation,
-  HiOutlineShieldExclamation,
-  HiOutlineArchive,
-  HiOutlineInformationCircle,
+type FormState = {
+	email: string;
+	password: string;
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
+type MotionLabelProps = ComponentPropsWithoutRef<"label"> & MotionProps;
+type MotionButtonProps = ComponentPropsWithoutRef<"button"> & MotionProps;
+type MotionDivProps = ComponentPropsWithoutRef<"div"> & MotionProps;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
+const MotionLabel = motion.label as unknown as React.FC<MotionLabelProps>;
+const MotionButton = motion.button as unknown as React.FC<MotionButtonProps>;
+const MotionDiv = motion.div as unknown as React.FC<MotionDivProps>;
 
-const servicesPanelTransition = {
-  duration: 0.42,
-  ease: [0.22, 1, 0.36, 1],
-};
+export default function LoginForm() {
+	const router = useRouter();
+	const [formState, setFormState] = useState<FormState>({ email: "", password: "" });
+	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-const MotionDiv = motion.div as React.ComponentType<
-  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
->;
+	const containerVariants = {
+		hidden: { opacity: 0, y: 14 },
+		show: {
+			opacity: 1,
+			y: 0,
+			transition: { duration: 0.45, ease: "easeOut", staggerChildren: 0.08 },
+		},
+	};
 
-const MotionButton = motion.button as React.ComponentType<
-  React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
->;
+	const itemVariants = {
+		hidden: { opacity: 0, y: 10 },
+		show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+	};
 
-export default function Services() {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+	const handleChange = (field: keyof FormState, value: string) => {
+		setFormState((prev) => ({ ...prev, [field]: value }));
+	};
 
-  const toggleExpanded = (id: string) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setErrorMessage(null);
+		setSuccessMessage(null);
 
-  return (
-    <section id="servicios" className="bg-light py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <MotionDiv
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
-        >
-          <h2 className="text-4xl font-black text-primary sm:text-5xl">
-            Nuestros Servicios
-          </h2>
-          <p className="mt-4 text-lg text-foreground/70">
-            Servicios integrales de imagenologia diagnostica con tecnologia de ultima generacion
-          </p>
-        </MotionDiv>
+		if (!formState.email.trim() || !formState.password.trim()) {
+			setErrorMessage("Completa el correo y la contrasena para continuar.");
+			return;
+		}
 
-        <MotionDiv
-          className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={containerVariants}
-        >
-          {especialidades.map((especialidad) => {
-            const IconComponent = iconMap[especialidad.icon];
-            const isExpanded = expandedId === especialidad.id;
+		setIsLoading(true);
 
-            return (
-              <MotionDiv
-                key={especialidad.id}
-                variants={cardVariants}
-                className="group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
-              >
-                <div
-                  className={`relative overflow-hidden ${
-                    especialidad.color === "primary"
-                      ? "bg-linear-to-br from-primary to-primary/70"
-                      : especialidad.color === "secondary"
-                      ? "bg-linear-to-br from-secondary to-secondary/70"
-                      : "bg-linear-to-br from-accent to-accent/70"
-                  } p-6 transition-all duration-300`}
-                >
-                  <div
-                    className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60"
-                    style={{ backgroundImage: `url(${especialidad.imagen})` }}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/40"
-                    aria-hidden="true"
-                  />
-                  <div className="relative z-10 flex items-start justify-between">
-                    <div className="relative flex-1">
-                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
-                        {IconComponent && <IconComponent size={24} />}
-                      </div>
-                      <h3 className="text-xl font-bold text-white">
-                        {especialidad.nombre}
-                      </h3>
-                      <p className="mt-1 text-sm text-white/80">
-                        {especialidad.servicios.length} servicios disponibles
-                      </p>
-                    </div>
-                  </div>
+		try {
+			const data = await login({
+				email: formState.email,
+				password: formState.password,
+			});
 
-                  <MotionButton
-                    onClick={() => toggleExpanded(especialidad.id)}
-                    className="relative z-10 mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span>{isExpanded ? "Ocultar" : "Ver"} servicios</span>
-                    <MotionDiv
-                      animate={{ rotate: isExpanded ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="text-white"
-                    >
-                      <HiChevronDown size={18} />
-                    </MotionDiv>
-                  </MotionButton>
-                </div>
+			if (!data?.ok) {
+				setErrorMessage(data?.message || "Credenciales invalidas.");
+				return;
+			}
 
-                <MotionDiv
-                  initial={false}
-                  animate={{
-                    height: isExpanded ? "auto" : 0,
-                    opacity: isExpanded ? 1 : 0,
-                  }}
-                  transition={servicesPanelTransition}
-                  className="overflow-hidden bg-white"
-                  aria-hidden={!isExpanded}
-                >
-                  <MotionDiv
-                    animate={{ y: isExpanded ? 0 : -8 }}
-                    transition={servicesPanelTransition}
-                    className="space-y-2 px-6 py-4"
-                  >
-                    {especialidad.servicios.map((servicio) => (
-                      <MotionDiv
-                        key={servicio.id}
-                        animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
-                        transition={{ duration: 0.28 }}
-                        className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
-                      >
-                        <span className="text-sm font-medium text-foreground">
-                          {servicio.nombre}
-                        </span>
-                        <MotionButton
-                          animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
-                          transition={{ duration: 0.22 }}
-                          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          tabIndex={isExpanded ? 0 : -1}
-                        >
-                          <span className="text-white">
-                            <HiOutlineCalendar size={14} />
-                          </span>
-                          <span>Agendar</span>
-                        </MotionButton>
-                      </MotionDiv>
-                    ))}
-                  </MotionDiv>
-                </MotionDiv>
-              </MotionDiv>
-            );
-          })}
-        </MotionDiv>
-      </div>
-    </section>
-  );
+			setSuccessMessage("Acceso correcto. Bienvenido al panel.");
+
+			// Redirigir al dashboard después de 800ms para que el usuario vea el mensaje de éxito
+			setTimeout(() => {
+				router.push("/admin");
+			}, 800);
+		} catch {
+			setErrorMessage("No se pudo conectar con el servidor.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<form onSubmit={handleSubmit} className="flex flex-col gap-6">
+			<MotionDiv variants={containerVariants} initial="hidden" animate="show" className="flex flex-col gap-6">
+				<MotionDiv variants={itemVariants} className="flex flex-col items-start gap-4">
+					<div className="flex items-center gap-3">
+						<Image
+							src="/image/logo-white.webp"
+							alt="Tordoya"
+							width={132}
+							height={32}
+							className="h-8 w-auto"
+							priority
+						/>
+						
+					</div>
+
+					<div>
+						<h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+							Portal Administrativo Seguro
+						</h1>
+						<p className="mt-2 text-sm leading-6 text-white/65 sm:text-base">
+							Gestiona la operacion clinica con controles avanzados y acceso cifrado.
+						</p>
+					</div>
+				</MotionDiv>
+
+				<div className="space-y-4">
+					<MotionLabel
+						variants={itemVariants}
+						className="flex flex-col gap-2 text-sm font-medium text-white/80"
+					>
+					Correo
+						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
+							<HiOutlineMail className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
+						<input
+							type="email"
+							required
+							placeholder="nombre@tordoya.com"
+							value={formState.email}
+							onChange={(event) => handleChange("email", event.target.value)}
+								className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+							aria-label="Correo corporativo"
+						/>
+					</div>
+				</MotionLabel>
+
+					<MotionLabel
+						variants={itemVariants}
+						className="flex flex-col gap-2 text-sm font-medium text-white/80"
+					>
+					Contraseña
+						<div className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)] transition-all duration-200 hover:border-white/25 hover:bg-white/10 focus-within:border-[--color-accent] focus-within:bg-white/10 focus-within:shadow-[0_0_0_3px_rgba(0,183,250,0.18)]">
+							<HiOutlineLockClosed className="h-5 w-5 text-white/60 transition group-focus-within:text-white/90" aria-hidden="true" />
+						<input
+							type={showPassword ? "text" : "password"}
+							required
+							placeholder="Contraseña segura"
+							value={formState.password}
+							onChange={(event) => handleChange("password", event.target.value)}
+							className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+							aria-label="Contrasena"
+						/>
+						<button
+							type="button"
+							onClick={() => setShowPassword((prev) => !prev)}
+								className="rounded-full p-1 text-white/60 transition hover:text-white"
+							aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+						>
+							{showPassword ? (
+								<HiOutlineEyeOff className="h-5 w-5" />
+							) : (
+								<HiOutlineEye className="h-5 w-5" />
+							)}
+						</button>
+					</div>
+					</MotionLabel>
+				</div>
+
+				{errorMessage && (
+					<div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+						{errorMessage}
+					</div>
+				)}
+
+				{successMessage && (
+					<div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+						{successMessage}
+					</div>
+				)}
+
+				<MotionButton
+					variants={itemVariants}
+					whileHover={{ scale: 1.02, y: -1 }}
+					whileTap={{ scale: 0.98 }}
+					type="submit"
+					disabled={isLoading}
+					className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[linear-gradient(120deg,#00b7fa_0%,#55d7ff_45%,#00b7fa_100%)] px-6 py-3 text-sm font-semibold text-primary shadow-[0_16px_45px_rgba(0,183,250,0.45)] transition-all duration-300 hover:shadow-[0_24px_65px_rgba(0,183,250,0.6)] disabled:cursor-not-allowed disabled:opacity-60"
+				>
+					<span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+						<span className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_55%)]" />
+					</span>
+				{isLoading ? (
+					<>
+						<span className="h-4 w-4 animate-spin rounded-full border-2 border-[#01155a] border-t-transparent" />
+						Validando acceso...
+					</>
+				) : (
+					<>
+						Ingresar al panel
+						<span className="text-base transition-transform duration-300 group-hover:translate-x-1">
+							→
+						</span>
+					</>
+				)}
+				</MotionButton>
+
+				<p className="text-xs text-white/55">
+					Acceso exclusivo para personal autorizado. Todas las sesiones quedan registradas.
+				</p>
+			</MotionDiv>
+		</form>
+	);
 }
 </file>
 
@@ -5576,6 +7611,1006 @@ export const especialidades: Especialidad[] = [
 ];
 </file>
 
+<file path="client/features/specialties/components/SpecialtiesTable.tsx">
+"use client";
+
+import React, { useState } from "react";
+import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import SpecialtyStatusBadge from "./SpecialtyStatusBadge";
+import type { EspecialidadDTO } from "@/services/especialidades.service";
+
+type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
+const MotionDiv = motion.div as React.FC<MotionDivProps>;
+
+const ITEMS_PER_PAGE = 7;
+
+interface SpecialtiesTableProps {
+  especialidades: EspecialidadDTO[];
+  onEdit: (especialidad: EspecialidadDTO) => void;
+  onDelete: (especialidad: EspecialidadDTO) => void;
+  isLoading?: boolean;
+}
+
+const colorMap: Record<string, string> = {
+  primary: "bg-primary",
+  secondary: "bg-secondary",
+  accent: "bg-accent",
+};
+
+function SkeletonRow() {
+  return (
+    <div className="flex animate-pulse items-center gap-4 px-6 py-4">
+      <div className="h-10 w-10 rounded-lg bg-primary/5" />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 w-40 rounded bg-primary/5" />
+        <div className="h-3 w-24 rounded bg-primary/5" />
+      </div>
+      <div className="h-5 w-16 rounded-full bg-primary/5" />
+      <div className="h-3 w-20 rounded bg-primary/5" />
+      <div className="h-8 w-20 rounded-lg bg-primary/5" />
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.04]">
+        <svg className="h-8 w-8 text-primary/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </div>
+      <h3 className="mt-4 text-sm font-semibold text-foreground">No hay especialidades</h3>
+      <p className="mt-1 text-xs text-foreground/50">Crea tu primera especialidad para comenzar.</p>
+    </div>
+  );
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="flex items-center justify-between border-t border-primary/5 px-6 py-3">
+      <span className="text-xs text-foreground/40">
+        Página {currentPage} de {totalPages}
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-foreground/50 transition-colors hover:bg-primary/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Página anterior"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter((p) => {
+            if (totalPages <= 7) return true;
+            if (p === 1 || p === totalPages) return true;
+            if (Math.abs(p - currentPage) <= 1) return true;
+            return false;
+          })
+          .reduce<(number | "ellipsis")[]>((acc, p, idx, arr) => {
+            if (idx > 0) {
+              const prev = arr[idx - 1];
+              if (p - prev > 1) acc.push("ellipsis");
+            }
+            acc.push(p);
+            return acc;
+          }, [])
+          .map((item, i) =>
+            item === "ellipsis" ? (
+              <span key={`e${i}`} className="flex h-8 w-4 items-center justify-center text-xs text-foreground/30">
+                ...
+              </span>
+            ) : (
+              <button
+                key={item}
+                onClick={() => onPageChange(item)}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all duration-200",
+                  currentPage === item
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-foreground/50 hover:bg-primary/5 hover:text-foreground"
+                )}
+                aria-label={`Página ${item}`}
+                aria-current={currentPage === item ? "page" : undefined}
+              >
+                {item}
+              </button>
+            )
+          )}
+
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-foreground/50 transition-colors hover:bg-primary/5 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          aria-label="Página siguiente"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ActionMenu({
+  onEdit,
+  onDelete,
+}: {
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-primary/5 hover:text-foreground/70"
+        aria-label="Acciones"
+      >
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.5" fill="currentColor" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+          <circle cx="12" cy="19" r="1.5" fill="currentColor" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} aria-hidden="true" />
+            <MotionDiv
+              initial={{ opacity: 0, scale: 0.95, y: -4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -4 }}
+              transition={{ duration: 0.12 }}
+              className="absolute right-0 z-20 w-44 origin-top-right overflow-hidden rounded-xl border border-primary/10 bg-white shadow-lg"
+            >
+              <button
+                onClick={() => { onEdit(); setIsOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-foreground/70 transition-colors hover:bg-primary/5"
+              >
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Editar
+              </button>
+              <button
+                onClick={() => { onDelete(); setIsOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-danger/80 transition-colors hover:bg-danger/5"
+              >
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Eliminar
+              </button>
+            </MotionDiv>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Tabla moderna tipo SaaS para listar especialidades médicas.
+ * Incluye paginación (7 items/página), skeleton loading, menú contextual.
+ */
+export default function SpecialtiesTable({
+  especialidades,
+  onEdit,
+  onDelete,
+  isLoading = false,
+}: SpecialtiesTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(especialidades.length / ITEMS_PER_PAGE));
+
+  // Resetear página cuando cambian los datos filtrados
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedItems = especialidades.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  if (isLoading) {
+    return (
+      <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+        <div className="divide-y divide-primary/5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <SkeletonRow key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (especialidades.length === 0) {
+    return <EmptyState />;
+  }
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+      {/* Header */}
+      <div className="hidden md:grid grid-cols-[1fr_auto_auto_auto_auto] gap-12 border-b border-primary/5 bg-primary/[0.02] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground/40">
+        <span>Especialidad</span>
+        <span>Estado</span>
+        <span>Servicios</span>
+        <span>Orden</span>
+        <span className="w-20 text-center">Acciones</span>
+      </div>
+
+      {/* Filas */}
+      <div className="divide-y divide-primary/5">
+        {paginatedItems.map((esp, i) => {
+          const serviciosCount = esp.servicios?.length ?? 0;
+          const bgColor = colorMap[esp.color] || "bg-primary";
+
+          return (
+            <MotionDiv
+              key={esp.id || esp.slug}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: i * 0.03 }}
+              className={cn(
+                "group transition-colors duration-150 hover:bg-primary/[0.02]",
+                "md:grid md:grid-cols-[1fr_auto_auto_auto_auto] md:gap-23 md:items-center md:px-6"
+              )}
+            >
+              <div className="flex items-center gap-4 px-4 py-4 md:px-0 md:py-3">
+                <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white", bgColor)}>
+                  <span className="text-xs font-black">T</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-3">
+                    <span className="truncate text-sm font-semibold text-foreground">{esp.nombre}</span>
+                    <span className="md:hidden">
+                      <SpecialtyStatusBadge active={esp.activo} size="sm" />
+                    </span>
+                  </div>
+                  <p className="truncate text-[11px] text-foreground/40">{esp.slug}</p>
+                </div>
+              </div>
+
+              <div className="hidden md:block">
+                <SpecialtyStatusBadge active={esp.activo} size="sm" />
+              </div>
+              <div className="hidden md:block text-sm text-foreground/60">{serviciosCount}</div>
+              <div className="hidden md:block text-sm text-foreground/60">{esp.orden}</div>
+              <div className="hidden md:flex items-center justify-center">
+                <ActionMenu onEdit={() => onEdit(esp)} onDelete={() => onDelete(esp)} />
+              </div>
+
+              <div className="flex items-center gap-2 border-t border-primary/5 px-4 pb-3 pt-2 md:hidden">
+                <div className="flex-1">
+                  <SpecialtyStatusBadge active={esp.activo} size="sm" />
+                </div>
+                <button
+                  onClick={() => onEdit(esp)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-primary/10 px-3 py-1.5 text-[11px] font-medium text-foreground/60 transition-colors hover:bg-primary/5"
+                >
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Editar
+                </button>
+                <button
+                  onClick={() => onDelete(esp)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-danger/10 px-3 py-1.5 text-[11px] font-medium text-danger/60 transition-colors hover:bg-danger/5"
+                >
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Eliminar
+                </button>
+              </div>
+            </MotionDiv>
+          );
+        })}
+      </div>
+
+      {/* Paginación */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="client/lib/utils.ts">
+/**
+ * Utilidad para concatenar clases de Tailwind CSS de forma condicional.
+ * Versión ligera sin dependencias externas (clsx / class-variance-authority).
+ */
+export function cn(...classes: (string | boolean | undefined | null)[]): string {
+  return classes.filter(Boolean).join(" ");
+}
+
+export function toTrimLower(value: string): string {
+  return value.trim().toLowerCase();
+}
+</file>
+
+<file path="client/services/especialidades.service.ts">
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export interface ServicioDTO {
+  id: string;
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  precio: number | null;
+  duracionMinutos: number | null;
+  activo: boolean;
+  orden: number;
+}
+
+export interface EspecialidadDTO {
+  id: string;
+  slug: string;
+  nombre: string;
+  icon: string;
+  color: string;
+  imagen: string;
+  activo: boolean;
+  orden: number;
+  servicios: ServicioDTO[];
+}
+
+export async function getEspecialidades(): Promise<EspecialidadDTO[]> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(`${API_URL}/especialidades`, {
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+    const text = await response.text();
+    if (!text) return [];
+    return JSON.parse(text) as EspecialidadDTO[];
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.warn("API no disponible:", err);
+    throw err;
+  }
+}
+
+export async function getEspecialidadBySlug(
+  slug: string,
+): Promise<EspecialidadDTO> {
+  const response = await fetch(`${API_URL}/especialidades/${slug}`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+  return (await response.json()) as EspecialidadDTO;
+}
+</file>
+
+<file path="server/prisma.config.ts">
+// This file was generated by Prisma, and assumes you have installed the following:
+// npm install --save-dev prisma dotenv
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+    seed: "npx ts-node prisma/seed.ts",
+  },
+  datasource: {
+    url: process.env["DATABASE_URL"],
+  },
+});
+</file>
+
+<file path="server/src/auth/auth.service.ts">
+import { Injectable } from '@nestjs/common';
+import type { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class AuthService {
+  constructor(private prisma: PrismaService) {}
+
+  async login(payload: LoginDto) {
+    const email = payload.email.trim().toLowerCase();
+
+    const user = await this.prisma.usuario.findFirst({
+      where: { email },
+    });
+
+    if (!user || user.password !== payload.password) {
+      return null;
+    }
+
+    return {
+      token: 'demo-token',
+      user: {
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+}
+</file>
+
+<file path="server/src/prisma/prisma.service.ts">
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  constructor() {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL is not set. Check your .env file.');
+    }
+
+    super({
+      adapter: new PrismaPg({ connectionString: databaseUrl }),
+    });
+  }
+
+  async onModuleInit() {
+    await this.$connect();
+  }
+}
+</file>
+
+<file path="client/components/dashboard/Sidebar.tsx">
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import {
+  HiOutlineViewGrid,
+  HiOutlineViewList,
+  HiOutlineUserGroup,
+  HiOutlineCalendar,
+  HiOutlineDocumentText,
+  HiOutlineChartBar,
+  HiOutlineCash,
+  HiOutlineCog,
+  HiOutlineLogout,
+  HiOutlineChevronLeft,
+  HiOutlineMenu,
+  HiOutlineBell,
+  HiOutlineQuestionMarkCircle,
+  HiOutlineShieldCheck,
+  HiOutlinePencilAlt,
+} from "react-icons/hi";
+import type { IconType } from "react-icons";
+
+/* ==========================================================================
+   INTERFACES Y TIPOS
+   ========================================================================== */
+
+export interface SidebarNavItem {
+  label: string;
+  icon: IconType;
+  href: string;
+  badge?: string | number;
+  disabled?: boolean;
+}
+
+export interface SidebarUser {
+  name: string;
+  email: string;
+  avatar?: string;
+  initials: string;
+  role: string;
+}
+
+/* ==========================================================================
+   DATOS DE NAVEGACIÓN
+   ========================================================================== */
+
+const mainNavItems: SidebarNavItem[] = [
+  { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
+  { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades" },
+  { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: 46 },
+
+ 
+];
+
+const secondaryNavItems: SidebarNavItem[] = [
+  { label: "Configuración", icon: HiOutlineCog, href: "/admin/configuracion" },
+  
+];
+
+const tertiaryNavItems: SidebarNavItem[] = [
+ 
+  { label: "Bitácora", icon: HiOutlinePencilAlt, href: "/admin/bitacora" },
+];
+
+/* ==========================================================================
+   SUBCOMPONENTES
+   ========================================================================== */
+
+interface SidebarLogoProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+function SidebarLogo({ collapsed, onToggle }: SidebarLogoProps) {
+  return (
+    <div
+      className={cn(
+        "flex h-16 items-center border-b border-white/10 px-4 transition-all duration-300",
+        collapsed ? "justify-center px-0" : "justify-between"
+      )}
+    >
+      <Link
+        href="/admin"
+        className={cn(
+          "flex items-center gap-3 overflow-hidden transition-all duration-300",
+          collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+        )}
+      >
+        <Image
+          src="/image/logo-white.webp"
+          alt="Tordoya"
+          width={120}
+          height={30}
+          className="h-7 w-auto shrink-0"
+          priority
+        />
+      </Link>
+
+      <Link
+        href="/admin"
+        className={cn(
+          "flex items-center justify-center overflow-hidden transition-all duration-300",
+          collapsed ? "w-auto opacity-100" : "w-0 opacity-0"
+        )}
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/20 text-xs font-black text-accent">
+          T
+        </span>
+      </Link>
+
+      <button
+        onClick={onToggle}
+        className={cn(
+          "hidden md:flex items-center justify-center rounded-lg p-1.5 text-white/50 transition-all duration-200 hover:bg-white/10 hover:text-white/80",
+          collapsed ? "mx-auto" : ""
+        )}
+        aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+        title={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+      >
+        <HiOutlineChevronLeft
+          size={18}
+          className={cn(
+            "transition-transform duration-300",
+            collapsed ? "rotate-180" : ""
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
+interface NotificationBadgeProps {
+  collapsed: boolean;
+}
+
+function NotificationBadge({ collapsed }: NotificationBadgeProps) {
+  return (
+    <div
+      className={cn(
+        "border-b border-white/10 transition-all duration-300",
+        collapsed ? "px-0 py-3" : "px-4 py-3"
+      )}
+    >
+      <button
+        className={cn(
+          "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:text-white/90",
+          collapsed ? "justify-center px-0" : ""
+        )}
+        aria-label="Notificaciones"
+      >
+        <span className="relative inline-flex">
+          <HiOutlineBell size={20} />
+          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white ring-2 ring-primary">
+            3
+          </span>
+        </span>
+        <span
+          className={cn(
+            "overflow-hidden whitespace-nowrap transition-all duration-300",
+            collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}
+        >
+          3 pendientes
+        </span>
+      </button>
+    </div>
+  );
+}
+
+interface NavItemProps {
+  item: SidebarNavItem;
+  collapsed: boolean;
+  currentPath: string;
+}
+
+function NavItem({ item, collapsed, currentPath }: NavItemProps) {
+  const active = currentPath === item.href;
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.disabled ? "#" : item.href}
+      className={cn(
+        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+        collapsed ? "justify-center px-0 mx-2" : "",
+        active
+          ? "bg-white/10 text-accent shadow-[inset_3px_0_0_var(--color-accent)]"
+          : "text-white/60 hover:bg-white/[0.06] hover:text-white/85",
+        item.disabled && "pointer-events-none opacity-40"
+      )}
+      title={collapsed ? item.label : undefined}
+      aria-current={active ? "page" : undefined}
+    >
+      <Icon
+        size={20}
+        className={cn(
+          "shrink-0 transition-colors duration-200",
+          active ? "text-accent" : "text-white/50 group-hover:text-white/75"
+        )}
+      />
+
+      <span
+        className={cn(
+          "overflow-hidden whitespace-nowrap transition-all duration-300",
+          collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+        )}
+      >
+        {item.label}
+      </span>
+
+      {item.badge && (
+        <span
+          className={cn(
+            "ml-auto flex shrink-0 items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold leading-none transition-all duration-300",
+            collapsed
+              ? "absolute -right-0.5 -top-0.5 h-5 min-w-5 px-1"
+              : "",
+            active
+              ? "bg-accent/20 text-accent"
+              : "bg-white/10 text-white/70"
+          )}
+        >
+          {item.badge}
+        </span>
+      )}
+
+      {collapsed && (
+        <div className="pointer-events-none absolute left-full z-50 ml-3 rounded-lg bg-dark px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 whitespace-nowrap">
+          {item.label}
+        </div>
+      )}
+    </Link>
+  );
+}
+
+interface NavSectionProps {
+  title?: string;
+  items: SidebarNavItem[];
+  collapsed: boolean;
+  currentPath: string;
+  showTitle?: boolean;
+}
+
+function NavSection({
+  title,
+  items,
+  collapsed,
+  currentPath,
+  showTitle = true,
+}: NavSectionProps) {
+  return (
+    <div className="px-3 py-1">
+      {title && showTitle && (
+        <span
+          className={cn(
+            "flex px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/35 transition-all duration-300",
+            collapsed ? "justify-center px-0" : ""
+          )}
+        >
+          {collapsed ? (
+            <span className="h-px w-4 bg-white/20" aria-hidden="true" />
+          ) : (
+            title
+          )}
+        </span>
+      )}
+      <div className="space-y-0.5">
+        {items.map((item) => (
+          <NavItem
+            key={item.href}
+            item={item}
+            collapsed={collapsed}
+            currentPath={currentPath}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface UserProfileProps {
+  user: SidebarUser;
+  collapsed: boolean;
+  onLogout?: () => void;
+}
+
+function UserProfile({ user, collapsed, onLogout }: UserProfileProps) {
+  return (
+    <div className="border-t border-white/10 p-3">
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-white/[0.06]",
+          collapsed ? "justify-center px-0" : ""
+        )}
+      >
+        {/* Avatar */}
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-bold text-accent ring-2 ring-white/10">
+          {user.avatar ? (
+            <Image
+              src={user.avatar}
+              alt={user.name}
+              width={36}
+              height={36}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            user.initials
+          )}
+        </div>
+
+        {/* Info del usuario */}
+        <div
+          className={cn(
+            "flex-1 overflow-hidden transition-all duration-300",
+            collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}
+        >
+          <p className="truncate text-sm font-semibold text-white/90">
+            {user.name}
+          </p>
+          <p className="truncate text-[11px] text-white/50">{user.role}</p>
+        </div>
+      </div>
+
+      {/* Botón de cerrar sesión */}
+      <button
+        onClick={onLogout}
+        className={cn(
+          "mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/50 transition-all duration-200 hover:bg-white/[0.08] hover:text-danger",
+          collapsed ? "justify-center px-0" : ""
+        )}
+        aria-label="Cerrar sesión"
+        title={collapsed ? "Cerrar sesión" : undefined}
+      >
+        <HiOutlineLogout size={18} className="shrink-0" />
+        <span
+          className={cn(
+            "overflow-hidden whitespace-nowrap transition-all duration-300",
+            collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}
+        >
+          Cerrar sesión
+        </span>
+      </button>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENTE PRINCIPAL SIDEBAR
+   ========================================================================== */
+
+interface SidebarProps {
+  user?: SidebarUser;
+  currentPath?: string;
+  onLogout?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: (collapsed: boolean) => void;
+}
+
+const DEFAULT_USER: SidebarUser = {
+  name: "Dr. Roberto López",
+  email: "roberto@tordoya.com",
+  initials: "RL",
+  role: "Administrador",
+};
+
+export default function Sidebar({
+  user = DEFAULT_USER,
+  currentPath = "/admin",
+  onLogout,
+  collapsed: externalCollapsed,
+  onToggleCollapse,
+}: SidebarProps) {
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isCollapsed = externalCollapsed ?? internalCollapsed;
+
+  const handleToggle = () => {
+    const next = !isCollapsed;
+    if (onToggleCollapse) {
+      onToggleCollapse(next);
+    } else {
+      setInternalCollapsed(next);
+    }
+  };
+
+  return (
+    <>
+      {/* OVERLAY MÓVIL */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* BOTÓN HAMBURGUESA MÓVIL */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg md:hidden"
+        aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={mobileOpen}
+      >
+        <HiOutlineMenu size={22} />
+      </button>
+
+      {/* SIDEBAR ESCRITORIO */}
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-50 flex flex-col bg-primary text-white shadow-2xl shadow-black/20",
+          "transition-all duration-300 ease-in-out",
+          "h-screen",
+          "hidden md:flex",
+          isCollapsed ? "w-16" : "w-64",
+          "translate-x-0"
+        )}
+        aria-label="Panel de navegación principal"
+      >
+        <SidebarLogo collapsed={isCollapsed} onToggle={handleToggle} />
+        <NotificationBadge collapsed={isCollapsed} />
+
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2">
+          <NavSection
+            title="Principal"
+            items={mainNavItems}
+            collapsed={isCollapsed}
+            currentPath={currentPath}
+          />
+          <NavSection
+            title="Administración"
+            items={secondaryNavItems}
+            collapsed={isCollapsed}
+            currentPath={currentPath}
+          />
+          <NavSection
+            title="Sistema"
+            items={tertiaryNavItems}
+            collapsed={isCollapsed}
+            currentPath={currentPath}
+            showTitle={false}
+          />
+        </nav>
+
+        <UserProfile
+          user={user}
+          collapsed={isCollapsed}
+          onLogout={onLogout}
+        />
+      </aside>
+
+      {/* SIDEBAR MÓVIL (overlay) */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex flex-col bg-primary text-white shadow-2xl shadow-black/20",
+          "transition-all duration-300 ease-in-out",
+          "md:hidden",
+          mobileOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full"
+        )}
+        aria-label="Panel de navegación móvil"
+        aria-hidden={!mobileOpen}
+      >
+        {/* Logo móvil */}
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
+          <Link href="/admin" className="flex items-center gap-3">
+            <Image
+              src="/image/logo-white.webp"
+              alt="Tordoya"
+              width={120}
+              height={30}
+              className="h-7 w-auto"
+              priority
+            />
+          </Link>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center justify-center rounded-lg p-1.5 text-white/50 hover:bg-white/10 hover:text-white/80"
+            aria-label="Cerrar menú"
+          >
+            <HiOutlineChevronLeft size={20} />
+          </button>
+        </div>
+
+        <NotificationBadge collapsed={false} />
+
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2">
+          <NavSection
+            title="Principal"
+            items={mainNavItems}
+            collapsed={false}
+            currentPath={currentPath}
+          />
+          <NavSection
+            title="Administración"
+            items={secondaryNavItems}
+            collapsed={false}
+            currentPath={currentPath}
+          />
+          <NavSection
+            title="Sistema"
+            items={tertiaryNavItems}
+            collapsed={false}
+            currentPath={currentPath}
+            showTitle={false}
+          />
+        </nav>
+
+        <UserProfile user={user} collapsed={false} onLogout={onLogout} />
+      </aside>
+
+      {/* ESPACIADOR PARA CONTENIDO PRINCIPAL */}
+      <div
+        className={cn(
+          "hidden md:block shrink-0 transition-all duration-300",
+          isCollapsed ? "w-16" : "w-64"
+        )}
+        aria-hidden="true"
+      />
+    </>
+  );
+}
+</file>
+
 <file path="README.md">
 # Tordoya App
 
@@ -5655,6 +8690,553 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 </file>
 
+<file path="server/prisma/schema.prisma">
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("usuarios")
+}
+
+model Especialidad {
+  id        String    @id @default(uuid())
+  slug      String    @unique
+  nombre    String
+  icon      String    @default("HiOutlineViewList")
+  color     String    @default("primary")
+  imagen    String
+  activo    Boolean   @default(true)
+  orden     Int       @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  servicios Servicio[]
+
+  @@map("especialidades")
+}
+
+model Servicio {
+  id              String       @id @default(uuid())
+  slug            String       @unique
+  nombre          String
+  descripcion     String?
+  precio          Decimal?     @db.Decimal(10, 2)
+  duracionMinutos Int?
+  activo          Boolean      @default(true)
+  orden           Int          @default(0)
+
+  especialidadId  String
+  especialidad    Especialidad @relation(fields: [especialidadId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("servicios")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+</file>
+
+<file path="server/src/app.module.ts">
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { EspecialidadesModule } from './especialidades/especialidades.module';
+import { ServiciosModule } from './servicios/servicios.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    EspecialidadesModule,
+    ServiciosModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+</file>
+
+<file path="server/src/main.ts">
+import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  const configService = app.get(ConfigService);
+
+  // CORS: acepta desarrollo local y los dominios de producción en Vercel
+  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+  const allowedOrigins = corsOrigin
+    ? corsOrigin.split(',').map((o) => o.trim())
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://consultorio-tordoya.vercel.app',
+        'https://tordoya.vercel.app',
+      ];
+
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  const port = configService.get<number>('PORT') || 5000;
+
+  await app.listen(port);
+
+  console.log(`Backend running on http://localhost:${port}`);
+  console.log(`CORS enabled for: ${allowedOrigins.join(', ')}`);
+}
+bootstrap();
+</file>
+
+<file path="client/components/Services.tsx">
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { motion, type MotionProps } from "framer-motion";
+import {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+  HiChevronDown,
+  HiOutlineCalendar,
+} from "react-icons/hi";
+import { getEspecialidades } from "@/services/especialidades.service";
+import type { EspecialidadDTO } from "@/services/especialidades.service";
+
+import { especialidades as fallbackData } from "@/data/especialidades";
+
+const iconMap: Record<string, React.ComponentType<{ size: number }>> = {
+  HiOutlineViewList,
+  HiOutlineHeart,
+  HiOutlineArrowUp,
+  HiOutlineBeaker,
+  HiOutlineTrendingUp,
+  HiOutlineExclamation,
+  HiOutlineShieldExclamation,
+  HiOutlineArchive,
+  HiOutlineInformationCircle,
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+const servicesPanelTransition = {
+  duration: 0.42,
+  ease: [0.22, 1, 0.36, 1],
+};
+
+const MotionDiv = motion.div as React.ComponentType<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
+>;
+
+const MotionButton = motion.button as React.ComponentType<
+  React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps>
+>;
+
+function mapFallbackToDTO(data: typeof fallbackData): EspecialidadDTO[] {
+  return data.map((esp) => ({
+    id: esp.id,
+    slug: esp.id,
+    nombre: esp.nombre,
+    icon: esp.icon,
+    color: esp.color,
+    imagen: esp.imagen || "",
+    activo: true,
+    orden: 0,
+    servicios: (esp.servicios || []).map((svc) => ({
+      id: svc.id,
+      slug: svc.id,
+      nombre: svc.nombre,
+      descripcion: null,
+      precio: null,
+      duracionMinutos: null,
+      activo: true,
+      orden: 0,
+    })),
+  }));
+}
+
+export default function Services() {
+  const [allEspecialidades, setAllEspecialidades] = useState<EspecialidadDTO[]>(() =>
+    mapFallbackToDTO(fallbackData)
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        const data = await getEspecialidades();
+        if (mounted && data?.length) {
+          setAllEspecialidades(data);
+        }
+      } catch {
+        // Fallback ya cargado
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // ✅ SOLO mostrar especialidades ACTIVAS en el home
+  const especialidades = allEspecialidades.filter((e) => e.activo !== false);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  if (isLoading) {
+    return (
+      <section id="servicios" className="bg-light py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="text-4xl font-black text-primary sm:text-5xl">Nuestros Servicios</h2>
+            <p className="mt-4 text-lg text-foreground/70">Servicios integrales de imagenologia diagnostica con tecnologia de ultima generacion</p>
+          </div>
+          <div className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-64 animate-pulse rounded-xl bg-primary/5" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="servicios" className="bg-light py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <MotionDiv
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 text-center"
+        >
+          <h2 className="text-4xl font-black text-primary sm:text-5xl">Nuestros Servicios</h2>
+          <p className="mt-4 text-lg text-foreground/70">Servicios integrales de imagenologia diagnostica con tecnologia de ultima generacion</p>
+        </MotionDiv>
+
+        <MotionDiv
+          className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={containerVariants}
+        >
+          {especialidades.map((especialidad) => {
+            const IconComponent = iconMap[especialidad.icon] || HiOutlineViewList;
+            const isExpanded = expandedId === especialidad.slug;
+            const servicios = especialidad.servicios ?? [];
+
+            return (
+              <MotionDiv
+                key={especialidad.slug}
+                variants={cardVariants}
+                className="group h-fit self-start overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg"
+              >
+                <div
+                  className={`relative overflow-hidden ${
+                    especialidad.color === "primary"
+                      ? "bg-linear-to-br from-primary to-primary/70"
+                      : especialidad.color === "secondary"
+                      ? "bg-linear-to-br from-secondary to-secondary/70"
+                      : "bg-linear-to-br from-accent to-accent/70"
+                  } p-6 transition-all duration-300`}
+                >
+                  {especialidad.imagen && (
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-cover rounded-xl bg-right opacity-60 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
+                      style={{ backgroundImage: `url(${especialidad.imagen})` }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/40" aria-hidden="true" />
+                  <div className="relative z-10 flex items-start justify-between">
+                    <div className="relative flex-1">
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm text-white">
+                        {IconComponent && <IconComponent size={24} />}
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{especialidad.nombre}</h3>
+                      <p className="mt-1 text-sm text-white/80">{servicios.length} servicios disponibles</p>
+                    </div>
+                  </div>
+
+                  <MotionButton
+                    onClick={() => toggleExpanded(especialidad.slug)}
+                    className="relative z-10 mt-4 inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/30"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>{isExpanded ? "Ocultar" : "Ver"} servicios</span>
+                    <MotionDiv
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-white"
+                    >
+                      <HiChevronDown size={18} />
+                    </MotionDiv>
+                  </MotionButton>
+                </div>
+
+                <MotionDiv
+                  initial={false}
+                  animate={{ height: isExpanded ? "auto" : 0, opacity: isExpanded ? 1 : 0 }}
+                  transition={servicesPanelTransition}
+                  className="overflow-hidden bg-white"
+                  aria-hidden={!isExpanded}
+                >
+                  <MotionDiv
+                    animate={{ y: isExpanded ? 0 : -8 }}
+                    transition={servicesPanelTransition}
+                    className="space-y-2 px-6 py-4"
+                  >
+                    {servicios.map((servicio) => (
+                      <MotionDiv
+                        key={servicio.slug}
+                        animate={{ opacity: isExpanded ? 1 : 0, x: isExpanded ? 0 : -8 }}
+                        transition={{ duration: 0.28 }}
+                        className="group/item flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-3 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10"
+                      >
+                        <span className="text-sm font-medium text-foreground">{servicio.nombre}</span>
+                        <MotionButton
+                          animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
+                          transition={{ duration: 0.22 }}
+                          className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          tabIndex={isExpanded ? 0 : -1}
+                        >
+                          <HiOutlineCalendar size={14} />
+                          <span>Agendar</span>
+                        </MotionButton>
+                      </MotionDiv>
+                    ))}
+                  </MotionDiv>
+                </MotionDiv>
+              </MotionDiv>
+            );
+          })}
+        </MotionDiv>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="client/lib/constants.ts">
+export const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export const AUTH_TOKEN_KEY = "auth_token";
+</file>
+
+<file path="server/package.json">
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "scripts": {
+    "build": "npx prisma generate && npx nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.24",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.1.24",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "*",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.24",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcrypt": "^6.0.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.21.0",
+    "prisma": "^7.8.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^7.0.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^17.0.0",
+    "jest": "^30.0.0",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
+</file>
+
+<file path="server/start.sh">
+#!/bin/bash
+set -e
+
+echo "=== INICIO DEL DEPLOY ==="
+echo "Directorio actual: $(pwd)"
+echo "Contenido:"
+ls -la
+
+echo ""
+echo "🔧 Paso 1: Instalar dependencias..."
+npm install --include=dev
+
+echo ""
+echo "🔧 Paso 2: Generar Prisma Client..."
+npx prisma generate
+
+echo ""
+echo "🔧 Paso 3: Compilar TypeScript..."
+npx nest build
+
+echo ""
+echo "🔧 Paso 4: Ejecutar migraciones..."
+npx prisma migrate deploy
+
+echo ""
+echo "🌱 Paso 5: Sembrar datos..."
+npx ts-node prisma/seed.ts || echo "Seed ya ejecutado"
+
+echo ""
+echo "🚀 Paso 6: Iniciar servidor..."
+echo "Contenido de dist/:"
+ls -la dist/
+echo ""
+echo "Buscando archivo principal..."
+find dist/ -name "main*" -type f 2>/dev/null | head -10
+
+# Intentar varias ubicaciones posibles
+if [ -f "dist/main.js" ]; then
+  echo "✅ main.js en dist/"
+  node dist/main.js
+elif [ -f "dist/main" ]; then
+  echo "✅ main en dist/"
+  node dist/main
+elif [ -f "dist/src/main.js" ]; then
+  echo "✅ main.js en dist/src/"
+  node dist/src/main.js
+elif [ -f "dist/src/main" ]; then
+  echo "✅ main en dist/src/"
+  node dist/src/main
+else
+  echo "❌ No se encontró el archivo principal"
+  echo "Buscando archivos .js en dist/..."
+  find dist/ -name "*.js" -type f 2>/dev/null | head -20
+  exit 1
+fi
+</file>
+
 </files>
-=======
->>>>>>> 6b89220b26577020172a8253e8924767ace331e7

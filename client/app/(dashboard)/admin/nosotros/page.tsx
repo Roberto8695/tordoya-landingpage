@@ -37,13 +37,7 @@ function NosotrosContent() {
               </p>
             </div>
 
-            <button
-              onClick={handleReset}
-              className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-rose-200 bg-white px-5 py-3 text-sm font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 hover:shadow-md"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Restaurar por defecto
-            </button>
+            
           </div>
 
           {/* Success message */}
