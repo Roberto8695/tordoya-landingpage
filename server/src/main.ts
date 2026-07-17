@@ -32,11 +32,11 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const port = configService.get<number>('PORT') || 5000;
+  const port = configService.get<number>('PORT') || 3000;
 
-  await app.listen(port);
+  await app.listen(process.env.PORT ?? 3000);
 
-  console.log(`Backend running on http://localhost:${port}`);
+  console.log(`Backend running on port ${port}`);
   console.log(`CORS enabled for: ${allowedOrigins.join(', ')}`);
 }
 bootstrap();
