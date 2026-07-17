@@ -305,21 +305,7 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="absolute right-6 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-2 md:flex">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setActiveSlide(i)}
-            className={`flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 ${
-              i === activeSlide ? "bg-white/20 text-white" : "bg-white/5 text-white/50 hover:bg-white/15 hover:text-white/80"
-            }`}
-            aria-label={`Ir al slide ${i + 1}`}
-          >
-            <span className="text-xs font-bold">{i + 1}</span>
-          </button>
-        ))}
-      </div>
+      
     </section>
   );
 }
