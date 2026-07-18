@@ -7,7 +7,7 @@ const NOTIFICATION_INTERVAL = 3 * 60 * 1000;
 const BUZZ_DURATION = 3000;
 
 export default function WhatsAppButton() {
-  const whatsappNumber = '5491234567890'; // Cambia esto por tu número de WhatsApp
+  const whatsappNumber = '+5215547157971'; // Cambia esto por tu número de WhatsApp
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hola,%20me%20gustaría%20conocer%20más%20sobre%20los%20servicios`;
   const [unreadCount, setUnreadCount] = useState(0);
   const [isBuzzing, setIsBuzzing] = useState(false);

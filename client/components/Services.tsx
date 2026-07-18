@@ -58,6 +58,19 @@ const servicesPanelTransition = {
   ease: [0.22, 1, 0.36, 1],
 };
 
+const whatsappNumber = "525547157971";
+
+function openWhatsAppToSchedule(serviceName: string) {
+  const message = [
+    "Hola, quiero agendar un servicio.",
+    `Servicio: ${serviceName}`,
+    "¿Me pueden apoyar con la disponibilidad y el proceso de agendado?",
+  ].join("\n");
+
+  const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 const MotionDiv = motion.div as React.ComponentType<
   React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
 >;
@@ -269,6 +282,8 @@ export default function Services() {
                       >
                         <span className="text-sm font-medium text-foreground">{servicio.nombre}</span>
                         <MotionButton
+                          type="button"
+                          onClick={() => openWhatsAppToSchedule(servicio.nombre)}
                           animate={{ opacity: isExpanded ? 1 : 0, scale: isExpanded ? 1 : 0.95 }}
                           transition={{ duration: 0.22 }}
                           className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-xs font-bold text-white opacity-0 transition-all duration-200 hover:bg-secondary group-hover/item:opacity-100"

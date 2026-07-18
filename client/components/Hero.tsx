@@ -85,6 +85,31 @@ export default function Hero() {
                 <div className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-white/[0.04] blur-3xl" />
                 <div className="absolute left-[20%] top-[60%] h-48 w-48 rounded-full bg-white/[0.03] blur-2xl" />
               </div>
+
+              <div
+                className="pointer-events-none absolute inset-y-0  left-45 z-0 w-[88vw] sm:w-[62vw] lg:hidden"
+                style={{ maxWidth: 460 }}
+              >
+                <div className="absolute inset-0 bg-linear-to-l from-black/20 via-black/50 to-transparent" aria-hidden="true" />
+                <Image
+                  src={slide.id === "doctora" ? "/image/banners/dra_evelia.webp" : "/image/banners/utero.webp"}
+                  alt={slide.id === "doctora" ? "Dra. Evelia Martínez" : "Salud femenina"}
+                  fill
+                  sizes="(max-width: 639px) 78vw, 62vw"
+                  className="object-contain object-bottom-right opacity-95 drop-shadow-2xl"
+                  priority={isActive}
+                />
+              </div>
+
+              <div
+                className="pointer-events-none absolute inset-0 z-[1] lg:hidden"
+                aria-hidden="true"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgba(1,21,90,0.82) 0%, rgba(1,21,90,0.62) 42%, rgba(1,21,90,0.28) 72%, rgba(1,21,90,0.08) 100%)",
+                }}
+              />
+
               <div className="absolute inset-0 opacity-[0.07]" style={{
                 backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
                 backgroundSize: "60px 60px",

@@ -8,7 +8,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { config } = useSiteConfig();
   const { header } = config;
-  const headerLogo = header.logo || "/image/logo_h.webp";
+  const headerLogo = header.logo || "/image/logo_h.svg";
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-primary/10 bg-white/95 backdrop-blur-sm shadow-sm">

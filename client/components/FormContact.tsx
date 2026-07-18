@@ -11,9 +11,46 @@ const phoneCodes = [
 
 export default function FormContact() {
 	const [status, setStatus] = useState<"idle" | "sent">("idle");
+	const [formData, setFormData] = useState({
+		fullName: "",
+		email: "",
+		phoneCode: "+52",
+		phone: "",
+		message: "",
+	});
+
+	const whatsappNumber = "525547157971";
+
+	const handleChange = (
+		field: keyof typeof formData,
+		value: string,
+	) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+	};
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+
+		const fullName = formData.fullName.trim();
+		const email = formData.email.trim();
+		const phone = formData.phone.trim();
+		const message = formData.message.trim();
+
+		if (!fullName || !email || !phone || !message) {
+			setStatus("idle");
+			return;
+		}
+
+		const text = [
+			"Hola, quisiera más información.",
+			`Nombre: ${fullName}`,
+			`Correo: ${email}`,
+			`Teléfono: ${formData.phoneCode} ${phone}`,
+			`Mensaje: ${message}`,
+		].join("\n");
+
+		const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+		window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 		setStatus("sent");
 	};
 
@@ -50,6 +87,8 @@ export default function FormContact() {
 								name="fullName"
 								type="text"
 								placeholder="Tu nombre"
+								value={formData.fullName}
+								onChange={(e) => handleChange("fullName", e.target.value)}
 								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
 							/>
 						</div>
@@ -63,6 +102,8 @@ export default function FormContact() {
 								name="email"
 								type="email"
 								placeholder="correo@ejemplo.com"
+								value={formData.email}
+								onChange={(e) => handleChange("email", e.target.value)}
 								className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
 							/>
 						</div>
@@ -76,7 +117,8 @@ export default function FormContact() {
 									<select
 										id="phoneCode"
 										name="phoneCode"
-										defaultValue="+52"
+										value={formData.phoneCode}
+										onChange={(e) => handleChange("phoneCode", e.target.value)}
 										className="h-12 w-full appearance-none rounded-xl border border-primary/12 bg-white px-3 pr-9 text-[15px] text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10"
 									>
 										{phoneCodes.map((code) => (
@@ -107,6 +149,8 @@ export default function FormContact() {
 									type="tel"
 									inputMode="tel"
 									placeholder="1234567890"
+									value={formData.phone}
+									onChange={(e) => handleChange("phone", e.target.value)}
 									className="h-12 w-full rounded-xl border border-primary/12 bg-white px-4 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
 								/>
 							</div>
@@ -121,6 +165,8 @@ export default function FormContact() {
 								name="message"
 								placeholder="¿En qué podemos ayudarte?"
 								rows={6}
+								value={formData.message}
+								onChange={(e) => handleChange("message", e.target.value)}
 								className="w-full resize-none rounded-xl border border-primary/12 bg-white px-4 py-3 text-[15px] text-foreground outline-none transition-all duration-200 placeholder:text-[#b9c5d8] focus:border-accent focus:ring-4 focus:ring-accent/10"
 							/>
 						</div>
