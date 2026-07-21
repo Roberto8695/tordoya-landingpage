@@ -24,24 +24,11 @@ export default function PortalAuthPage() {
 							
 						</div>
 						<h2 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">
-							Accede al panel administrativo clinico con seguridad reforzada.
+							Accede al panel administrativo de la página con seguridad reforzada.
 						</h2>
-						<p className="max-w-xl text-sm leading-6 text-white/70 sm:text-base">
-							Plataforma privada para gestion de pacientes, protocolos y reportes. Disenada
-							para equipos medicos que exigen control total y trazabilidad.
-						</p>
+						
 					</div>
-					<div className="flex flex-wrap gap-4 text-xs text-white/70">
-						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
-							Cifrado de extremo a extremo
-						</span>
-						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
-							Auditoria y logs en tiempo real
-						</span>
-						<span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">
-							Autenticacion multifactor
-						</span>
-					</div>
+					
 				</section>
 
 				<section className="mt-12 w-full max-w-xl lg:mt-0 lg:flex-1">

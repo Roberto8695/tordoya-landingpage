@@ -108,9 +108,7 @@ export default function LoginForm() {
 						<h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
 							Portal Administrativo Seguro
 						</h1>
-						<p className="mt-2 text-sm leading-6 text-white/65 sm:text-base">
-							Gestiona la operacion clinica con controles avanzados y acceso cifrado.
-						</p>
+						
 					</div>
 				</MotionDiv>
 
@@ -125,7 +123,7 @@ export default function LoginForm() {
 						<input
 							type="email"
 							required
-							placeholder="nombre@tordoya.com"
+							placeholder="example@gmail.com"
 							value={formState.email}
 							onChange={(event) => handleChange("email", event.target.value)}
 								className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
@@ -144,7 +142,7 @@ export default function LoginForm() {
 						<input
 							type={showPassword ? "text" : "password"}
 							required
-							placeholder="Contraseña segura"
+							placeholder="Contraseña"
 							value={formState.password}
 							onChange={(event) => handleChange("password", event.target.value)}
 							className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
@@ -205,7 +203,7 @@ export default function LoginForm() {
 				</MotionButton>
 
 				<p className="text-xs text-white/55">
-					Acceso exclusivo para personal autorizado. Todas las sesiones quedan registradas.
+					Acceso exclusivo para personal autorizado.
 				</p>
 			</MotionDiv>
 		</form>
