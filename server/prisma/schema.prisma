@@ -82,6 +82,9 @@ model ConfigFooter {
   contactEmail    String   @default("diagnosticoultrasonidotordoya@gmail.com")
   copyrightText   String   @default("© {year} Tordoya. Todos los derechos reservados.")
   copyrightSubtext String  @default("Soluciones integrales en diagnóstico por ultrasonido.")
+  facebookUrl     String   @default("https://www.facebook.com/Centromedicotordoya")
+  instagramUrl    String   @default("https://www.instagram.com/diagnosticoultrasonidotordoya")
+  tiktokUrl       String   @default("https://www.tiktok.com/@diagnosticotordoya")
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

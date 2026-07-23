@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown } from "lucide-react";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import { EditableNavList, SectionCard } from "@/features/configuraciones/config-ui";
@@ -66,9 +68,11 @@ export default function FooterConfig() {
               />
             </label>
             {footerLogoPreview && (
-              <img
+              <Image
                 src={footerLogoPreview}
                 alt="Vista previa"
+                width={180}
+                height={40}
                 className="h-10 w-auto rounded-lg border border-primary/10 bg-white object-contain p-1"
               />
             )}
@@ -123,6 +127,46 @@ export default function FooterConfig() {
                     contact: { ...config.footer.contact, email: e.target.value },
                   })
                 }
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Redes Sociales */}
+        <div>
+          <p className="mb-3 text-sm font-medium text-foreground/80">Redes Sociales</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaFacebook className="h-4 w-4 text-[#1877F2]" />
+                Facebook URL
+              </span>
+              <input
+                value={config.footer.facebookUrl}
+                onChange={(e) => updateFooter({ facebookUrl: e.target.value })}
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaInstagram className="h-4 w-4 text-[#E4405F]" />
+                Instagram URL
+              </span>
+              <input
+                value={config.footer.instagramUrl}
+                onChange={(e) => updateFooter({ instagramUrl: e.target.value })}
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaTiktok className="h-4 w-4 text-black" />
+                TikTok URL
+              </span>
+              <input
+                value={config.footer.tiktokUrl}
+                onChange={(e) => updateFooter({ tiktokUrl: e.target.value })}
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>

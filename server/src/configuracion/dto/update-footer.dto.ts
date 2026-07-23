@@ -8,4 +8,7 @@ export class UpdateFooterDto {
   contactEmail?: string;
   copyrightText?: string;
   copyrightSubtext?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  tiktokUrl?: string;
 }

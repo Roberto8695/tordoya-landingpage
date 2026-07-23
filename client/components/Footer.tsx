@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone } from "react-icons/hi";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 
 export default function Footer() {
@@ -40,6 +41,36 @@ export default function Footer() {
 									{tag}
 								</span>
 							))}
+						</div>
+
+						<div className="mt-6 flex gap-3">
+							<a
+								href={footer.facebookUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white transition-all duration-200 hover:bg-[#1877F2] hover:shadow-lg hover:-translate-y-0.5"
+								aria-label="Facebook"
+							>
+								<FaFacebook size={20} />
+							</a>
+							<a
+								href={footer.instagramUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white transition-all duration-200 hover:bg-gradient-to-br hover:from-[#833AB4] hover:via-[#FD1D1D] hover:to-[#F77737] hover:shadow-lg hover:-translate-y-0.5"
+								aria-label="Instagram"
+							>
+								<FaInstagram size={20} />
+							</a>
+							<a
+								href={footer.tiktokUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white transition-all duration-200 hover:bg-black hover:shadow-lg hover:-translate-y-0.5"
+								aria-label="TikTok"
+							>
+								<FaTiktok size={20} />
+							</a>
 						</div>
 					</div>
 

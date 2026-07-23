@@ -43,6 +43,9 @@ export interface SiteConfig {
     };
     copyrightText: string;
     copyrightSubtext: string;
+    facebookUrl: string;
+    instagramUrl: string;
+    tiktokUrl: string;
   };
 }
 
@@ -77,6 +80,9 @@ const DEFAULT_CONFIG: SiteConfig = {
     },
     copyrightText: "© {year} Tordoya. Todos los derechos reservados.",
     copyrightSubtext: "Soluciones integrales en diagnóstico por ultrasonido.",
+    facebookUrl: "https://www.facebook.com/Centromedicotordoya",
+    instagramUrl: "https://www.instagram.com/diagnosticoultrasonidotordoya",
+    tiktokUrl: "https://www.tiktok.com/@diagnosticotordoya",
   },
 };
 
@@ -114,6 +120,9 @@ function apiToSiteConfig(
     contactEmail: string;
     copyrightText: string;
     copyrightSubtext: string;
+    facebookUrl: string;
+    instagramUrl: string;
+    tiktokUrl: string;
   }
 ): SiteConfig {
   return {
@@ -135,6 +144,9 @@ function apiToSiteConfig(
       },
       copyrightText: footer.copyrightText,
       copyrightSubtext: footer.copyrightSubtext,
+      facebookUrl: footer.facebookUrl,
+      instagramUrl: footer.instagramUrl,
+      tiktokUrl: footer.tiktokUrl,
     },
   };
 }
@@ -207,6 +219,9 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
           contactEmail: nextFooter.contact.email,
           copyrightText: nextFooter.copyrightText,
           copyrightSubtext: nextFooter.copyrightSubtext,
+          facebookUrl: nextFooter.facebookUrl,
+          instagramUrl: nextFooter.instagramUrl,
+          tiktokUrl: nextFooter.tiktokUrl,
         });
         setError(null);
       } catch {

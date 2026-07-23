@@ -26,6 +26,9 @@ export interface ConfigFooterDTO {
   contactEmail: string;
   copyrightText: string;
   copyrightSubtext: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  tiktokUrl: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -83,6 +86,9 @@ export async function updateFooter(
     contactEmail: string;
     copyrightText: string;
     copyrightSubtext: string;
+    facebookUrl: string;
+    instagramUrl: string;
+    tiktokUrl: string;
   }>
 ): Promise<ConfigFooterDTO> {
   const res = await fetch(`${API_URL}/configuracion/footer`, {
