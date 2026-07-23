@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { BannersModule } from './banners/banners.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { UploadModule } from './upload/upload.module';
@@ -14,6 +15,7 @@ import { ConfiguracionModule } from './configuracion/configuracion.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
+    BannersModule,
     EspecialidadesModule,
     ServiciosModule,
     UploadModule,

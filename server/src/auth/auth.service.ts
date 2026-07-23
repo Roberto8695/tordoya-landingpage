@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { PrismaService } from '../prisma/prisma.service';
 import type { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -14,16 +13,7 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user) {
-      return null;
-    }
-
-    const passwordValid = await bcrypt.compare(
-      payload.password,
-      user.password,
-    );
-
-    if (!passwordValid) {
+    if (!user || user.password !== payload.password) {
       return null;
     }
 

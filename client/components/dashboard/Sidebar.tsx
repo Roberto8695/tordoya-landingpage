@@ -25,6 +25,7 @@ import {
   HiOutlineShieldCheck,
   HiOutlinePencilAlt,
   HiOutlineInformationCircle,
+  HiOutlinePhotograph,
 } from "react-icons/hi";
 import type { IconType } from "react-icons";
 
@@ -60,6 +61,7 @@ function useNavItems(counts: { especialidades: number; servicios: number }): {
   return {
     mainNavItems: [
       { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
+      { label: "Hero", icon: HiOutlinePhotograph, href: "/admin/banners" },
       { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades", badge: counts.especialidades },
       { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: counts.servicios },
       { label: "Nosotros", icon: HiOutlineInformationCircle, href: "/admin/nosotros" },

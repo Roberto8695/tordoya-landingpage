@@ -122,6 +122,28 @@ model ConfigNosotros {
   @@map("config_nosotros")
 }
 
+model BannerSlide {
+  id            String   @id @default(uuid())
+  badge         String   @default("")
+  title         String   @default("")
+  subtitle      String   @default("")
+  description   String   @default("")
+  bullets       Json     @default("[]")
+  cta1          Json     @default("{\"label\":\"Agenda tu cita\",\"href\":\"#contacto\",\"style\":\"primary\"}")
+  cta2          Json?
+  imageDesktop  String   @default("")
+  imageMobile   String   @default("")
+  theme         String   @default("corporate")
+  layout        String   @default("text-left-image-right")
+  active        Boolean  @default(true)
+  orden         Int      @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("banner_slides")
+}
+
 enum Role {
   ADMIN
   EDITOR

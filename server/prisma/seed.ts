@@ -167,6 +167,62 @@ async function main() {
     console.log(`  ✅ ${created.nombre} (${created.slug}) - ${servicios.length} servicios`);
   }
 
+  // ─── Banner Slides ─────────────────────────────────────
+  console.log('\n  🖼️  Seeding banner slides...');
+
+  await prisma.bannerSlide.deleteMany();
+
+  const bannerSlides = [
+    {
+      badge: 'Conoce a quien te cuida',
+      title: 'Máster en Ultrasonografía',
+      subtitle: 'Dra. Evelia Martínez · Especialista en Cirugía General · Diagnóstico preciso por imagen · Atención en CDMX',
+      description: 'Dra. Evelia Martínez con más de 15 años de experiencia en diagnóstico por ultrasonido.',
+      bullets: JSON.stringify([
+        { id: 'b1', text: 'Especialista en Cirugía General' },
+        { id: 'b2', text: 'Diagnóstico preciso por imagen' },
+        { id: 'b3', text: 'Atención en CDMX · Benito Juárez' },
+      ]),
+      cta1: JSON.stringify({ label: 'Agenda tu cita', href: '#contacto', style: 'primary' }),
+      cta2: null,
+      imageDesktop: '/image/banners/dra_evelia.webp',
+      imageMobile: '',
+      theme: 'corporate',
+      layout: 'text-left-image-right',
+      active: true,
+      orden: 0,
+    },
+    {
+      badge: 'Para ella',
+      title: 'Tu salud femenina, protegida desde adentro',
+      subtitle: 'Estudios especializados para el cuidado integral de la mujer en cada etapa de su vida.',
+      description: 'Colposcopía, Citología Cérvico Vaginal, Ecografía Pélvica y más.',
+      bullets: JSON.stringify([
+        { id: 'b4', text: 'Colposcopía' },
+        { id: 'b5', text: 'Citología Cérvico Vaginal (Papanicolau)' },
+        { id: 'b6', text: 'Ecografía Pélvica / Ginecológica' },
+        { id: 'b7', text: 'Ecografía Transvaginal' },
+        { id: 'b8', text: 'Monitoreo y Seguimiento Folicular' },
+      ]),
+      cta1: JSON.stringify({ label: 'Agenda tu cita', href: '#contacto', style: 'secondary' }),
+      cta2: JSON.stringify({ label: 'Ver todos los servicios', href: '#servicios', style: 'ghost' }),
+      imageDesktop: '/image/banners/utero.webp',
+      imageMobile: '',
+      theme: 'light-blue',
+      layout: 'text-left-image-right',
+      active: true,
+      orden: 1,
+    },
+  ];
+
+  for (const slide of bannerSlides) {
+    const { cta2, ...rest } = slide;
+    await prisma.bannerSlide.create({
+      data: cta2 ? { ...rest, cta2 } : { ...rest, cta2: undefined },
+    });
+    console.log(`    ✅ Slide: ${slide.title}`);
+  }
+
   console.log('\n🌱 Seed completed successfully!');
 }
 
