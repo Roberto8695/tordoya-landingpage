@@ -137,6 +137,7 @@ model BannerSlide {
   layout        String   @default("text-left-image-right")
   active        Boolean  @default(true)
   orden         Int      @default(0)
+  pais          String   @default("todos")
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

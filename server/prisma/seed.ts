@@ -191,6 +191,7 @@ async function main() {
       layout: 'text-left-image-right',
       active: true,
       orden: 0,
+      pais: 'todos',
     },
     {
       badge: 'Para ella',
@@ -212,6 +213,7 @@ async function main() {
       layout: 'text-left-image-right',
       active: true,
       orden: 1,
+      pais: 'todos',
     },
   ];
 

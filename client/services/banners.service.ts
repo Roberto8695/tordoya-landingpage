@@ -16,6 +16,7 @@ interface BannerSlideDTO {
   layout: string;
   active: boolean;
   orden: number;
+  pais: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -40,6 +41,7 @@ function toDTO(banner: BannerData): Record<string, unknown> {
     layout: banner.layout,
     active: banner.active,
     orden: banner.order,
+    pais: banner.pais,
   };
 }
 
@@ -59,6 +61,7 @@ function fromDTO(dto: BannerSlideDTO): BannerData {
     layout: dto.layout as BannerData["layout"],
     active: dto.active,
     order: dto.orden,
+    pais: (dto.pais ?? "todos") as BannerData["pais"],
     createdAt: dto.createdAt,
     updatedAt: dto.updatedAt,
   };

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
 import BannerPreview, { type BannerData } from "./BannerPreview";
@@ -23,6 +24,13 @@ const LAYOUT_LABELS: Record<string, string> = {
   "image-left-text-right": "Imagen > Texto",
   "text-centered": "Centrado",
   "content-bottom": "Inferior",
+};
+
+const PAIS_LABEL: Record<string, string> = {
+  todos: "Todos",
+  mexico: "México",
+  bolivia: "Bolivia",
+  peru: "Perú",
 };
 
 interface BannerTableProps {
@@ -106,6 +114,9 @@ export default function BannerTable({
               </th>
               <th className="hidden md:table-cell whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-foreground/40">
                 Layout
+              </th>
+              <th className="hidden lg:table-cell whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-foreground/40">
+                País
               </th>
               <th className="hidden lg:table-cell whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-foreground/40">
                 Orden
@@ -263,6 +274,27 @@ function BannerRow({
       <td className="hidden md:table-cell px-4 py-4">
         <span className="text-xs text-foreground/60">
           {layoutLabel}
+        </span>
+      </td>
+
+      <td className="hidden lg:table-cell px-4 py-4">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/60">
+          {banner.pais === "todos" ? (
+            <svg className="h-4 w-4 text-foreground/50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          ) : (
+            <Image
+              src={`/image/${banner.pais}.png`}
+              alt=""
+              width={20}
+              height={14}
+              className="h-3.5 w-5 rounded-sm border border-primary/5 object-cover"
+              unoptimized
+            />
+          )}
+          {PAIS_LABEL[banner.pais] ?? "Todos"}
         </span>
       </td>
 

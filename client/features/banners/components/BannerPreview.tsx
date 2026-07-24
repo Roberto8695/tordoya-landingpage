@@ -32,6 +32,22 @@ export type BannerLayout =
   | "text-centered"
   | "content-bottom";
 
+export type Pais = "todos" | "mexico" | "bolivia" | "peru";
+
+export const PAISES: { id: Pais; label: string }[] = [
+  { id: "todos", label: "Todos los países" },
+  { id: "mexico", label: "México" },
+  { id: "bolivia", label: "Bolivia" },
+  { id: "peru", label: "Perú" },
+];
+
+export const COUNTRY_STORAGE_KEY = "tordoya_country";
+
+export function getCurrentCountry(): Pais {
+  if (typeof window === "undefined") return "todos";
+  return (localStorage.getItem(COUNTRY_STORAGE_KEY) as Pais) ?? "todos";
+}
+
 export interface BannerData {
   id: string;
   badge: string;
@@ -47,6 +63,7 @@ export interface BannerData {
   layout: BannerLayout;
   active: boolean;
   order: number;
+  pais: Pais;
   createdAt?: string;
   updatedAt?: string;
 }

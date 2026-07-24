@@ -5,7 +5,7 @@ import { motion, type MotionProps, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/lib/constants";
-import BannerPreview, { getImageUrl, type BannerData, type BannerTheme, type BannerLayout, type CtaStyle, type BannerBullet } from "./BannerPreview";
+import BannerPreview, { getImageUrl, type BannerData, type BannerTheme, type BannerLayout, type CtaStyle, type BannerBullet, type Pais, PAISES } from "./BannerPreview";
 import BannerThemeSelector from "./BannerThemeSelector";
 import BannerLayoutSelector from "./BannerLayoutSelector";
 
@@ -44,6 +44,7 @@ function createEmptyBanner(overrides?: Partial<BannerData>): BannerData {
     layout: "text-left-image-right",
     active: true,
     order: 0,
+    pais: "todos",
     ...overrides,
   };
 }
@@ -745,6 +746,44 @@ export default function BannerForm({
                             onChange={(e) => updateField("order", parseInt(e.target.value) || 0)}
                             className="h-10 w-full max-w-32 rounded-xl border border-primary/10 bg-white px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-accent focus:ring-4 focus:ring-accent/10"
                           />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold text-foreground/70">Visibilidad por país</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {PAISES.map((pais) => (
+                              <button
+                                key={pais.id}
+                                type="button"
+                                onClick={() => updateField("pais", pais.id)}
+                                className={cn(
+                                  "flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-xs font-medium transition-all duration-200",
+                                  form.pais === pais.id
+                                    ? "border-accent bg-accent/5 text-accent shadow-sm"
+                                    : "border-primary/10 text-foreground/60 hover:border-primary/20 hover:text-foreground/80"
+                                )}
+                              >
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-primary/5">
+                                  {pais.id === "todos" ? (
+                                    <svg className="h-4 w-4 text-foreground/50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                                      <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="currentColor" strokeWidth="1.5" />
+                                    </svg>
+                                  ) : (
+                                    <Image
+                                      src={`/image/${pais.id}.png`}
+                                      alt={pais.label}
+                                      width={24}
+                                      height={16}
+                                      className="h-4 w-6 object-cover"
+                                      unoptimized
+                                    />
+                                  )}
+                                </span>
+                                {pais.label}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </CardSection>
                     )}

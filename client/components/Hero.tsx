@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { motion, type MotionProps, AnimatePresence } from "framer-motion";
 import { fetchBanners } from "@/services/banners.service";
-import { THEME_CONFIG } from "@/features/banners/components/BannerPreview";
-import type { BannerData } from "@/features/banners/components/BannerPreview";
+import { THEME_CONFIG, COUNTRY_STORAGE_KEY, getImageUrl } from "@/features/banners/components/BannerPreview";
+import type { BannerData, Pais } from "@/features/banners/components/BannerPreview";
 
 type MotionDivProps = React.ComponentPropsWithoutRef<"div"> & MotionProps;
 const MotionDiv = motion.div as React.FC<MotionDivProps>;
@@ -19,6 +19,17 @@ type MotionUlProps = React.ComponentPropsWithoutRef<"ul"> & MotionProps;
 const MotionUl = motion.ul as React.FC<MotionUlProps>;
 type MotionLiProps = React.ComponentPropsWithoutRef<"li"> & MotionProps;
 const MotionLi = motion.li as React.FC<MotionLiProps>;
+
+function getCountry(): Pais {
+  if (typeof window === "undefined") return "todos";
+  return (localStorage.getItem(COUNTRY_STORAGE_KEY) as Pais) ?? "todos";
+}
+
+function filterByCountry(slides: BannerData[]): BannerData[] {
+  const country = getCountry();
+  if (country === "todos") return slides.filter((s) => s.pais === "todos" || !s.pais);
+  return slides.filter((s) => s.pais === "todos" || !s.pais || s.pais === country);
+}
 
 const FALLBACK_SLIDES: BannerData[] = [
   {
@@ -40,6 +51,7 @@ const FALLBACK_SLIDES: BannerData[] = [
     layout: "text-left-image-right",
     active: true,
     order: 0,
+    pais: "todos",
   },
   {
     id: "fallback-2",
@@ -62,6 +74,7 @@ const FALLBACK_SLIDES: BannerData[] = [
     layout: "text-left-image-right",
     active: true,
     order: 1,
+    pais: "todos",
   },
 ];
 
@@ -104,17 +117,34 @@ function mapButtons(style: string): "accent" | "pink" | "ghost" {
 }
 
 export default function Hero() {
-  const [slides, setSlides] = useState<BannerData[]>(() => {
+  const [allSlides, setAllSlides] = useState<BannerData[]>(() => {
     return loadCached() ?? FALLBACK_SLIDES;
   });
+  const [countryVersion, setCountryVersion] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
+
+  const slides = useMemo(
+    () => filterByCountry(allSlides),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allSlides, countryVersion],
+  );
+  const safeIndex = slides.length > 0 ? activeSlide % slides.length : 0;
+
+  useEffect(() => {
+    const onChange = () => {
+      setCountryVersion((v) => v + 1);
+      setActiveSlide(0);
+    };
+    window.addEventListener("tordoya-country-change", onChange);
+    return () => window.removeEventListener("tordoya-country-change", onChange);
+  }, []);
 
   useEffect(() => {
     fetchBanners()
       .then((data) => {
         const active = data.filter((s) => s.active);
         if (active.length > 0) {
-          setSlides(active);
+          setAllSlides(active);
           saveCache(active);
         }
       })
@@ -135,7 +165,7 @@ export default function Hero() {
     <section id="inicio" className="relative h-screen overflow-hidden text-white">
       <AnimatePresence mode="wait">
         {slides.map((slide, index) => {
-          const isActive = index === activeSlide;
+          const isActive = index === safeIndex;
           const theme = THEME_CONFIG[slide.theme] ?? THEME_CONFIG.corporate;
           const slideName = extractName(slide.subtitle);
           const cleanSubtitle = slideName ? stripName(slide.subtitle) : slide.subtitle;
@@ -165,12 +195,11 @@ export default function Hero() {
                 >
                   <div className="absolute inset-0 bg-linear-to-l from-black/20 via-black/50 to-transparent" aria-hidden="true" />
                   <Image
-                    src={slide.imageDesktop}
+                    src={getImageUrl(slide.imageDesktop)}
                     alt=""
                     fill
                     sizes="(max-width: 639px) 78vw, 62vw"
                     className="object-contain object-bottom-right opacity-95 drop-shadow-2xl"
-                    priority={isActive}
                     unoptimized
                   />
                 </div>
@@ -365,12 +394,11 @@ export default function Hero() {
                       >
                         <div className="relative w-full flex items-end justify-center mt-[25px]">
                           <Image
-                            src={slide.imageDesktop}
+                            src={getImageUrl(slide.imageDesktop)}
                             alt=""
                             width={480}
                             height={600}
                             className="h-[90vh] w-auto object-contain object-bottom drop-shadow-2xl"
-                            priority={isActive}
                             unoptimized
                           />
                         </div>
@@ -391,7 +419,7 @@ export default function Hero() {
             type="button"
             onClick={() => setActiveSlide(i)}
             className={`h-2 rounded-full transition-all duration-300 ${
-              i === activeSlide ? "w-10 bg-white" : "w-2.5 bg-white/30 hover:bg-white/50"
+              i === safeIndex ? "w-10 bg-white" : "w-2.5 bg-white/30 hover:bg-white/50"
             }`}
             aria-label={`Ir al slide ${i + 1}`}
           />
