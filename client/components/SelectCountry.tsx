@@ -10,13 +10,7 @@ type CountryOption = {
 	flagSrc: string;
 };
 
-type SelectCountryProps = {
-	open?: boolean;
-	onOpenChange?: (open: boolean) => void;
-};
-
 const STORAGE_KEY = "tordoya_country";
-const COUNTRY_CHANGE_EVENT = "tordoya-country-change";
 
 const countryOptions: CountryOption[] = [
 	{ id: "mexico", name: "Mexico", flagSrc: "/image/mexico.png" },
@@ -24,36 +18,22 @@ const countryOptions: CountryOption[] = [
 	{ id: "peru", name: "Peru", flagSrc: "/image/peru.png" },
 ];
 
-export default function SelectCountry({ open, onOpenChange }: SelectCountryProps) {
-	const [internalOpen, setInternalOpen] = useState(true);
+export default function SelectCountry() {
+	const [isOpen, setIsOpen] = useState(true);
 	const [selectedCountry, setSelectedCountry] = useState<CountryOption["id"] | null>(null);
 	const [highlightedCountry, setHighlightedCountry] = useState<CountryOption["id"] | null>(null);
 	const detectedCountry = useDetectCountry();
 	const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
-	const isControlled = open !== undefined;
-	const isOpen = open ?? internalOpen;
-
-	const setOpen = (nextOpen: boolean) => {
-		if (isControlled) {
-			onOpenChange?.(nextOpen);
-			return;
-		}
-
-		setInternalOpen(nextOpen);
-	};
 
 	useEffect(() => {
 		const storedCountry = window.localStorage.getItem(STORAGE_KEY) as CountryOption["id"] | null;
 
 		if (storedCountry) {
 			setSelectedCountry(storedCountry);
-			setOpen(false);
-		} else {
-			setOpen(true);
+			setIsOpen(false);
 		}
 
 		setHasLoadedStorage(true);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -72,8 +52,7 @@ export default function SelectCountry({ open, onOpenChange }: SelectCountryProps
 	const handleSelectCountry = (countryId: CountryOption["id"]) => {
 		setSelectedCountry(countryId);
 		window.localStorage.setItem(STORAGE_KEY, countryId);
-		window.dispatchEvent(new CustomEvent(COUNTRY_CHANGE_EVENT, { detail: countryId }));
-		setOpen(false);
+		setIsOpen(false);
 	};
 
 	useEffect(() => {
@@ -87,19 +66,19 @@ export default function SelectCountry({ open, onOpenChange }: SelectCountryProps
 
 		if (!storedCountry) {
 			setSelectedCountry(null);
-			setOpen(true);
+			setIsOpen(true);
 			return;
 		}
 
 		if (storedCountry !== detectedCountry) {
 			window.localStorage.removeItem(STORAGE_KEY);
 			setSelectedCountry(null);
-			setOpen(true);
+			setIsOpen(true);
 			return;
 		}
 
 		setSelectedCountry(storedCountry);
-		setOpen(false);
+		setIsOpen(false);
 	}, [detectedCountry]);
 
 	if (!isOpen) {

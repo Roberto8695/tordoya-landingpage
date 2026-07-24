@@ -38,7 +38,7 @@ const dDin = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Tordoya | Diagnóstico por Ultrasonido",
+  title: "Tordoya | Soluciones Integrales",
   description: "Empresa líder en soluciones integrales para tu negocio",
   icons: [
     { rel: 'icon', url: '/image/icono.webp?v=2', type: 'image/webp' },

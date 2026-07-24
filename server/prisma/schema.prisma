@@ -82,9 +82,6 @@ model ConfigFooter {
   contactEmail    String   @default("diagnosticoultrasonidotordoya@gmail.com")
   copyrightText   String   @default("© {year} Tordoya. Todos los derechos reservados.")
   copyrightSubtext String  @default("Soluciones integrales en diagnóstico por ultrasonido.")
-  facebookUrl     String   @default("https://www.facebook.com/Centromedicotordoya")
-  instagramUrl    String   @default("https://www.instagram.com/diagnosticoultrasonidotordoya")
-  tiktokUrl       String   @default("https://www.tiktok.com/@diagnosticotordoya")
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -120,28 +117,6 @@ model ConfigNosotros {
   updatedAt DateTime @updatedAt
 
   @@map("config_nosotros")
-}
-
-model BannerSlide {
-  id            String   @id @default(uuid())
-  badge         String   @default("")
-  title         String   @default("")
-  subtitle      String   @default("")
-  description   String   @default("")
-  bullets       Json     @default("[]")
-  cta1          Json     @default("{\"label\":\"Agenda tu cita\",\"href\":\"#contacto\",\"style\":\"primary\"}")
-  cta2          Json?
-  imageDesktop  String   @default("")
-  imageMobile   String   @default("")
-  theme         String   @default("corporate")
-  layout        String   @default("text-left-image-right")
-  active        Boolean  @default(true)
-  orden         Int      @default(0)
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("banner_slides")
 }
 
 enum Role {

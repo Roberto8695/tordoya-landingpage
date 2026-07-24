@@ -25,7 +25,6 @@ import {
   HiOutlineShieldCheck,
   HiOutlinePencilAlt,
   HiOutlineInformationCircle,
-  HiOutlinePhotograph,
 } from "react-icons/hi";
 import type { IconType } from "react-icons";
 
@@ -61,7 +60,6 @@ function useNavItems(counts: { especialidades: number; servicios: number }): {
   return {
     mainNavItems: [
       { label: "Dashboard", icon: HiOutlineViewGrid, href: "/admin" },
-      { label: "Hero", icon: HiOutlinePhotograph, href: "/admin/banners" },
       { label: "Especialidades", icon: HiOutlineViewList, href: "/admin/especialidades", badge: counts.especialidades },
       { label: "Servicios", icon: HiOutlineDocumentText, href: "/admin/servicios", badge: counts.servicios },
       { label: "Nosotros", icon: HiOutlineInformationCircle, href: "/admin/nosotros" },
@@ -70,7 +68,7 @@ function useNavItems(counts: { especialidades: number; servicios: number }): {
       { label: "Configuración", icon: HiOutlineCog, href: "/admin/configuracion" },
     ],
     tertiaryNavItems: [
-      
+      { label: "Bitácora", icon: HiOutlinePencilAlt, href: "/admin/bitacora" },
     ],
   };
 }
@@ -142,9 +140,43 @@ function SidebarLogo({ collapsed, onToggle }: SidebarLogoProps) {
   );
 }
 
+interface NotificationBadgeProps {
+  collapsed: boolean;
+}
 
-
-
+function NotificationBadge({ collapsed }: NotificationBadgeProps) {
+  return (
+    <div
+      className={cn(
+        "border-b border-white/10 transition-all duration-300",
+        collapsed ? "px-0 py-3" : "px-4 py-3"
+      )}
+    >
+      <button
+        className={cn(
+          "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:text-white/90",
+          collapsed ? "justify-center px-0" : ""
+        )}
+        aria-label="Notificaciones"
+      >
+        <span className="relative inline-flex">
+          <HiOutlineBell size={20} />
+          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white ring-2 ring-primary">
+            3
+          </span>
+        </span>
+        <span
+          className={cn(
+            "overflow-hidden whitespace-nowrap transition-all duration-300",
+            collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}
+        >
+          3 pendientes
+        </span>
+      </button>
+    </div>
+  );
+}
 
 interface NavItemProps {
   item: SidebarNavItem;
@@ -413,7 +445,8 @@ export default function Sidebar({
         aria-label="Panel de navegación principal"
       >
         <SidebarLogo collapsed={isCollapsed} onToggle={handleToggle} />
-       
+        <NotificationBadge collapsed={isCollapsed} />
+
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2">
           <NavSection
             title="Principal"
@@ -475,7 +508,7 @@ export default function Sidebar({
           </button>
         </div>
 
-       
+        <NotificationBadge collapsed={false} />
 
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-2">
           <NavSection
