@@ -71,6 +71,7 @@ export default function BannerForm({
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [activeTab, setActiveTab] = useState("general");
   const [newBulletText, setNewBulletText] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const desktopInputRef = useRef<HTMLInputElement>(null);
   const mobileInputRef = useRef<HTMLInputElement>(null);
@@ -82,6 +83,7 @@ export default function BannerForm({
     setErrors({});
     setActiveTab("general");
     setNewBulletText("");
+    setPreviewOpen(false);
   }, [initialData, isOpen]);
 
   const updateField = useCallback(<K extends keyof BannerFormData>(
@@ -750,71 +752,109 @@ export default function BannerForm({
                 </AnimatePresence>
               </div>
 
-            <div className="flex items-center justify-end border-t border-primary/5 bg-light px-6 py-4">
+            <div className="flex items-center justify-between border-t border-primary/5 bg-light px-6 py-4">
+              <MotionButton
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="button"
+                onClick={() => setPreviewOpen(true)}
+                disabled={isSaving}
+                className="flex h-10 items-center justify-center gap-2 rounded-xl border border-primary/10 bg-white px-4 text-sm font-medium text-foreground/60 transition-all duration-200 hover:border-primary/20 hover:text-foreground/80 disabled:opacity-50"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                Vista previa
+              </MotionButton>
+
               <div className="flex items-center gap-2">
-                  <MotionButton
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    type="button"
-                    onClick={onClose}
-                    disabled={isSaving}
-                    className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50"
-                  >
-                    Cancelar
-                  </MotionButton>
-                  <MotionButton
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    type="submit"
-                    disabled={isSaving}
-                    className="flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary disabled:opacity-50"
-                  >
-                    {isSaving ? (
-                      <>
-                        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
-                          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Guardando...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Guardar
-                      </>
-                    )}
-                  </MotionButton>
-                </div>
+                <MotionButton
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSaving}
+                  className="flex h-10 items-center justify-center rounded-xl border border-primary/10 bg-white px-5 text-sm font-medium text-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-foreground disabled:opacity-50"
+                >
+                  Cancelar
+                </MotionButton>
+                <MotionButton
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-secondary disabled:opacity-50"
+                >
+                  {isSaving ? (
+                    <>
+                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25" />
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      Guardar
+                    </>
+                  )}
+                </MotionButton>
               </div>
+            </div>
             </form>
           </MotionDiv>
 
-          <div className="fixed bottom-6 right-6 z-[101] w-[480px]  shadow-2xl">
-            <MotionDiv
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="rounded-2xl border border-primary/10 bg-white overflow-hidden"
-            >
-              <div className="flex items-center justify-between border-b border-primary/5 px-4 py-2.5 bg-light/80">
-                <div className="flex items-center gap-2">
-                  <svg className="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" strokeWidth="1.5" />
-                  </svg>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
-                    Vista previa en vivo
-                  </span>
-                </div>
-                <span className={cn(
-                  "flex h-2 w-2 rounded-full",
-                  form.active ? "bg-success" : "bg-foreground/30"
-                )} />
+          <AnimatePresence>
+            {previewOpen && (
+              <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                <MotionDiv
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                  onClick={() => setPreviewOpen(false)}
+                  aria-hidden="true"
+                />
+                <MotionDiv
+                  initial={{ opacity: 0, scale: 0.92, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.92, y: 10 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-2xl"
+                >
+                  <div className="flex items-center justify-between border-b border-primary/5 bg-gradient-to-r from-primary to-secondary px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <svg className="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                      <div>
+                        <h3 className="text-base font-bold text-white">Vista previa del slide</h3>
+                        <p className="text-xs text-white/60">{form.title || "Slide sin título"}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setPreviewOpen(false)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
+                      aria-label="Cerrar vista previa"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="overflow-hidden bg-primary/[0.02]">
+                    <BannerPreview banner={form} />
+                  </div>
+                </MotionDiv>
               </div>
-              <BannerPreview banner={form} />
-            </MotionDiv>
-          </div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </AnimatePresence>

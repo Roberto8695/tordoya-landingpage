@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { motion, type MotionProps, AnimatePresence } from "framer-motion";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
 import BannerPreview, { type BannerData } from "./BannerPreview";
-
-const MotionDiv = motion.div as React.ComponentType<
-  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & MotionProps>
->;
 
 const MotionTr = motion.tr as React.ComponentType<
   React.PropsWithChildren<React.HTMLAttributes<HTMLTableRowElement> & MotionProps>
@@ -47,30 +44,12 @@ export default function BannerTable({
   onDuplicate,
   isLoading = false,
 }: BannerTableProps) {
-  const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const sorted = [...banners].sort((a, b) => a.order - b.order);
   const pageCount = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginated = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  useEffect(() => {
-    if (currentPage > pageCount) setCurrentPage(pageCount);
-  }, [currentPage, pageCount]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const closeMenu = useCallback(() => setMenuOpen(null), []);
 
   if (isLoading) {
     return (
@@ -108,8 +87,8 @@ export default function BannerTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-primary/10 bg-white shadow-sm">
-      <div className="overflow-x-auto">
+    <div className="overflow-visible rounded-xl border border-primary/10 bg-white shadow-sm">
+      <div className="overflow-x-auto overflow-y-visible">
         <table className="w-full">
           <thead>
             <tr className="border-b border-primary/5 bg-light/50">
@@ -143,12 +122,10 @@ export default function BannerTable({
                 <BannerRow
                   key={banner.id}
                   banner={banner}
-                  onEdit={() => { closeMenu(); onEdit(banner); }}
-                  onDelete={() => { closeMenu(); onDelete(banner); }}
-                  onToggleActive={() => { closeMenu(); onToggleActive(banner); }}
-                  onDuplicate={() => { closeMenu(); onDuplicate(banner); }}
-                  menuOpen={menuOpen === banner.id}
-                  onMenuToggle={() => setMenuOpen(menuOpen === banner.id ? null : banner.id)}
+                  onEdit={() => onEdit(banner)}
+                  onDelete={() => onDelete(banner)}
+                  onToggleActive={() => onToggleActive(banner)}
+                  onDuplicate={() => onDuplicate(banner)}
                 />
               ))}
             </AnimatePresence>
@@ -216,8 +193,6 @@ interface BannerRowProps {
   onDelete: () => void;
   onToggleActive: () => void;
   onDuplicate: () => void;
-  menuOpen: boolean;
-  onMenuToggle: () => void;
 }
 
 function BannerRow({
@@ -226,8 +201,6 @@ function BannerRow({
   onDelete,
   onToggleActive,
   onDuplicate,
-  menuOpen,
-  onMenuToggle,
 }: BannerRowProps) {
   const themeBadge = THEME_BADGES[banner.theme] ?? THEME_BADGES.corporate;
   const layoutLabel = LAYOUT_LABELS[banner.layout] ?? banner.layout;
@@ -311,112 +284,83 @@ function BannerRow({
         </span>
       </td>
 
-      <td className="px-4 py-4 relative">
-        <button
-          type="button"
-          onClick={onMenuToggle}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/30 opacity-0 transition-all duration-200 hover:bg-primary/5 hover:text-foreground/60 group-hover:opacity-100"
-          aria-label="Acciones"
-          aria-haspopup="true"
-          aria-expanded={menuOpen}
-        >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="12" cy="5" r="1.5" />
-            <circle cx="12" cy="12" r="1.5" />
-            <circle cx="12" cy="19" r="1.5" />
-          </svg>
-        </button>
-
-        <AnimatePresence>
-          {menuOpen && (
-            <MotionDiv
-              initial={{ opacity: 0, scale: 0.95, y: -4 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -4 }}
-              transition={{ duration: 0.12 }}
-              className="absolute right-2 top-full z-50 mt-1 w-48 origin-top-right overflow-hidden rounded-xl border border-primary/10 bg-white shadow-lg"
-              onClick={(e) => e.stopPropagation()}
+      <td className="px-4 py-4">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button
+              type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/30 opacity-0 transition-all duration-200 hover:bg-primary/5 hover:text-foreground/60 group-hover:opacity-100"
+              aria-label="Acciones"
             >
-              <div className="py-1">
-                <MenuButton onClick={onEdit} icon={
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="5" r="1.5" />
+                <circle cx="12" cy="12" r="1.5" />
+                <circle cx="12" cy="19" r="1.5" />
+              </svg>
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              sideOffset={8}
+              align="end"
+              className="z-50 w-48 origin-top-right overflow-hidden rounded-xl border border-primary/10 bg-white shadow-lg data-[side=bottom]:animate-in data-[side=bottom]:fade-in-0 data-[side=bottom]:zoom-in-95 data-[side=top]:animate-in data-[side=top]:fade-in-0 data-[side=top]:zoom-in-95"
+            >
+              <DropdownMenu.Item
+                onClick={onEdit}
+                className="flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground/70 outline-none transition-colors hover:bg-primary/5 hover:text-foreground"
+              >
+                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Editar
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Item
+                onClick={onDuplicate}
+                className="flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground/70 outline-none transition-colors hover:bg-primary/5 hover:text-foreground"
+              >
+                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Duplicar
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Separator className="border-t border-primary/5" />
+
+              <DropdownMenu.Item
+                onClick={onToggleActive}
+                className="flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground/70 outline-none transition-colors hover:bg-primary/5 hover:text-foreground"
+              >
+                {banner.active ? (
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M10 18l4-4m0 0l4-4m-4 4l-4-4m4 4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                }>
-                  Editar
-                </MenuButton>
-
-                <MenuButton onClick={onDuplicate} icon={
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                ) : (
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                }>
-                  Duplicar
-                </MenuButton>
+                )}
+                {banner.active ? "Desactivar" : "Activar"}
+              </DropdownMenu.Item>
 
-                <div className="border-t border-primary/5" />
+              <DropdownMenu.Separator className="border-t border-primary/5" />
 
-                <MenuButton
-                  onClick={onToggleActive}
-                  icon={
-                    banner.active ? (
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M10 18l4-4m0 0l4-4m-4 4l-4-4m4 4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    ) : (
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )
-                  }
-                >
-                  {banner.active ? "Desactivar" : "Activar"}
-                </MenuButton>
-
-                <div className="border-t border-primary/5" />
-
-                <MenuButton onClick={onDelete} danger icon={
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                }>
-                  Eliminar
-                </MenuButton>
-              </div>
-            </MotionDiv>
-          )}
-        </AnimatePresence>
+              <DropdownMenu.Item
+                onClick={onDelete}
+                className="flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm font-medium text-danger outline-none transition-colors hover:bg-danger/5"
+              >
+                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Eliminar
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
       </td>
     </MotionTr>
-  );
-}
-
-function MenuButton({
-  children,
-  onClick,
-  icon,
-  danger = false,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  icon: React.ReactNode;
-  danger?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors duration-150",
-        danger
-          ? "text-danger hover:bg-danger/5"
-          : "text-foreground/70 hover:bg-primary/5 hover:text-foreground"
-      )}
-    >
-      <span className="shrink-0">{icon}</span>
-      {children}
-    </button>
   );
 }
