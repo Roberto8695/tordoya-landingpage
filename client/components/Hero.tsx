@@ -20,6 +20,67 @@ const MotionUl = motion.ul as React.FC<MotionUlProps>;
 type MotionLiProps = React.ComponentPropsWithoutRef<"li"> & MotionProps;
 const MotionLi = motion.li as React.FC<MotionLiProps>;
 
+const FALLBACK_SLIDES: BannerData[] = [
+  {
+    id: "fallback-1",
+    badge: "Conoce a quien te cuida",
+    title: "Máster en Ultrasonografía",
+    subtitle: "Dra. Evelia Martínez · Especialista en Cirugía General · Diagnóstico preciso por imagen · Atención en CDMX",
+    description: "Dra. Evelia Martínez con más de 15 años de experiencia en diagnóstico por ultrasonido.",
+    bullets: [
+      { id: "fb1", text: "Especialista en Cirugía General" },
+      { id: "fb2", text: "Diagnóstico preciso por imagen" },
+      { id: "fb3", text: "Atención en CDMX · Benito Juárez" },
+    ],
+    cta1: { label: "Agenda tu cita", href: "#contacto", style: "primary" },
+    cta2: null,
+    imageDesktop: "/image/banners/dra_evelia.webp",
+    imageMobile: "",
+    theme: "corporate",
+    layout: "text-left-image-right",
+    active: true,
+    order: 0,
+  },
+  {
+    id: "fallback-2",
+    badge: "Para ella",
+    title: "Tu salud femenina, protegida desde adentro",
+    subtitle: "Estudios especializados para el cuidado integral de la mujer en cada etapa de su vida.",
+    description: "Colposcopía, Citología Cérvico Vaginal, Ecografía Pélvica y más.",
+    bullets: [
+      { id: "fb4", text: "Colposcopía" },
+      { id: "fb5", text: "Citología Cérvico Vaginal (Papanicolau)" },
+      { id: "fb6", text: "Ecografía Pélvica / Ginecológica" },
+      { id: "fb7", text: "Ecografía Transvaginal" },
+      { id: "fb8", text: "Monitoreo y Seguimiento Folicular" },
+    ],
+    cta1: { label: "Agenda tu cita", href: "#contacto", style: "secondary" },
+    cta2: { label: "Ver todos los servicios", href: "#servicios", style: "ghost" },
+    imageDesktop: "/image/banners/utero.webp",
+    imageMobile: "",
+    theme: "light-blue",
+    layout: "text-left-image-right",
+    active: true,
+    order: 1,
+  },
+];
+
+const CACHE_KEY = "hero_slides_cache";
+
+function loadCached(): BannerData[] | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as BannerData[];
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+  } catch {}
+  return null;
+}
+
+function saveCache(slides: BannerData[]) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(slides)); } catch {}
+}
+
 function extractName(subtitle: string): string | null {
   const parts = subtitle.split("·").map((s) => s.trim());
   if (parts.length > 1 && /^(Dr\.|Dra\.)/i.test(parts[0]!)) {
@@ -43,12 +104,20 @@ function mapButtons(style: string): "accent" | "pink" | "ghost" {
 }
 
 export default function Hero() {
-  const [slides, setSlides] = useState<BannerData[]>([]);
+  const [slides, setSlides] = useState<BannerData[]>(() => {
+    return loadCached() ?? FALLBACK_SLIDES;
+  });
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     fetchBanners()
-      .then((data) => setSlides(data.filter((s) => s.active)))
+      .then((data) => {
+        const active = data.filter((s) => s.active);
+        if (active.length > 0) {
+          setSlides(active);
+          saveCache(active);
+        }
+      })
       .catch(() => {});
   }, []);
 
