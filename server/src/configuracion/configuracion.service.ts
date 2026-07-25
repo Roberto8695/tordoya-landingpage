@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateHeaderDto } from './dto/update-header.dto';
 import type { UpdateFooterDto } from './dto/update-footer.dto';
 import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
+import type { UpdateContactoDto } from './dto/update-contacto.dto';
 
 @Injectable()
 export class ConfiguracionService {
@@ -147,6 +148,77 @@ export class ConfiguracionService {
       where: { id: nosotros.id },
       data,
     });
+  }
+
+  // ---- Contacto por País ----
+
+  async getContacto(pais: string) {
+    const contacto = await this.prisma.contactoPais.findUnique({
+      where: { pais: pais as any },
+    });
+    if (contacto) {
+      return contacto;
+    }
+    // Auto-create with defaults based on country
+    const defaults: Record<string, { direccion: string; telefono: string; email: string }> = {
+      MX: {
+        direccion:
+          'Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.',
+        telefono: '+52 1 55 4715 7971',
+        email: 'mexico@ultrasonidodiagnosticotordoya.com',
+      },
+      BO: {
+        direccion: 'Calle Potosí 456, Zona Central, La Paz, Bolivia.',
+        telefono: '+591 (Pendiente)',
+        email: 'bolivia@ultrasonidodiagnosticotordoya.com',
+      },
+      PE: {
+        direccion: 'Av. Principal 123, San Isidro, Lima, Perú.',
+        telefono: '+51 900 944 014',
+        email: 'peru@ultrasonidodiagnosticotordoya.com',
+      },
+    };
+    const def = defaults[pais] ?? defaults.MX;
+    return this.prisma.contactoPais.create({
+      data: {
+        pais: pais as any,
+        direccion: def.direccion,
+        telefono: def.telefono,
+        email: def.email,
+      },
+    });
+  }
+
+  async updateContacto(dto: UpdateContactoDto) {
+    const pais = dto.pais ?? 'MX';
+    const existing = await this.prisma.contactoPais.findUnique({
+      where: { pais: pais as any },
+    });
+    const contacto = existing ?? (await this.getContacto(pais));
+    const data: Record<string, unknown> = {};
+    if (dto.direccion !== undefined) data.direccion = dto.direccion;
+    if (dto.telefono !== undefined) data.telefono = dto.telefono;
+    if (dto.email !== undefined) data.email = dto.email;
+    return this.prisma.contactoPais.update({
+      where: { id: contacto.id },
+      data,
+    });
+  }
+
+  async resetContacto() {
+    const contactos = await this.prisma.contactoPais.findMany();
+    for (const c of contactos) {
+      await this.prisma.contactoPais.delete({ where: { id: c.id } });
+    }
+    return { message: 'Contactos eliminados. Se recrearán al consultarlos.' };
+  }
+
+  async getAllContactos() {
+    const paises = ['MX', 'BO', 'PE'];
+    const resultados = await Promise.all(
+      paises.map((p) => this.getContacto(p)),
+    );
+    return resultados;
   }
 
   async resetNosotros() {

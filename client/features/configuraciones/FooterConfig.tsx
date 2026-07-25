@@ -1,13 +1,29 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown } from "lucide-react";
+import Image from "next/image";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
+import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown, Globe, Link2 } from "lucide-react";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import { EditableNavList, SectionCard } from "@/features/configuraciones/config-ui";
+
+const FLAG_IMAGES: Record<string, string> = {
+  MX: "/image/mexico.png",
+  BO: "/image/bolivia.png",
+  PE: "/image/peru.png",
+};
+
+const PAISES = [
+  { value: "MX", label: "México" },
+  { value: "BO", label: "Bolivia" },
+  { value: "PE", label: "Perú" },
+];
 
 export default function FooterConfig() {
   const {
     config,
+    contactoPaises,
+    updateContactoPais,
     updateFooter,
     updateFooterNavItem,
     addFooterNavItem,
@@ -17,6 +33,8 @@ export default function FooterConfig() {
     removeFooterTag,
     updateFooterTag,
   } = useSiteConfig();
+
+  const [selectedPais, setSelectedPais] = useState<string>("MX");
 
   const footerLogoInputRef = useRef<HTMLInputElement>(null);
   const [footerLogoPreview, setFooterLogoPreview] = useState<string | null>(null);
@@ -86,42 +104,64 @@ export default function FooterConfig() {
           />
         </label>
 
-        {/* Contact */}
+        {/* Contacto por País */}
         <div>
-          <p className="mb-3 text-sm font-medium text-foreground/80">Información de contacto</p>
+          <div className="mb-4 flex items-center gap-3">
+            <Globe className="h-5 w-5 text-primary/60" />
+            <p className="text-sm font-medium text-foreground/80">Información de contacto por país</p>
+          </div>
+          {/* Country selector */}
+          <div className="mb-4 flex items-center gap-3">
+            <div className="relative flex-1">
+              <select
+                value={selectedPais}
+                onChange={(e) => setSelectedPais(e.target.value)}
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 pl-10 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              >
+                {PAISES.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+              <Image
+                src={FLAG_IMAGES[selectedPais]}
+                alt={PAISES.find((p) => p.value === selectedPais)?.label ?? ""}
+                width={20}
+                height={14}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 rounded-sm object-cover"
+                unoptimized
+              />
+            </div>
+          </div>
+          {/* Per-country fields */}
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-xs text-foreground/60">Dirección</span>
+              <span className="text-xs text-foreground/60">Dirección ({PAISES.find(p => p.value === selectedPais)?.label})</span>
               <input
-                value={config.footer.contact.address}
+                value={contactoPaises[selectedPais]?.direccion ?? ""}
                 onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, address: e.target.value },
-                  })
+                  updateContactoPais(selectedPais, { direccion: e.target.value })
                 }
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs text-foreground/60">Teléfono</span>
+              <span className="text-xs text-foreground/60">Teléfono ({PAISES.find(p => p.value === selectedPais)?.label})</span>
               <input
-                value={config.footer.contact.phone}
+                value={contactoPaises[selectedPais]?.telefono ?? ""}
                 onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, phone: e.target.value },
-                  })
+                  updateContactoPais(selectedPais, { telefono: e.target.value })
                 }
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs text-foreground/60">Correo electrónico</span>
+              <span className="text-xs text-foreground/60">Correo electrónico ({PAISES.find(p => p.value === selectedPais)?.label})</span>
               <input
-                value={config.footer.contact.email}
+                value={contactoPaises[selectedPais]?.email ?? ""}
                 onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, email: e.target.value },
-                  })
+                  updateContactoPais(selectedPais, { email: e.target.value })
                 }
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
@@ -186,6 +226,52 @@ export default function FooterConfig() {
           onReorder={moveFooterNavItem}
           title="Enlaces del footer"
         />
+
+        {/* Redes Sociales */}
+        <div>
+          <div className="mb-4 flex items-center gap-3">
+            <Link2 className="h-5 w-5 text-primary/60" />
+            <p className="text-sm font-medium text-foreground/80">Redes Sociales</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaFacebook className="text-[#1877F2]" size={14} />
+                Facebook
+              </span>
+              <input
+                value={config.footer.social.facebook}
+                onChange={(e) => updateFooter({ social: { ...config.footer.social, facebook: e.target.value } })}
+                placeholder="https://facebook.com/..."
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaInstagram className="text-[#E4405F]" size={14} />
+                Instagram
+              </span>
+              <input
+                value={config.footer.social.instagram}
+                onChange={(e) => updateFooter({ social: { ...config.footer.social, instagram: e.target.value } })}
+                placeholder="https://instagram.com/..."
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="flex items-center gap-2 text-xs text-foreground/60">
+                <FaTiktok className="text-foreground/80" size={14} />
+                TikTok
+              </span>
+              <input
+                value={config.footer.social.tiktok}
+                onChange={(e) => updateFooter({ social: { ...config.footer.social, tiktok: e.target.value } })}
+                placeholder="https://tiktok.com/@..."
+                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+              />
+            </label>
+          </div>
+        </div>
 
         {/* Copyright */}
         <div className="grid gap-4 sm:grid-cols-2">

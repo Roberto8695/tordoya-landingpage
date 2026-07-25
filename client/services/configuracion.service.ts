@@ -102,3 +102,46 @@ export async function resetFooter(): Promise<ConfigFooterDTO> {
   if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
   return res.json();
 }
+
+export interface ContactoPaisDTO {
+  id: string;
+  pais: string;
+  direccion: string;
+  telefono: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getContacto(pais: string): Promise<ContactoPaisDTO> {
+  const res = await fetch(`${API_URL}/configuracion/contacto?pais=${pais}`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+  return res.json();
+}
+
+export async function updateContacto(
+  data: Partial<{
+    pais: string;
+    direccion: string;
+    telefono: string;
+    email: string;
+  }>
+): Promise<ContactoPaisDTO> {
+  const res = await fetch(`${API_URL}/configuracion/contacto`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+  return res.json();
+}
+
+export async function getAllContactos(): Promise<ContactoPaisDTO[]> {
+  const res = await fetch(`${API_URL}/configuracion/contactos`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+  return res.json();
+}

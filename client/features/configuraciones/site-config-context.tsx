@@ -16,6 +16,8 @@ import {
   updateFooter as apiUpdateFooter,
   resetHeader as apiResetHeader,
   resetFooter as apiResetFooter,
+  getAllContactos as apiGetAllContactos,
+  updateContacto as apiUpdateContacto,
   type NavItemDTO,
 } from "@/services/configuracion.service";
 
@@ -40,6 +42,11 @@ export interface SiteConfig {
       address: string;
       phone: string;
       email: string;
+    };
+    social: {
+      facebook: string;
+      instagram: string;
+      tiktok: string;
     };
     copyrightText: string;
     copyrightSubtext: string;
@@ -75,10 +82,23 @@ const DEFAULT_CONFIG: SiteConfig = {
       phone: "+52 1 55 4715 7971",
       email: "diagnosticoultrasonidotordoya@gmail.com",
     },
+    social: {
+      facebook: "https://facebook.com/tordoya",
+      instagram: "https://instagram.com/tordoya",
+      tiktok: "https://tiktok.com/@tordoya",
+    },
     copyrightText: "© {year} Tordoya. Todos los derechos reservados.",
     copyrightSubtext: "Soluciones integrales en diagnóstico por ultrasonido.",
   },
 };
+
+export interface ContactoPaisData {
+  id: string;
+  pais: string;
+  direccion: string;
+  telefono: string;
+  email: string;
+}
 
 interface SiteConfigContextType {
   config: SiteConfig;
@@ -98,6 +118,9 @@ interface SiteConfigContextType {
   removeFooterTag: (index: number) => Promise<void>;
   updateFooterTag: (index: number, tag: string) => Promise<void>;
   resetConfig: () => Promise<void>;
+  // Multi-country contact
+  contactoPaises: Record<string, ContactoPaisData>;
+  updateContactoPais: (pais: string, data: { direccion?: string; telefono?: string; email?: string }) => Promise<void>;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null);
@@ -133,6 +156,11 @@ function apiToSiteConfig(
         phone: footer.contactPhone,
         email: footer.contactEmail,
       },
+      social: {
+        facebook: "https://facebook.com/tordoya",
+        instagram: "https://instagram.com/tordoya",
+        tiktok: "https://tiktok.com/@tordoya",
+      },
       copyrightText: footer.copyrightText,
       copyrightSubtext: footer.copyrightSubtext,
     },
@@ -143,6 +171,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<SiteConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [contactoPaises, setContactoPaises] = useState<Record<string, ContactoPaisData>>({});
 
   // Load from API on mount
   useEffect(() => {
@@ -150,12 +179,25 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
 
     async function load() {
       try {
-        const [headerRes, footerRes] = await Promise.all([
+        const [headerRes, footerRes, contactosRes] = await Promise.all([
           apiGetHeader(),
           apiGetFooter(),
+          apiGetAllContactos(),
         ]);
         if (cancelled) return;
         setConfig(apiToSiteConfig(headerRes, footerRes));
+        // Map contactos by pais
+        const contactoMap: Record<string, ContactoPaisData> = {};
+        for (const c of contactosRes) {
+          contactoMap[c.pais] = {
+            id: c.id,
+            pais: c.pais,
+            direccion: c.direccion,
+            telefono: c.telefono,
+            email: c.email,
+          };
+        }
+        setContactoPaises(contactoMap);
         setError(null);
       } catch (err) {
         console.warn("No se pudo cargar la configuración desde la API:", err);
@@ -305,6 +347,40 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
     [config.footer.tags, updateFooter]
   );
 
+  const updateContactoPais = useCallback(
+    async (pais: string, data: { direccion?: string; telefono?: string; email?: string }) => {
+      // Optimistic update
+      setContactoPaises((prev) => {
+        const current = prev[pais];
+        if (!current) return prev;
+        return {
+          ...prev,
+          [pais]: {
+            ...current,
+            ...data,
+          },
+        };
+      });
+      try {
+        const updated = await apiUpdateContacto({ pais, ...data });
+        setContactoPaises((prev) => ({
+          ...prev,
+          [pais]: {
+            id: updated.id,
+            pais: updated.pais,
+            direccion: updated.direccion,
+            telefono: updated.telefono,
+            email: updated.email,
+          },
+        }));
+        setError(null);
+      } catch {
+        setError("Error al guardar el contacto del país.");
+      }
+    },
+    []
+  );
+
   const resetConfig = useCallback(async () => {
     try {
       const [headerRes, footerRes] = await Promise.all([
@@ -339,6 +415,8 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         removeFooterTag,
         updateFooterTag,
         resetConfig,
+        contactoPaises,
+        updateContactoPais,
       }}
     >
       {children}

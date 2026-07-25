@@ -43,7 +43,23 @@ export default function ConfiguracionPage() {
               </p>
             </div>
 
-            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-white px-5 py-3 text-sm font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50 hover:shadow-md"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Restaurar
+              </button>
+
+              <button
+                onClick={handleSave}
+                className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(1,21,90,0.25)] transition hover:bg-primary/90 hover:shadow-[0_6px_20px_rgba(1,21,90,0.35)]"
+              >
+                <Sparkles className="h-4 w-4" />
+                Guardar cambios
+              </button>
+            </div>
           </div>
 
           {/* Success message */}

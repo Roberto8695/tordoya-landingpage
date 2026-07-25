@@ -1,14 +1,9 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Post,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Query } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service';
 import type { UpdateHeaderDto } from './dto/update-header.dto';
 import type { UpdateFooterDto } from './dto/update-footer.dto';
 import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
+import type { UpdateContactoDto } from './dto/update-contacto.dto';
 
 @Controller('configuracion')
 export class ConfiguracionController {
@@ -42,6 +37,28 @@ export class ConfiguracionController {
   @Post('footer/reset')
   resetFooter() {
     return this.configuracionService.resetFooter();
+  }
+
+  // ---- Contacto por País ----
+
+  @Get('contacto')
+  getContacto(@Query('pais') pais: string) {
+    return this.configuracionService.getContacto(pais || 'MX');
+  }
+
+  @Put('contacto')
+  updateContacto(@Body() dto: UpdateContactoDto) {
+    return this.configuracionService.updateContacto(dto);
+  }
+
+  @Get('contactos')
+  getAllContactos() {
+    return this.configuracionService.getAllContactos();
+  }
+
+  @Post('contacto/reset')
+  resetContacto() {
+    return this.configuracionService.resetContacto();
   }
 
   // ---- Nosotros ----
