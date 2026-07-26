@@ -1,3 +1,9 @@
+export interface ContactByCountry {
+  address: string;
+  phone: string;
+  email: string;
+}
+
 export class UpdateFooterDto {
   logo?: string;
   description?: string;
@@ -11,4 +17,5 @@ export class UpdateFooterDto {
   facebookUrl?: string;
   instagramUrl?: string;
   tiktokUrl?: string;
+  contactsByCountry?: Record<string, ContactByCountry>;
 }

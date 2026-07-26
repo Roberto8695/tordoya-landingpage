@@ -1,5 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+export interface ContactByCountryDTO {
+  address: string;
+  phone: string;
+  email: string;
+}
+
 export interface NavItemDTO {
   label: string;
   href: string;
@@ -29,6 +35,7 @@ export interface ConfigFooterDTO {
   facebookUrl: string;
   instagramUrl: string;
   tiktokUrl: string;
+  contactsByCountry?: Record<string, ContactByCountryDTO>;
   createdAt: string;
   updatedAt: string;
 }
@@ -89,6 +96,7 @@ export async function updateFooter(
     facebookUrl: string;
     instagramUrl: string;
     tiktokUrl: string;
+    contactsByCountry: Record<string, ContactByCountryDTO>;
   }>
 ): Promise<ConfigFooterDTO> {
   const res = await fetch(`${API_URL}/configuracion/footer`, {

@@ -7,6 +7,12 @@ import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown } from "lucide-react";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import { EditableNavList, SectionCard } from "@/features/configuraciones/config-ui";
 
+const COUNTRIES = [
+  { key: "mexico", label: "México", flag: "🇲🇽" },
+  { key: "bolivia", label: "Bolivia", flag: "🇧🇴" },
+  { key: "peru", label: "Perú", flag: "🇵🇪" },
+];
+
 export default function FooterConfig() {
   const {
     config,
@@ -18,11 +24,13 @@ export default function FooterConfig() {
     addFooterTag,
     removeFooterTag,
     updateFooterTag,
+    updateContactByCountry,
   } = useSiteConfig();
 
   const footerLogoInputRef = useRef<HTMLInputElement>(null);
   const [footerLogoPreview, setFooterLogoPreview] = useState<string | null>(null);
   const [newTag, setNewTag] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("mexico");
 
   const handleFooterLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,6 +45,19 @@ export default function FooterConfig() {
     if (!tag) return;
     addFooterTag(tag);
     setNewTag("");
+  };
+
+  const currentContact = config.footer.contactsByCountry[selectedCountry] || {
+    address: "",
+    phone: "",
+    email: "",
+  };
+
+  const handleContactChange = (field: "address" | "phone" | "email", value: string) => {
+    updateContactByCountry(selectedCountry, {
+      ...currentContact,
+      [field]: value,
+    });
   };
 
   return (
@@ -90,43 +111,52 @@ export default function FooterConfig() {
           />
         </label>
 
-        {/* Contact */}
+        {/* Contact by Country */}
         <div>
-          <p className="mb-3 text-sm font-medium text-foreground/80">Información de contacto</p>
+          <p className="mb-3 text-sm font-medium text-foreground/80">Información de contacto por país</p>
+
+          {/* Country tabs */}
+          <div className="mb-4 flex gap-2">
+            {COUNTRIES.map(({ key, label, flag }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setSelectedCountry(key)}
+                className={`inline-flex items-center gap-1.5 rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
+                  selectedCountry === key
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
+                }`}
+              >
+                <span className="text-base">{flag}</span>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Contact fields for selected country */}
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span className="text-xs text-foreground/60">Dirección</span>
               <input
-                value={config.footer.contact.address}
-                onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, address: e.target.value },
-                  })
-                }
+                value={currentContact.address}
+                onChange={(e) => handleContactChange("address", e.target.value)}
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>
             <label className="space-y-2">
               <span className="text-xs text-foreground/60">Teléfono</span>
               <input
-                value={config.footer.contact.phone}
-                onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, phone: e.target.value },
-                  })
-                }
+                value={currentContact.phone}
+                onChange={(e) => handleContactChange("phone", e.target.value)}
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs text-foreground/60">Correo electrónico</span>
               <input
-                value={config.footer.contact.email}
-                onChange={(e) =>
-                  updateFooter({
-                    contact: { ...config.footer.contact, email: e.target.value },
-                  })
-                }
+                value={currentContact.email}
+                onChange={(e) => handleContactChange("email", e.target.value)}
                 className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
               />
             </label>

@@ -85,6 +85,7 @@ model ConfigFooter {
   facebookUrl     String   @default("https://www.facebook.com/Centromedicotordoya")
   instagramUrl    String   @default("https://www.instagram.com/diagnosticoultrasonidotordoya")
   tiktokUrl       String   @default("https://www.tiktok.com/@diagnosticotordoya")
+  contactsByCountry Json?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

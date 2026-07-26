@@ -87,6 +87,8 @@ export class ConfiguracionService {
     if (dto.facebookUrl !== undefined) data.facebookUrl = dto.facebookUrl;
     if (dto.instagramUrl !== undefined) data.instagramUrl = dto.instagramUrl;
     if (dto.tiktokUrl !== undefined) data.tiktokUrl = dto.tiktokUrl;
+    if (dto.contactsByCountry !== undefined)
+      data.contactsByCountry = dto.contactsByCountry;
 
     return this.prisma.configFooter.update({
       where: { id: footer.id },

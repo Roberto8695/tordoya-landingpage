@@ -17,7 +17,32 @@ import {
   resetHeader as apiResetHeader,
   resetFooter as apiResetFooter,
   type NavItemDTO,
+  type ContactByCountryDTO,
 } from "@/services/configuracion.service";
+
+export type ContactByCountry = {
+  address: string;
+  phone: string;
+  email: string;
+};
+
+const DEFAULT_CONTACTS_BY_COUNTRY: Record<string, ContactByCountry> = {
+  mexico: {
+    address: "Av. Río Mixcoac 39, esq. Calle Ceres, CP 03940, Col. Crédito Constructor, Benito Juárez, CDMX.",
+    phone: "+52 1 55 4715 7971",
+    email: "diagnosticoultrasonidotordoya@gmail.com",
+  },
+  bolivia: {
+    address: "Calle Ejemplo #123, Zona Central, La Paz, Bolivia",
+    phone: "+591 2 1234567",
+    email: "bolivia@tordoya.com",
+  },
+  peru: {
+    address: "Av. Ejemplo 456, Miraflores, Lima, Perú",
+    phone: "+51 1 9876543",
+    email: "peru@tordoya.com",
+  },
+};
 
 export interface NavItem {
   label: string;
@@ -41,6 +66,7 @@ export interface SiteConfig {
       phone: string;
       email: string;
     };
+    contactsByCountry: Record<string, ContactByCountry>;
     copyrightText: string;
     copyrightSubtext: string;
     facebookUrl: string;
@@ -78,6 +104,7 @@ const DEFAULT_CONFIG: SiteConfig = {
       phone: "+52 1 55 4715 7971",
       email: "diagnosticoultrasonidotordoya@gmail.com",
     },
+    contactsByCountry: DEFAULT_CONTACTS_BY_COUNTRY,
     copyrightText: "© {year} Tordoya. Todos los derechos reservados.",
     copyrightSubtext: "Soluciones integrales en diagnóstico por ultrasonido.",
     facebookUrl: "https://www.facebook.com/Centromedicotordoya",
@@ -104,6 +131,7 @@ interface SiteConfigContextType {
   removeFooterTag: (index: number) => Promise<void>;
   updateFooterTag: (index: number, tag: string) => Promise<void>;
   resetConfig: () => Promise<void>;
+  updateContactByCountry: (country: string, contact: ContactByCountry) => Promise<void>;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null);
@@ -123,6 +151,7 @@ function apiToSiteConfig(
     facebookUrl: string;
     instagramUrl: string;
     tiktokUrl: string;
+    contactsByCountry?: Record<string, ContactByCountryDTO> | null;
   }
 ): SiteConfig {
   return {
@@ -142,6 +171,7 @@ function apiToSiteConfig(
         phone: footer.contactPhone,
         email: footer.contactEmail,
       },
+      contactsByCountry: footer.contactsByCountry ?? DEFAULT_CONTACTS_BY_COUNTRY,
       copyrightText: footer.copyrightText,
       copyrightSubtext: footer.copyrightSubtext,
       facebookUrl: footer.facebookUrl,
@@ -320,6 +350,26 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
     [config.footer.tags, updateFooter]
   );
 
+  const updateContactByCountry = useCallback(
+    async (country: string, contact: ContactByCountry) => {
+      const contactsByCountry = {
+        ...config.footer.contactsByCountry,
+        [country]: contact,
+      };
+      setConfig((prev) => ({
+        ...prev,
+        footer: { ...prev.footer, contactsByCountry },
+      }));
+      try {
+        await apiUpdateFooter({ contactsByCountry });
+        setError(null);
+      } catch {
+        setError("Error al guardar los contactos por país.");
+      }
+    },
+    [config.footer.contactsByCountry]
+  );
+
   const resetConfig = useCallback(async () => {
     try {
       const [headerRes, footerRes] = await Promise.all([
@@ -354,6 +404,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         removeFooterTag,
         updateFooterTag,
         resetConfig,
+        updateContactByCountry,
       }}
     >
       {children}
