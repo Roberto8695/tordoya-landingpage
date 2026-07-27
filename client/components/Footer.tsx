@@ -16,11 +16,13 @@ function getCountry(): string {
 }
 
 export default function Footer() {
-	const { config } = useSiteConfig();
+	const { config, refreshFooter } = useSiteConfig();
 	const { footer } = config;
 	const [selectedCountry, setSelectedCountry] = useState(getCountry());
 
 	useEffect(() => {
+		refreshFooter();
+
 		const handleChange = (e: Event) => {
 			const detail = (e as CustomEvent<string>).detail;
 			setSelectedCountry(detail);
@@ -28,7 +30,7 @@ export default function Footer() {
 
 		window.addEventListener(COUNTRY_CHANGE_EVENT, handleChange);
 		return () => window.removeEventListener(COUNTRY_CHANGE_EVENT, handleChange);
-	}, []);
+	}, [refreshFooter]);
 
 	const contactByCountry = footer.contactsByCountry[selectedCountry];
 	const displayContact = contactByCountry ?? footer.contact;

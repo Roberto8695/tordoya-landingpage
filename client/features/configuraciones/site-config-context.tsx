@@ -132,6 +132,15 @@ interface SiteConfigContextType {
   updateFooterTag: (index: number, tag: string) => Promise<void>;
   resetConfig: () => Promise<void>;
   updateContactByCountry: (country: string, contact: ContactByCountry) => Promise<void>;
+  refreshFooter: () => Promise<void>;
+}
+
+const FOOTER_UPDATE_EVENT = "tordoya-footer-update";
+
+function dispatchFooterUpdate() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(FOOTER_UPDATE_EVENT));
+  }
 }
 
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null);
@@ -210,8 +219,45 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
     }
 
     load();
+
+    // Listen for footer updates from admin
+    function onFooterUpdate() {
+      apiGetFooter()
+        .then((footerRes) => {
+          setConfig((prev) => ({
+            ...prev,
+            footer: {
+              ...prev.footer,
+              logo: footerRes.logo,
+              description: footerRes.description,
+              tags: footerRes.tags,
+              navItems: footerRes.navItems,
+              contact: {
+                address: footerRes.contactAddress,
+                phone: footerRes.contactPhone,
+                email: footerRes.contactEmail,
+              },
+              contactsByCountry: footerRes.contactsByCountry ?? DEFAULT_CONTACTS_BY_COUNTRY,
+              copyrightText: footerRes.copyrightText,
+              copyrightSubtext: footerRes.copyrightSubtext,
+              facebookUrl: footerRes.facebookUrl,
+              instagramUrl: footerRes.instagramUrl,
+              tiktokUrl: footerRes.tiktokUrl,
+            },
+          }));
+        })
+        .catch(() => {});
+    }
+
+    if (typeof window !== "undefined") {
+      window.addEventListener(FOOTER_UPDATE_EVENT, onFooterUpdate);
+    }
+
     return () => {
       cancelled = true;
+      if (typeof window !== "undefined") {
+        window.removeEventListener(FOOTER_UPDATE_EVENT, onFooterUpdate);
+      }
     };
   }, []);
 
@@ -253,6 +299,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
           instagramUrl: nextFooter.instagramUrl,
           tiktokUrl: nextFooter.tiktokUrl,
         });
+        dispatchFooterUpdate();
         setError(null);
       } catch {
         setError("Error al guardar los cambios del footer.");
@@ -362,6 +409,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
       }));
       try {
         await apiUpdateFooter({ contactsByCountry });
+        dispatchFooterUpdate();
         setError(null);
       } catch {
         setError("Error al guardar los contactos por país.");
@@ -369,6 +417,36 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
     },
     [config.footer.contactsByCountry]
   );
+
+  const refreshFooter = useCallback(async () => {
+    try {
+      const footerRes = await apiGetFooter();
+      setConfig((prev) => ({
+        ...prev,
+        footer: {
+          ...prev.footer,
+          logo: footerRes.logo,
+          description: footerRes.description,
+          tags: footerRes.tags,
+          navItems: footerRes.navItems,
+          contact: {
+            address: footerRes.contactAddress,
+            phone: footerRes.contactPhone,
+            email: footerRes.contactEmail,
+          },
+          contactsByCountry: footerRes.contactsByCountry ?? DEFAULT_CONTACTS_BY_COUNTRY,
+          copyrightText: footerRes.copyrightText,
+          copyrightSubtext: footerRes.copyrightSubtext,
+          facebookUrl: footerRes.facebookUrl,
+          instagramUrl: footerRes.instagramUrl,
+          tiktokUrl: footerRes.tiktokUrl,
+        },
+      }));
+      setError(null);
+    } catch {
+      setError("Error al refrescar la configuración del footer.");
+    }
+  }, []);
 
   const resetConfig = useCallback(async () => {
     try {
@@ -405,6 +483,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         updateFooterTag,
         resetConfig,
         updateContactByCountry,
+        refreshFooter,
       }}
     >
       {children}
