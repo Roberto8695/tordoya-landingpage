@@ -1,14 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone } from "react-icons/hi";
 import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 
+const COUNTRY_STORAGE_KEY = "tordoya_country";
+const COUNTRY_CHANGE_EVENT = "tordoya-country-change";
+
+function getCountry(): string {
+	if (typeof window === "undefined") return "mexico";
+	return window.localStorage.getItem(COUNTRY_STORAGE_KEY) ?? "mexico";
+}
+
 export default function Footer() {
 	const { config } = useSiteConfig();
 	const { footer } = config;
+	const [selectedCountry, setSelectedCountry] = useState(getCountry());
+
+	useEffect(() => {
+		const handleChange = (e: Event) => {
+			const detail = (e as CustomEvent<string>).detail;
+			setSelectedCountry(detail);
+		};
+
+		window.addEventListener(COUNTRY_CHANGE_EVENT, handleChange);
+		return () => window.removeEventListener(COUNTRY_CHANGE_EVENT, handleChange);
+	}, []);
+
+	const contactByCountry = footer.contactsByCountry[selectedCountry];
+	const displayContact = contactByCountry ?? footer.contact;
 
 	const copyrightText = footer.copyrightText.replace(
 		"{year}",
@@ -91,26 +114,35 @@ export default function Footer() {
 					</div>
 
 					<div>
-						<h3 className="text-lg font-black text-white">Contacto</h3>
+						<h3 className="flex items-center gap-2 text-lg font-black text-white">
+							<Image
+								src={`/image/${selectedCountry}.png`}
+								alt={selectedCountry}
+								width={32}
+								height={24}
+								className="h-6 w-8 rounded-sm object-cover shadow-sm"
+							/>
+							Contacto
+						</h3>
 
 						<ul className="mt-5 space-y-4 text-sm text-white/80">
 							<li className="flex items-start gap-3">
 								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
 									<HiOutlineLocationMarker size={18} />
 								</span>
-								<span>{footer.contact.address}</span>
+								<span>{displayContact.address}</span>
 							</li>
 							<li className="flex items-start gap-3">
 								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
 									<HiOutlinePhone size={18} />
 								</span>
-								<span>{footer.contact.phone}</span>
+								<span>{displayContact.phone}</span>
 							</li>
 							<li className="flex items-start gap-3">
 								<span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-white/12 text-white">
 									<HiOutlineMail size={18} />
 								</span>
-								<span>{footer.contact.email}</span>
+								<span>{displayContact.email}</span>
 							</li>
 						</ul>
 					</div>
