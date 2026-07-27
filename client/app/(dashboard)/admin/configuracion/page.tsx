@@ -1,20 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
-import { RotateCcw, Sparkles, Save } from "lucide-react";
+import { RotateCcw, Save } from "lucide-react";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import HeaderConfig from "@/features/configuraciones/HeaderConfig";
 import FooterConfig from "@/features/configuraciones/FooterConfig";
 
 export default function ConfiguracionPage() {
-  const { resetConfig } = useSiteConfig();
+  const { config, resetConfig, updateHeader, updateFooter } = useSiteConfig();
   const [savedMessage, setSavedMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    setSavedMessage("Cambios guardados correctamente.");
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    try {
+      await Promise.all([
+        updateHeader(config.header),
+        updateFooter(config.footer),
+      ]);
+      setSavedMessage("Cambios guardados correctamente.");
+    } catch {
+      setSavedMessage("Error al guardar los cambios.");
+    } finally {
+      setSaving(false);
+    }
     window.setTimeout(() => setSavedMessage(""), 2500);
-  };
+  }, [config.header, config.footer, updateHeader, updateFooter]);
 
   const handleReset = () => {
     resetConfig();
@@ -43,7 +55,25 @@ export default function ConfiguracionPage() {
               </p>
             </div>
 
-            
+            <div className="flex shrink-0 gap-3">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 rounded-2xl border border-primary/20 bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-primary/5"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Restablecer
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 rounded-2xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-primary/90 disabled:opacity-60"
+              >
+                <Save className="h-4 w-4" />
+                {saving ? "Guardando..." : "Guardar"}
+              </button>
+            </div>
           </div>
 
           {/* Success message */}

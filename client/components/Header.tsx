@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { config } = useSiteConfig();
+  const { config, refreshHeader } = useSiteConfig();
+
+  useEffect(() => {
+    refreshHeader();
+  }, [refreshHeader]);
   const { header } = config;
   const headerLogo = header.logo || "/image/logo_h.svg";
 

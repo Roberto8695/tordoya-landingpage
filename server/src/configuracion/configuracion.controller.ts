@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Post,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, Put, Post, Body } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service';
-import type { UpdateHeaderDto } from './dto/update-header.dto';
-import type { UpdateFooterDto } from './dto/update-footer.dto';
-import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
 
 @Controller('configuracion')
 export class ConfiguracionController {
@@ -20,8 +11,8 @@ export class ConfiguracionController {
   }
 
   @Put('header')
-  updateHeader(@Body() dto: UpdateHeaderDto) {
-    return this.configuracionService.updateHeader(dto);
+  updateHeader(@Body() body: Record<string, unknown>) {
+    return this.configuracionService.updateHeader(body);
   }
 
   @Post('header/reset')
@@ -35,8 +26,8 @@ export class ConfiguracionController {
   }
 
   @Put('footer')
-  updateFooter(@Body() dto: UpdateFooterDto) {
-    return this.configuracionService.updateFooter(dto);
+  updateFooter(@Body() body: Record<string, unknown>) {
+    return this.configuracionService.updateFooter(body);
   }
 
   @Post('footer/reset')
@@ -44,16 +35,14 @@ export class ConfiguracionController {
     return this.configuracionService.resetFooter();
   }
 
-  // ---- Nosotros ----
-
   @Get('nosotros')
   getNosotros() {
     return this.configuracionService.getNosotros();
   }
 
   @Put('nosotros')
-  updateNosotros(@Body() dto: UpdateNosotrosDto) {
-    return this.configuracionService.updateNosotros(dto);
+  updateNosotros(@Body() body: Record<string, unknown>) {
+    return this.configuracionService.updateNosotros(body);
   }
 
   @Post('nosotros/reset')
@@ -61,3 +50,4 @@ export class ConfiguracionController {
     return this.configuracionService.resetNosotros();
   }
 }
+

@@ -133,13 +133,26 @@ interface SiteConfigContextType {
   resetConfig: () => Promise<void>;
   updateContactByCountry: (country: string, contact: ContactByCountry) => Promise<void>;
   refreshFooter: () => Promise<void>;
+  refreshHeader: () => Promise<void>;
 }
 
+const HEADER_UPDATE_EVENT = "tordoya-header-update";
 const FOOTER_UPDATE_EVENT = "tordoya-footer-update";
+const STORAGE_KEY = "tordoya-config-timestamp";
+
+function dispatchHeaderUpdate() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(HEADER_UPDATE_EVENT));
+    // Also write to localStorage so other tabs get notified via storage event
+    localStorage.setItem(STORAGE_KEY, Date.now().toString());
+  }
+}
 
 function dispatchFooterUpdate() {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(FOOTER_UPDATE_EVENT));
+    // Also write to localStorage so other tabs get notified via storage event
+    localStorage.setItem(STORAGE_KEY, Date.now().toString());
   }
 }
 
@@ -220,6 +233,23 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
 
     load();
 
+    // Listen for header updates from admin
+    function onHeaderUpdate() {
+      apiGetHeader()
+        .then((headerRes) => {
+          setConfig((prev) => ({
+            ...prev,
+            header: {
+              logo: headerRes.logo,
+              ctaText: headerRes.ctaText,
+              ctaLink: headerRes.ctaLink,
+              navItems: headerRes.navItems,
+            },
+          }));
+        })
+        .catch(() => {});
+    }
+
     // Listen for footer updates from admin
     function onFooterUpdate() {
       apiGetFooter()
@@ -249,14 +279,26 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         .catch(() => {});
     }
 
+    // Listen for storage events from OTHER tabs (localStorage changes across tabs)
+    function onStorageChange(e: StorageEvent) {
+      if (e.key === STORAGE_KEY) {
+        onHeaderUpdate();
+        onFooterUpdate();
+      }
+    }
+
     if (typeof window !== "undefined") {
+      window.addEventListener(HEADER_UPDATE_EVENT, onHeaderUpdate);
       window.addEventListener(FOOTER_UPDATE_EVENT, onFooterUpdate);
+      window.addEventListener("storage", onStorageChange);
     }
 
     return () => {
       cancelled = true;
       if (typeof window !== "undefined") {
+        window.removeEventListener(HEADER_UPDATE_EVENT, onHeaderUpdate);
         window.removeEventListener(FOOTER_UPDATE_EVENT, onFooterUpdate);
+        window.removeEventListener("storage", onStorageChange);
       }
     };
   }, []);
@@ -272,6 +314,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
           ctaLink: nextHeader.ctaLink,
           navItems: nextHeader.navItems,
         });
+        dispatchHeaderUpdate();
         setError(null);
       } catch {
         setError("Error al guardar los cambios del header.");
@@ -293,6 +336,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
           contactAddress: nextFooter.contact.address,
           contactPhone: nextFooter.contact.phone,
           contactEmail: nextFooter.contact.email,
+          contactsByCountry: nextFooter.contactsByCountry,
           copyrightText: nextFooter.copyrightText,
           copyrightSubtext: nextFooter.copyrightSubtext,
           facebookUrl: nextFooter.facebookUrl,
@@ -301,8 +345,9 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         });
         dispatchFooterUpdate();
         setError(null);
-      } catch {
+      } catch (err) {
         setError("Error al guardar los cambios del footer.");
+        throw err;
       }
     },
     [config.footer]
@@ -411,12 +456,31 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         await apiUpdateFooter({ contactsByCountry });
         dispatchFooterUpdate();
         setError(null);
-      } catch {
+    } catch (err) {
         setError("Error al guardar los contactos por país.");
+        throw err;
       }
     },
     [config.footer.contactsByCountry]
   );
+
+  const refreshHeader = useCallback(async () => {
+    try {
+      const headerRes = await apiGetHeader();
+      setConfig((prev) => ({
+        ...prev,
+        header: {
+          logo: headerRes.logo,
+          ctaText: headerRes.ctaText,
+          ctaLink: headerRes.ctaLink,
+          navItems: headerRes.navItems,
+        },
+      }));
+      setError(null);
+    } catch {
+      setError("Error al refrescar la configuración del header.");
+    }
+  }, []);
 
   const refreshFooter = useCallback(async () => {
     try {
@@ -484,6 +548,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         resetConfig,
         updateContactByCountry,
         refreshFooter,
+        refreshHeader,
       }}
     >
       {children}

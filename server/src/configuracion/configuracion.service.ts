@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import type { UpdateHeaderDto } from './dto/update-header.dto';
-import type { UpdateFooterDto } from './dto/update-footer.dto';
-import type { UpdateNosotrosDto } from './dto/update-nosotros.dto';
 
 @Injectable()
 export class ConfiguracionService {
@@ -18,7 +15,7 @@ export class ConfiguracionService {
     });
   }
 
-  async updateHeader(dto: UpdateHeaderDto) {
+  async updateHeader(dto: Record<string, unknown>) {
     const existing = await this.prisma.configHeader.findFirst();
     const header =
       existing ??
@@ -64,7 +61,7 @@ export class ConfiguracionService {
     });
   }
 
-  async updateFooter(dto: UpdateFooterDto) {
+  async updateFooter(dto: Record<string, unknown>) {
     const existing = await this.prisma.configFooter.findFirst();
     const footer =
       existing ??
@@ -89,6 +86,9 @@ export class ConfiguracionService {
     if (dto.tiktokUrl !== undefined) data.tiktokUrl = dto.tiktokUrl;
     if (dto.contactsByCountry !== undefined)
       data.contactsByCountry = dto.contactsByCountry;
+
+    console.log("[updateFooter] payload received keys:", Object.keys(dto));
+    console.log("[updateFooter] sending to Prisma keys:", Object.keys(data));
 
     return this.prisma.configFooter.update({
       where: { id: footer.id },
@@ -129,7 +129,7 @@ export class ConfiguracionService {
     });
   }
 
-  async updateNosotros(dto: UpdateNosotrosDto) {
+  async updateNosotros(dto: Record<string, unknown>) {
     const existing = await this.prisma.configNosotros.findFirst();
     const nosotros =
       existing ??

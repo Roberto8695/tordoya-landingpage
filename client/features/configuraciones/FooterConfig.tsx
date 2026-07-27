@@ -1,11 +1,83 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
-import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown } from "lucide-react";
+import { Plus, Trash2, ImagePlus, Upload, ArrowUpDown, Save, Loader2 } from "lucide-react";
 import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import { EditableNavList, SectionCard } from "@/features/configuraciones/config-ui";
+
+function ContactForm({
+  initialContact,
+  onSave,
+  saving,
+  saved,
+}: {
+  initialContact: { address: string; phone: string; email: string };
+  onSave: (contact: { address: string; phone: string; email: string }) => Promise<void>;
+  saving: boolean;
+  saved: boolean;
+}) {
+  const [draft, setDraft] = useState(initialContact);
+
+  // Reset draft when initialContact changes (country switch)
+  useEffect(() => {
+    setDraft(initialContact);
+  }, [initialContact]);
+
+  const handleChange = (field: "address" | "phone" | "email", value: string) => {
+    setDraft((prev) => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="space-y-2">
+          <span className="text-xs text-foreground/60">Dirección</span>
+          <input
+            value={draft.address}
+            onChange={(e) => handleChange("address", e.target.value)}
+            className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+          />
+        </label>
+        <label className="space-y-2">
+          <span className="text-xs text-foreground/60">Teléfono</span>
+          <input
+            value={draft.phone}
+            onChange={(e) => handleChange("phone", e.target.value)}
+            className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+          />
+        </label>
+        <label className="space-y-2 sm:col-span-2">
+          <span className="text-xs text-foreground/60">Correo electrónico</span>
+          <input
+            value={draft.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+            className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
+          />
+        </label>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        {saved && (
+          <span className="text-xs font-medium text-emerald-600">✓ Guardado</span>
+        )}
+        <button
+          type="button"
+          onClick={() => onSave(draft)}
+          disabled={saving}
+          className="inline-flex items-center gap-1.5 rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-primary/90 disabled:opacity-60"
+        >
+          {saving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
+          {saving ? "Guardando..." : "Guardar"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const COUNTRIES = [
   { key: "mexico", label: "México", flag: "/image/mexico.png" },
@@ -31,6 +103,27 @@ export default function FooterConfig() {
   const [footerLogoPreview, setFooterLogoPreview] = useState<string | null>(null);
   const [newTag, setNewTag] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("mexico");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleCountryChange = (key: string) => {
+    setSelectedCountry(key);
+  };
+
+  const handleSaveContact = async (contact: { address: string; phone: string; email: string }) => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      await updateContactByCountry(selectedCountry, contact);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setSaved(false);
+      console.error("Error al guardar contacto:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleFooterLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,19 +138,6 @@ export default function FooterConfig() {
     if (!tag) return;
     addFooterTag(tag);
     setNewTag("");
-  };
-
-  const currentContact = config.footer.contactsByCountry[selectedCountry] || {
-    address: "",
-    phone: "",
-    email: "",
-  };
-
-  const handleContactChange = (field: "address" | "phone" | "email", value: string) => {
-    updateContactByCountry(selectedCountry, {
-      ...currentContact,
-      [field]: value,
-    });
   };
 
   return (
@@ -113,7 +193,9 @@ export default function FooterConfig() {
 
         {/* Contact by Country */}
         <div>
-          <p className="mb-3 text-sm font-medium text-foreground/80">Información de contacto por país</p>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium text-foreground/80">Información de contacto por país</p>
+          </div>
 
           {/* Country tabs */}
           <div className="mb-4 flex gap-2">
@@ -121,7 +203,7 @@ export default function FooterConfig() {
               <button
                 key={key}
                 type="button"
-                onClick={() => setSelectedCountry(key)}
+                onClick={() => handleCountryChange(key)}
                 className={`inline-flex items-center gap-1.5 rounded-2xl px-4 py-2 text-sm font-semibold transition-all ${
                   selectedCountry === key
                     ? "bg-primary text-white shadow-md"
@@ -141,32 +223,13 @@ export default function FooterConfig() {
           </div>
 
           {/* Contact fields for selected country */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2">
-              <span className="text-xs text-foreground/60">Dirección</span>
-              <input
-                value={currentContact.address}
-                onChange={(e) => handleContactChange("address", e.target.value)}
-                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
-              />
-            </label>
-            <label className="space-y-2">
-              <span className="text-xs text-foreground/60">Teléfono</span>
-              <input
-                value={currentContact.phone}
-                onChange={(e) => handleContactChange("phone", e.target.value)}
-                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
-              />
-            </label>
-            <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs text-foreground/60">Correo electrónico</span>
-              <input
-                value={currentContact.email}
-                onChange={(e) => handleContactChange("email", e.target.value)}
-                className="w-full rounded-2xl border border-primary/15 bg-white px-4 py-3 text-sm text-foreground outline-none ring-primary/20 transition focus:ring"
-              />
-            </label>
-          </div>
+          <ContactForm
+            key={selectedCountry}
+            initialContact={config.footer.contactsByCountry[selectedCountry] || { address: "", phone: "", email: "" }}
+            onSave={handleSaveContact}
+            saving={saving}
+            saved={saved}
+          />
         </div>
 
         {/* Redes Sociales */}

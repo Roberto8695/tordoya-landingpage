@@ -19,3 +19,4 @@ export class UpdateFooterDto {
   tiktokUrl?: string;
   contactsByCountry?: Record<string, ContactByCountry>;
 }
+
