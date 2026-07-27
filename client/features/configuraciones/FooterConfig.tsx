@@ -8,9 +8,9 @@ import { useSiteConfig } from "@/features/configuraciones/site-config-context";
 import { EditableNavList, SectionCard } from "@/features/configuraciones/config-ui";
 
 const COUNTRIES = [
-  { key: "mexico", label: "México", flag: "🇲🇽" },
-  { key: "bolivia", label: "Bolivia", flag: "🇧🇴" },
-  { key: "peru", label: "Perú", flag: "🇵🇪" },
+  { key: "mexico", label: "México", flag: "/image/mexico.png" },
+  { key: "bolivia", label: "Bolivia", flag: "/image/bolivia.png" },
+  { key: "peru", label: "Perú", flag: "/image/peru.png" },
 ];
 
 export default function FooterConfig() {
@@ -128,7 +128,13 @@ export default function FooterConfig() {
                     : "bg-primary/10 text-primary hover:bg-primary/20"
                 }`}
               >
-                <span className="text-base">{flag}</span>
+                <Image
+                  src={flag}
+                  alt={label}
+                  width={28}
+                  height={20}
+                  className="h-5 w-7 rounded-sm object-cover shadow-sm"
+                />
                 {label}
               </button>
             ))}
